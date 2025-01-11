@@ -16,7 +16,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -102,8 +101,8 @@ public class Robot extends LoggedRobot {
     /** This function is called once when the robot is disabled. */
     @Override
     public void disabledInit() {
-      //TODO: uncomment later
-       // robotContainer.resetSimulation();
+        // TODO: uncomment later
+        // robotContainer.resetSimulation();
     }
 
     /** This function is called periodically when disabled. */
@@ -159,8 +158,8 @@ public class Robot extends LoggedRobot {
     /** This function is called periodically whilst in simulation. */
     @Override
     public void simulationPeriodic() {
-      //TODO: uncomment later
-        //SimulatedArena.getInstance().simulationPeriodic();
-        //robotContainer.displaySimFieldToAdvantageScope();
+        // TODO: uncomment later
+        // SimulatedArena.getInstance().simulationPeriodic();
+        // robotContainer.displaySimFieldToAdvantageScope();
     }
 }
