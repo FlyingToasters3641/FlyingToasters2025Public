@@ -1,7 +1,37 @@
 package frc.robot.subsystems.elevator;
 
-public class ElevatorIOSim {
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+
+import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.math.MathUtil;
+
+public class ElevatorIOSim implements ElevatorIO{
     
-    //TODO: Make an ElevatorSimClass
+
+    private final ElevatorSim EL_sim = new ElevatorSim(
+        DCMotor.getKrakenX60(4),
+        4, 
+        Pounds.of(9.8).in(Kilograms), //TODO: Ask for Intake Mass
+        Inches.of(2).in(Meters), //TODO: Ask for Spool Radius
+        Inches.of(22.4).in(Meters), 
+        Inches.of(77).in(Meters), 
+        true, 
+        Inches.of(0).in(Meters)
+    );
+    
+
+    @Override
+    public void updateInputs(ElevatorIOInputs inputs){
+
+    }
+    
+
+    //TODO: Figure out how to convert voltage into movement of position
+    @Override
+    public void setELPosition(double position){
+        double currentPosition = EL_sim.getPositionMeters();
+    }
 
 }

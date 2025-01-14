@@ -29,6 +29,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.vision.*;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -44,6 +47,7 @@ public class RobotContainer {
     // Subsystems
     private final Vision vision;
     private final Drive drive;
+    private final Elevator elevator;
     private SwerveDriveSimulation driveSimulation = null;
 
     // Controller
@@ -67,6 +71,9 @@ public class RobotContainer {
                         drive,
                         new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
                         new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
+                // elevator = new Elevator(
+                //         new ElevatorIO(new ElevatorIOTalonFX());
+                // )
                 break;
 
             case SIM:
@@ -137,6 +144,12 @@ public class RobotContainer {
                 ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
                 : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
         controller.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
+
+        
+
+        //TODO: Add butting bindings for elevator to move up/down for later usages for SIM.
+
+        controller.b.onTrue()
     }
 
     /**
