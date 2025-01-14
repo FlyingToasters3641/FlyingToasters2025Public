@@ -17,6 +17,11 @@ jobs:
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
           fetch-depth: 1
 
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Push to public repository
         run: |
           git remote add public https://github.com/FlyingToasters3641/FlyingToasters2025Public.git
