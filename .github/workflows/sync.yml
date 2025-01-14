@@ -16,7 +16,7 @@ jobs:
       - name: Checkout private repository
         uses: actions/checkout@v4.2.2
         with:
-          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          token: ${{ secrets.FINE_GRAINED_TOKEN }}
 
       - name: Configure Git
         run: |
@@ -33,6 +33,6 @@ jobs:
 
       - name: Push to public repository
         env:
-          PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          PUBLIC_REPO_TOKEN: ${{ secrets.FINE_GRAINED_TOKEN }}
         run: |
           git push https://$PUBLIC_REPO_TOKEN@github.com/FlyingToasters3641/FlyingToasters2025Public.git main --force
