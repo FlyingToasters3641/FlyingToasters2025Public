@@ -3,10 +3,7 @@ name: Sync Private to Public Repo
 on:
   push:
     branches:
-      - main  # Sync only the main branch
-
-permissions:
-  contents: write  # Ensure the workflow can push to repositories
+      - main
 
 jobs:
   sync:
@@ -14,23 +11,14 @@ jobs:
 
     steps:
       - name: Checkout private repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v2
         with:
-          token: ${{ secrets.FINE_GRAINED_TOKEN }}
-
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Add public repository as a remote
-        run: git remote add public https://github.com/FlyingToasters3641/FlyingToasters2025Public.git
-
-      - name: Pull latest changes from private repository
-        run: git pull origin main
+          repository: FlyingToasters3641/FlyingToasters2025
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
 
       - name: Push to public repository
-        env:
-          PUBLIC_REPO_TOKEN: ${{ secrets.FINE_GRAINED_TOKEN }}
         run: |
-          git push https://oauth2:$PUBLIC_REPO_TOKEN@github.com/FlyingToasters3641/FlyingToasters2025Public.git main --force
+          git remote add public https://github.com/FlyingToasters3641/FlyingToasters2025Public.git
+          git push public main --force
+        env:
+          PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
