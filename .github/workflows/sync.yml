@@ -26,10 +26,8 @@ jobs:
       - name: Add public repository as a remote
         run: git remote add public https://github.com/FlyingToasters3641/FlyingToasters2025Public.git
 
-      - name: Clean up repository
-        run: |
-          git gc --prune=now --aggressive
-          git fsck --full
+      - name: Pull latest changes from private repository
+        run: git pull origin main
 
       - name: Push to public repository
         env:
