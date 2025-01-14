@@ -1,18 +1,33 @@
 name: Sync Private to Public Repo
+
 on:
   push:
     branches:
-      - main
+      - main  # Sync only the main branch
+
+permissions:
+  contents: write  # Ensure the workflow can push to repositories
+
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout private repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v3
         with:
-          repository: FlyingToasters3641/FlyingToasters2025
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
-      - name: Push to public repository
+
+      - name: Configure Git
         run: |
-          git remote set-url origin https://github.com/FlyingToasters3641/FlyingToasters2025Public.git
-          git push --force origin main
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add public repository as a remote
+        run: git remote add public https://github.com/FlyingToasters3641/FlyingToasters2025Public.git
+
+      - name: Push to public repository
+        env:
+          PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+        run: |
+          git push https://$PUBLIC_REPO_TOKEN@github.com/FlyingToasters3641/FlyingToasters2025Public.git main --force
