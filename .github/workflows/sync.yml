@@ -33,4 +33,4 @@ jobs:
         env:
           PUBLIC_REPO_TOKEN: ${{ secrets.FINE_GRAINED_TOKEN }}
         run: |
-          git push https://$PUBLIC_REPO_TOKEN@github.com/FlyingToasters3641/FlyingToasters2025Public.git main --force
+          git push https://oauth2:$PUBLIC_REPO_TOKEN@github.com/FlyingToasters3641/FlyingToasters2025Public.git main --force
