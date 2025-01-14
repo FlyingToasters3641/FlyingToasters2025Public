@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   sync:
+    needs: CI  # This ensures the sync job runs after the CI job
     runs-on: ubuntu-latest
 
     steps:
