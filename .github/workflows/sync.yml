@@ -1,0 +1,18 @@
+name: Sync Private to Public Repo
+on:
+  push:
+    branches:
+      - main
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout private repository
+        uses: actions/checkout@v4.2.2
+        with:
+          repository: FlyingToasters3641/FlyingToasters2025
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+      - name: Push to public repository
+        run: |
+          git remote set-url origin https://github.com/FlyingToasters3641/FlyingToasters2025Public.git
+          git push --force origin main
