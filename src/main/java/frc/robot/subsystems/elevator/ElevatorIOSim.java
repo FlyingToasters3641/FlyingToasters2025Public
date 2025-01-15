@@ -13,7 +13,7 @@ public class ElevatorIOSim implements ElevatorIO{
     private final ElevatorSim EL_sim = new ElevatorSim(
         DCMotor.getKrakenX60(4),
         4, 
-        Pounds.of(9.8).in(Kilograms), //TODO: Ask for Intake Mass
+        Pounds.of(9.8).in(Kilograms), //TODO: Ask for Intake Mass 
         Inches.of(2).in(Meters), //TODO: Ask for Spool Radius
         Inches.of(22.4).in(Meters), 
         Inches.of(77).in(Meters), 
@@ -24,11 +24,11 @@ public class ElevatorIOSim implements ElevatorIO{
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs){
-
+        inputs.EL_position = EL_sim.getPositionMeters();
     }
-    
 
-    //TODO: Figure out how to convert voltage into movement of position
+
+    //TODO: Figure out how to convert voltage into movement of position. TRY PHOENIX SIM!
     @Override
     public void setELPosition(double position){
         double currentPosition = EL_sim.getPositionMeters();
