@@ -1,4 +1,4 @@
-name: Sync Private to Public Repo
+name: Sync Private to Public Repo 
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
         with:
           repository: FlyingToasters3641/FlyingToasters2025
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
-          fetch-depth: 1
+          fetch-depth: 0  # Fetch full history to avoid issues
 
       - name: Configure Git
         run: |
@@ -24,7 +24,8 @@ jobs:
 
       - name: Push to public repository
         run: |
-          git remote add public https://github.com/FlyingToasters3641/FlyingToasters2025Public.git
+          git remote add public https://$PUBLIC_REPO_TOKEN@github.com/FlyingToasters3641/FlyingToasters2025Public.git
           git push public main --force
         env:
           PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+
