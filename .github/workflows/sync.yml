@@ -1,0 +1,30 @@
+name: Sync Private to Public Repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout private repository
+        uses: actions/checkout@v3
+        with:
+          repository: FlyingToasters3641/FlyingToasters2025
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          fetch-depth: 1
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Push to public repository
+        run: |
+          git remote add public https://github.com/FlyingToasters3641/FlyingToasters2025Public.git
+          git push public main --force
+        env:
+          PUBLIC_REPO_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
