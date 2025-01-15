@@ -75,6 +75,8 @@ public class Robot extends LoggedRobot {
                 break;
         }
 
+        
+
         // Start AdvantageKit logger
         Logger.start();
 
