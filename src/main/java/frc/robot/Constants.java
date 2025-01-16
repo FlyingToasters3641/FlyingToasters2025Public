@@ -25,11 +25,15 @@ public final class Constants {
         public static final int kDriverControllerPort = 0;
     }
     
+
+    //Constants to use for pathfinding
     public static final PathConstraints constraints = new PathConstraints(
         3.0, 4.0,
         Units.degreesToRadians(540), Units.degreesToRadians(720));
     
     public static final Pose2d targetPose = new Pose2d(5.8, 4, new Rotation2d(3.1415926589793));
+    public static final int goalVelocity = 1;
+    public static final int speedMultiplier = 3;
 
 
 
