@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase{
@@ -18,7 +19,7 @@ public class Elevator extends SubsystemBase{
         io.updateInputs(inputs);
     }
 
-    public void setELPosition(double position){
+    public void setELPosition(Distance position){
         io.setELPosition(position);
     }
 

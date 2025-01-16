@@ -1,5 +1,7 @@
 package frc.robot.subsystems.elevator;
 
+import static edu.wpi.first.units.Units.*;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -12,6 +14,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.MutDistance;
+
 public class ElevatorIOTalonFX implements ElevatorIO {
 
     // TODO: Calculate Elevator Ratios
@@ -20,20 +25,16 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     private static final String CANbusName = "idk"; // TODO: Update CANbus Name
     public static final TalonFX EL_TalonFXOne = new TalonFX(1, CANbusName);// TODO: Update CANIDs
-    public static final TalonFX EL_TalonFXTwo = new TalonFX(2, CANbusName);
-    public static final TalonFX EL_TalonFXThree = new TalonFX(3, CANbusName);
-    public static final TalonFX EL_TalonFXFour = new TalonFX(4, CANbusName); // TODO: Standardize Names for Motors
+    public static final TalonFX EL_TalonFXTwo = new TalonFX(2, CANbusName); // TODO: Standardize Names for Motors
     public static final CANcoder EL_CANCoder = new CANcoder(5, CANbusName); // TODO: Clarify CANcoder usage
 
-    double setpoint = 0.0;
+    MutDistance setpoint = Inches.mutable(0);
 
     public ElevatorIOTalonFX() {
 
         // Assuming all motors run in the same direction, sets all motors to "follow"
         // EL_TalonFXOne
         EL_TalonFXTwo.setControl(new Follower(EL_TalonFXOne.getDeviceID(), false));
-        EL_TalonFXThree.setControl(new Follower(EL_TalonFXOne.getDeviceID(), false));
-        EL_TalonFXFour.setControl(new Follower(EL_TalonFXOne.getDeviceID(), false));
 
         TalonFXConfiguration EL_TalonConfig = new TalonFXConfiguration();
 
@@ -57,22 +58,20 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     }
 
     @Override
-    public void updateInputs(ElevatorIOInputs inputs){
-        inputs.EL_position_inches = setpoint;
-        inputs.EL_position = EL_CANCoder.getPosition().getValueAsDouble();
+    public void updateInputs(ElevatorIOInputs inputs){;
+        inputs.EL_position.mut_replace(Inches.of(EL_CANCoder.getPosition().getValueAsDouble()));
         Logger.recordOutput("Elevator/absolute", EL_CANCoder.getPosition().getValueAsDouble());
         Logger.recordOutput("Elevator/motorOnePos", EL_TalonFXOne.getPosition().getValueAsDouble());
         Logger.recordOutput("Elevator/motorTwoPos", EL_TalonFXTwo.getPosition().getValueAsDouble());
-        Logger.recordOutput("Elevator/motorThreePos", EL_TalonFXThree.getPosition().getValueAsDouble());
-        Logger.recordOutput("Elevator/motorFourPos", EL_TalonFXFour.getPosition().getValueAsDouble());
         Logger.recordOutput("Elevator/voltage", EL_TalonFXOne.getMotorVoltage().getValueAsDouble());
         Logger.recordOutput("Elevator/setpoint", setpoint);
     }
 
     @Override
-    public void setELPosition(double position){
-        setpoint = position;
-        EL_TalonFXOne.setControl(new MotionMagicTorqueCurrentFOC(position).withSlot(0)); //May need to make position negative if needed.
+    public void setELPosition(Distance position){
+        setpoint.mut_replace(position);
+        EL_TalonFXOne.setControl(new MotionMagicTorqueCurrentFOC(position.copy().in(Inches)).withSlot(0)); //May need to make position negative if needed.
+        //TODO: this may be a thing to be debugged but WPILib has had issues with mutable Units randomly being changed. -AU
     }
 
 }
