@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.LineUpCommand;
+import frc.robot.commands.PathFindToPose;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -168,7 +169,9 @@ public class RobotContainer {
                 : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
         controller.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
-        controller.y().onTrue(Commands.run(() -> AutoBuilder.pathfindToPose(Constants.targetPose, Constants.constraints).until(() -> drive.getPose().getTranslation().getDistance(Constants.targetPose.getTranslation())<= 2.0)));
+        //controller.y().whileTrue(Commands.run(() -> AutoBuilder.pathfindToPose(Constants.targetPose, Constants.constraints)));
+        //controller.y().onTrue(new LineUpCommand(drive));
+        controller.y().whileTrue(new PathFindToPose(drive, () -> Constants.targetPose, 3, 1));
     }
 
     /**
