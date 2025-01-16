@@ -153,7 +153,7 @@ public class RobotContainer {
         drive.setDefaultCommand(DriveCommands.joystickDrive(
                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
 
-        // Lock to 0° when A button is held
+        // Lock to 0 when A button is held
         controller
                 .a()
                 .whileTrue(DriveCommands.joystickDriveAtAngle(
