@@ -68,9 +68,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     }
 
     @Override
-    public void setELPosition(Distance position){
-        setpoint.mut_replace(position);
-        EL_TalonFXOne.setControl(new MotionMagicTorqueCurrentFOC(position.copy().in(Inches)).withSlot(0)); //May need to make position negative if needed.
+    public void setELPosition(double position){
+        setpoint.mut_replace(position, Inches);
+        EL_TalonFXOne.setControl(new MotionMagicTorqueCurrentFOC(position).withSlot(0)); //May need to make position negative if needed.
         //TODO: this may be a thing to be debugged but WPILib has had issues with mutable Units randomly being changed. -AU
     }
 

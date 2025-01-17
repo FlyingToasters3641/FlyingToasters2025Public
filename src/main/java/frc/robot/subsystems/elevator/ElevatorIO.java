@@ -18,6 +18,8 @@ public interface ElevatorIO {
 
     public default void updateInputs(ElevatorIOInputs inputs) {};
 
-    public default void setELPosition(Distance position) {};
+    public default void setELPosition(double position) {};
+
+    public default void ELStop() {};
     
 }

@@ -3,12 +3,14 @@ package frc.robot.subsystems.elevator;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -29,12 +31,12 @@ public class ElevatorIOSim implements ElevatorIO{
     private final ProfiledPIDController EL_PID_controller = new ProfiledPIDController(ElevatorConstants.EL_PROFILED_PID_CONSTANTS.kP, ElevatorConstants.EL_PROFILED_PID_CONSTANTS.kI, ElevatorConstants.EL_PROFILED_PID_CONSTANTS.kD, ElevatorConstants.TRAPEZOID_PROFILE_CONSTRAINTS);
     private final ElevatorFeedforward EL_FeedForward = new ElevatorFeedforward(ElevatorConstants.EL_FF_CONSTANTS.kS,ElevatorConstants.EL_FF_CONSTANTS.kG , ElevatorConstants.EL_FF_CONSTANTS.kV);
 
-    
+    MutDistance simSetpoint = Inches.mutable(0);    
     
 
     private final ElevatorSim EL_sim = new ElevatorSim(
-        DCMotor.getKrakenX60(4),
-        4, 
+        DCMotor.getKrakenX60(2),
+        1, 
         Pounds.of(9.8).in(Kilograms), //TODO: Ask for Intake Mass 
         Inches.of(2).in(Meters), //TODO: Ask for Spool Radius
         Inches.of(22.4).in(Meters), 
@@ -44,10 +46,12 @@ public class ElevatorIOSim implements ElevatorIO{
     );
     
     public ElevatorIOSim(){
-        EL_TalonFXTwo.setControl(new Follower(EL_TalonFXOne.getDeviceID(), true)); //This probably doesn't work LOL, be prepared to change if needed.
 
         EL_TalonFXOneSim.setRawRotorPosition(EL_sim.getPositionMeters() / ElevatorConstants.METERS_PER_ROTATION.in(Meters));
 		EL_TalonFXOneSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond() / ElevatorConstants.METERS_PER_ROTATION.in(Meters));
+
+        EL_TalonFXTwoSim.setRawRotorPosition(EL_sim.getPositionMeters() / ElevatorConstants.METERS_PER_ROTATION.in(Meters));
+        EL_TalonFXTwoSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond() / ElevatorConstants.METERS_PER_ROTATION.in(Meters));
     }
 
     
@@ -63,13 +67,20 @@ public class ElevatorIOSim implements ElevatorIO{
 
     //TODO: Figure out how to convert voltage into movement of position. TRY PHOENIX SIM!
     @Override
-    public void setELPosition(Distance position){
-        Distance currentHeight = Meters.of(EL_sim.getPositionMeters());
-        LinearVelocity currentVelocity = MetersPerSecond.of(EL_sim.getVelocityMetersPerSecond());
+    public void setELPosition(double position){
+       
+        simSetpoint.mut_replace(position, Inches);
 
+        EL_sim.setState(position, 2); //another random value, lol, lmao even.
 
-
+        EL_TalonFXOneSim.setRawRotorPosition(position);
+        EL_TalonFXTwoSim.setRawRotorPosition(position);
         
+    }
+
+    @Override
+    public void ELStop(){
+        this.setELPosition(0); //TODO: Update this to be consistent with setpoint stuff
     }
 
 }

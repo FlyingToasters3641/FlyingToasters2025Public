@@ -176,7 +176,7 @@ public class RobotContainer {
 
         //TODO: Add butting bindings for elevator to move up/down for later usages for SIM.
 
-        controller.b().onTrue(ElevatorCommands.moveToTestPos(elevator));
+        controller.b().whileTrue(ElevatorCommands.moveToTestPos(elevator)).onFalse(ElevatorCommands.moveToTestRestPos(elevator));
     }
 
     /**
