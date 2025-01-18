@@ -38,7 +38,7 @@ public class ElevatorVisualizer {
             new LoggedMechanismLigament2d(
                 "Elevator",
                 Inches.of(0).in(Meters),
-                45,
+                90,
                 10,
                 new Color8Bit(color)
             )

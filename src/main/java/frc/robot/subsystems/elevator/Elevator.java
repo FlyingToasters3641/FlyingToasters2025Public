@@ -15,8 +15,9 @@ public class Elevator extends SubsystemBase{
     private ElevatorIO io;
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-    private final ElevatorVisualizer measuredVisualizer;
-    private final ElevatorVisualizer goalVisualizer;
+    private final ElevatorVisualizer EL_measuredVisualizer;
+    private final ElevatorVisualizer EL_goalVisualizer;
+
 
 
 
@@ -25,8 +26,8 @@ public class Elevator extends SubsystemBase{
     public Elevator(ElevatorIO io){
         this.io = io;
 
-        measuredVisualizer = new ElevatorVisualizer("Measured", Color.kBlack);
-        goalVisualizer = new ElevatorVisualizer("Goal", Color.kBlue);
+        EL_measuredVisualizer = new ElevatorVisualizer("Measured", Color.kBlack);
+        EL_goalVisualizer = new ElevatorVisualizer("Goal", Color.kBlue);
     }
 
     @Override
@@ -36,8 +37,8 @@ public class Elevator extends SubsystemBase{
         this.io.updateInputs(inputs);
         Logger.processInputs("Elevator", inputs);
 
-        measuredVisualizer.update(this.inputs.EL_position);
-        goalVisualizer.update(this.setpoint);
+        EL_measuredVisualizer.update(this.inputs.EL_position);
+        EL_goalVisualizer.update(this.setpoint);
 
     }
 
@@ -45,5 +46,12 @@ public class Elevator extends SubsystemBase{
         io.setELPosition(position);
     }
 
+    public void setGoal(double goal){
+        io.setELGoal(goal);
+    }
+
+    public void applyELVolts(){
+        io.applyELVolts();
+    }
 
 }

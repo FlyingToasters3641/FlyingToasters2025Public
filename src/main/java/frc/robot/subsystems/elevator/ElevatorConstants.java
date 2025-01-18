@@ -34,7 +34,7 @@ public class ElevatorConstants {
 
     }
 
-	public static final PIDConstants EL_PROFILED_PID_CONSTANTS = new PIDConstants(0, 0, 0, 0);
+	public static final PIDConstants EL_PROFILED_PID_CONSTANTS = new PIDConstants(2, 0, 0, 0);
 
     public static final FFConstants EL_FF_CONSTANTS = new FFConstants(0, 0, 0, 0);
 
