@@ -5,9 +5,12 @@ import static edu.wpi.first.units.Units.*;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutLinearVelocity;
+import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Voltage;
 
 public interface ElevatorIO {
     
@@ -17,7 +20,15 @@ public interface ElevatorIO {
         public MutDistance EL_position = Inches.mutable(0);
         public MutLinearVelocity EL_velocity = InchesPerSecond.mutable(0);
 
+        public MutVoltage EL_appliedVoltsLeader = Volts.mutable(0);
+        public MutVoltage EL_appliedVoltsFollower = Volts.mutable(0);
+
         public MutDistance EL_Goalpoint = Inches.mutable(0);
+
+        public MutDistance position = Inches.mutable(0);
+
+        public MutLinearVelocity setpointVelocity = InchesPerSecond.mutable(0);
+        public MutDistance setpointPosition = Inches.mutable(0);
     }
 
     public default void updateInputs(ElevatorIOInputs inputs) {};
@@ -26,10 +37,16 @@ public interface ElevatorIO {
 
     public default void ELStop() {};
 
-    public default void setELGoal(double position) {};
+    // public default void setELGoal(Distance position) {};
 
-    public default void applyELVolts() {};
+    // public default void applyELVolts() {};
 
+    default void EL_runSetpoint(Distance position) {}
+
+    default void EL_runVolts(Voltage volts) {}
+
+
+    default void EL_setPID(double p, double i, double d) {}
 
     
 }

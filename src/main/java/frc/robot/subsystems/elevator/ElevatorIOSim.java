@@ -33,25 +33,10 @@ public class ElevatorIOSim implements ElevatorIO{
     private final ProfiledPIDController EL_PID_controller = new ProfiledPIDController(ElevatorConstants.EL_PROFILED_PID_CONSTANTS.kP, ElevatorConstants.EL_PROFILED_PID_CONSTANTS.kI, ElevatorConstants.EL_PROFILED_PID_CONSTANTS.kD, ElevatorConstants.TRAPEZOID_PROFILE_CONSTRAINTS);
     private final ElevatorFeedforward EL_FeedForward = new ElevatorFeedforward(ElevatorConstants.EL_FF_CONSTANTS.kS,ElevatorConstants.EL_FF_CONSTANTS.kG , ElevatorConstants.EL_FF_CONSTANTS.kV);
 
-    public MutDistance simSetpoint = Inches.mutable(0);  
+    public MutDistance EL_simSetpoint = Inches.mutable(0);  
     
+    private MutVoltage EL_appliedVolts = Volts.mutable(0);
     
-    public MutDistance simGoal = Inches.mutable(0);
-
-    private double appliedVolts = 0;
-    
-    
-    //old sim
-    // private final ElevatorSim EL_sim = new ElevatorSim(
-    //     DCMotor.getKrakenX60(2),
-    //     1, 
-    //     Pounds.of(9.8).in(Kilograms), //TODO: Ask for Intake Mass 
-    //     Inches.of(2).in(Meters), //TODO: Ask for Spool Radius
-    //     Inches.of(22.4).in(Meters), 
-    //     Inches.of(77).in(Meters), 
-    //     true, 
-    //     Inches.of(0).in(Meters)
-    // );
 
     //new sim as of 1/18/2025
     private final ElevatorSim EL_sim = new ElevatorSim(
@@ -88,7 +73,9 @@ public class ElevatorIOSim implements ElevatorIO{
         inputs.EL_position.mut_replace(EL_sim.getPositionMeters(), Meters);
         inputs.EL_velocity.mut_replace(EL_sim.getVelocityMetersPerSecond(), InchesPerSecond);
 
-        inputs.EL_Goalpoint.mut_replace(simGoal.copy());
+        // inputs.EL_appliedVoltsLeader.mut_replace(appliedVolts, Volts);
+        // inputs.EL_appliedVoltsFollower.mut_replace(appliedVolts, Volts);
+
 
         EL_TalonFXOneSim.setRawRotorPosition(EL_sim.getPositionMeters());
         EL_TalonFXTwoSim.setRawRotorPosition(EL_sim.getPositionMeters());
@@ -96,44 +83,68 @@ public class ElevatorIOSim implements ElevatorIO{
         
         EL_TalonFXOneSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond());
         EL_TalonFXTwoSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond());
-        
 
+        
+        inputs.position.mut_replace(EL_sim.getPositionMeters(), Meters);
+
+        inputs.setpointPosition.mut_replace(EL_PID_controller.getSetpoint().position, Meters);
+        inputs.setpointVelocity.mut_replace(0, MetersPerSecond);
     }
-
-
-    //TODO: Figure out how to convert voltage into movement of position. TRY PHOENIX SIM!
-    // @Override
-    // public void setELPosition(double position){
-       
-    //     simSetpoint.mut_replace(position, Inches);
-
-    //     EL_sim.setState(position, 0.1); //another random value, lol, lmao even.
-
-    //     EL_TalonFXOneSim.setRawRotorPosition(position);
-    //     EL_TalonFXTwoSim.setRawRotorPosition(position);
         
+
     // }
 
+    // //trying out voltage sim
     // @Override
-    // public void ELStop(){
-    //     this.setELPosition(0); //TODO: Update this to be consistent with setpoint stuff
+    // public void setELGoal(Distance position){
+    //     simGoal.mut_replace(position.in(Inches), Inches);
+
+    //     Distance currentHeight = Meters.of(EL_sim.getPositionMeters());
+    //     LinearVelocity currentVelocity = MetersPerSecond.of(EL_sim.getVelocityMetersPerSecond());
+
+    //     EL_PID_controller.setGoal(position.in(Inches));
+
+
+    //     appliedVolts = EL_PID_controller.calculate(currentHeight.in(Inches), position.in(Inches)) + EL_FeedForward.calculate(currentVelocity.in(MetersPerSecond));
+
+
+
+    //     EL_sim.setInputVoltage(appliedVolts);
     // }
 
-    //trying out voltage sim
     @Override
-    public void setELGoal(double position){
-        simGoal.mut_replace(position, Inches);
-        EL_PID_controller.setGoal(position);
+    public void EL_runSetpoint(Distance position) {
+        Distance currentHeight = Meters.of(EL_sim.getPositionMeters());
+        LinearVelocity currentVelocity = MetersPerSecond.of(EL_sim.getVelocityMetersPerSecond());
 
-        //Voltage effort = EL_PID_controller.calculate(EL_sim.getPositionMeters()).plus(EL_FeedForward.calculate(EL_PID_controller.getSetpoint().velocity.getValueAsDouble()));
+        Voltage controllerVoltage = Volts.of(EL_PID_controller.calculate(currentHeight.in(Inches), position.in(Inches)));
+        Voltage feedForwardVoltage = Volts.of(EL_FeedForward.calculate(currentVelocity.in(MetersPerSecond)));
 
-        // appliedVolts.mut_replace(EL_PID_controller.calculate(EL_sim.getPositionMeters()) + EL_FeedForward.calculate(EL_PID_controller.getSetpoint().velocity),Volts);
-		// EL_sim.setInputVoltage(appliedVolts.in(Volts));
+        Voltage effort = controllerVoltage.plus(feedForwardVoltage);
 
-        appliedVolts = EL_PID_controller.calculate(EL_sim.getPositionMeters()) + EL_FeedForward.calculate(EL_PID_controller.getSetpoint().velocity);
-
-        EL_sim.setInputVoltage(appliedVolts);
+        EL_runVolts(effort);
     }
+
+    @Override
+    public void EL_runVolts(Voltage volts) {
+        double clampedEffort = MathUtil.clamp(volts.in(Volts), -12, 12);
+        EL_appliedVolts.mut_replace(clampedEffort, Volts);
+        EL_sim.setInputVoltage(clampedEffort);
+    }
+
+    @Override
+    public void EL_setPID(double p, double i, double d) {
+        EL_PID_controller.setPID(p, i, d);
+    }
+
+    @Override
+    public void ELStop() {
+        EL_runVolts(Volts.of(0));
+    }
+
+
+
+
 
 
 

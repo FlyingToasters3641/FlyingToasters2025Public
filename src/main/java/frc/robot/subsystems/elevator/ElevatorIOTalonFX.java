@@ -60,6 +60,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     @Override
     public void updateInputs(ElevatorIOInputs inputs){;
         inputs.EL_position.mut_replace(Inches.of(EL_CANCoder.getPosition().getValueAsDouble()));
+
+
+        
+
         Logger.recordOutput("Elevator/absolute", EL_CANCoder.getPosition().getValueAsDouble());
         Logger.recordOutput("Elevator/motorOnePos", EL_TalonFXOne.getPosition().getValueAsDouble());
         Logger.recordOutput("Elevator/motorTwoPos", EL_TalonFXTwo.getPosition().getValueAsDouble());
@@ -73,5 +77,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         EL_TalonFXOne.setControl(new MotionMagicTorqueCurrentFOC(position).withSlot(0)); //May need to make position negative if needed.
         //TODO: this may be a thing to be debugged but WPILib has had issues with mutable Units randomly being changed. -AU
     }
+
+
+
+    
+    
 
 }

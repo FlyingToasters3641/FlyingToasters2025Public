@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
 import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
@@ -176,9 +177,11 @@ public class RobotContainer {
 
         //TODO: Add butting bindings for elevator to move up/down for later usages for SIM.
 
-        controller.b().whileTrue(ElevatorCommands.setTestNegativeGoalSetpoint(elevator)).onFalse(ElevatorCommands.setRestGoalSetpoint(elevator));
+        // controller.b().whileTrue(ElevatorCommands.setTestNegativeGoalSetpoint(elevator)).onFalse(ElevatorCommands.setRestGoalSetpoint(elevator));
 
-        controller.y().whileTrue(ElevatorCommands.setTestGoalSetpoint(elevator)).onFalse(ElevatorCommands.setRestGoalSetpoint(elevator));
+        // controller.y().whileTrue(ElevatorCommands.setTestGoalSetpoint(elevator)).onFalse(ElevatorCommands.setRestGoalSetpoint(elevator));
+
+        controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
     }
 
     /**

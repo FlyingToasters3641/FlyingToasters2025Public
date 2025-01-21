@@ -18,13 +18,22 @@ public class Elevator extends SubsystemBase{
     private final ElevatorVisualizer EL_measuredVisualizer;
     private final ElevatorVisualizer EL_goalVisualizer;
 
+    private final ElevatorStates actual;
+    private final ElevatorStates target;
+    private final ElevatorStates goal;
 
 
 
-    private Distance setpoint = Inches.of(0.0);
+
+    public Distance setpoint = Inches.of(0.0);
 
     public Elevator(ElevatorIO io){
         this.io = io;
+        this.io.EL_setPID(0.3, 0, 0);
+        this.actual = ElevatorStates.getEL_measuredInstance();
+        this.target = ElevatorStates.getEL_desiredInstance();
+        this.goal = ElevatorStates.getEL_goalInstance();
+
 
         EL_measuredVisualizer = new ElevatorVisualizer("Measured", Color.kBlack);
         EL_goalVisualizer = new ElevatorVisualizer("Goal", Color.kBlue);
@@ -37,8 +46,19 @@ public class Elevator extends SubsystemBase{
         this.io.updateInputs(inputs);
         Logger.processInputs("Elevator", inputs);
 
-        EL_measuredVisualizer.update(this.inputs.EL_position);
+        EL_measuredVisualizer.update(this.inputs.position);
         EL_goalVisualizer.update(this.setpoint);
+
+        if(edu.wpi.first.wpilibj.RobotState.isDisabled()) {
+            this.io.ELStop();
+        } else {
+            this.io.EL_runSetpoint(this.setpoint);
+        }
+
+
+        actual.updateElevatorPosition(this.inputs.position);
+        target.updateElevatorPosition(this.inputs.setpointPosition);
+        goal.updateElevatorPosition(this.setpoint);
 
     }
 
@@ -46,12 +66,13 @@ public class Elevator extends SubsystemBase{
         io.setELPosition(position);
     }
 
-    public void setGoal(double goal){
-        io.setELGoal(goal);
-    }
+    // public void setGoal(Distance goal){
+    //     io.setELGoal(goal);
+    // }
 
-    public void applyELVolts(){
-        io.applyELVolts();
-    }
+    // public void applyELVolts(){
+    //     io.applyELVolts();
+    // }
+    
 
 }
