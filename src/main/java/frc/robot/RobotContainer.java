@@ -18,23 +18,16 @@ import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
-import java.io.IOException;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,6 +44,11 @@ import frc.robot.subsystems.drive.GyroIOSim;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeCommands;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
@@ -66,6 +64,7 @@ public class RobotContainer {
     // Subsystems
     private final Vision vision;
     private final Drive drive;
+    private final Intake intake;
     private SwerveDriveSimulation driveSimulation = null;
 
     // Controller
@@ -93,7 +92,8 @@ public class RobotContainer {
                         drive,
                         new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
                         new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
-                break;
+                        intake = new Intake(new IntakeIOTalonFX());
+                        break;
 
             case SIM:
                 // Sim robot, instantiate physics sim IO implementations
@@ -112,13 +112,16 @@ public class RobotContainer {
                                 camera0Name, robotToCamera0, driveSimulation::getSimulatedDriveTrainPose),
                         new VisionIOPhotonVisionSim(
                                 camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
-                break;
+                
 
+                 intake = new Intake(new IntakeIOSim());
+                 break;
             default:
                 // Replayed robot, disable IO implementations
                 drive = new Drive(
                         new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
                 vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
+                 intake = new Intake(new IntakeIO() {});
                 break;
         }
 
@@ -170,6 +173,10 @@ public class RobotContainer {
 
         //Pathfinds to the desired pose off constants in the constants class
         controller.y().whileTrue(new PathFindToPose(drive, () -> Constants.targetPose, Constants.speedMultiplier, Constants.goalVelocity));
+        controller.leftTrigger().whileTrue(IntakeCommands.raiseJoint(intake, 0.5)); // Raise the joint
+        controller.leftTrigger().whileFalse(IntakeCommands.lowerJoint(intake, -0.5)); // Lower the joint
+        controller.rightTrigger().onTrue(IntakeCommands.runWheels(intake, 1.0)); // Run wheels forward
+        controller.rightBumper().onTrue(IntakeCommands.reverseWheels(intake, -1.0)); // Run wheels forward
     }
 
     /**

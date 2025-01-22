@@ -3,13 +3,15 @@ package frc.robot.subsystems.intake;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase{
     private IntakeIO io;
-
+    private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
     IntakeIOTalonFX IntakeTalonFX = new IntakeIOTalonFX();
     public static double frontTalonVoltage;
+
     public Intake(IntakeIO io) {
         this.io = io;
      
@@ -17,20 +19,20 @@ public class Intake extends SubsystemBase{
 
     @Override
     public void periodic() {
-
-
+        io.updateInputs(inputs); // Update inputs from IO
+        Logger.processInputs("Intake", inputs); // Log telemetry
     }
 
-    public void lowerJointMotor(DoubleSupplier axis) { //This is supposed to lower the intake
-        io.setJointSpeed(axis.getAsDouble());
+    public void lowerJointMotor(Double axis) { //This is supposed to lower the intake
+        io.setJointSpeed(axis);
     }
 
-    public void raiseJointMotor(DoubleSupplier axis) { //This is supposed to raise the intake
-        io.setJointSpeed(axis.getAsDouble());
+    public void raiseJointMotor(Double axis) { //This is supposed to raise the intake
+        io.setJointSpeed(axis);
     }
 
-    public void reverseWheelMotor(DoubleSupplier axis) { //This will run the intake wheels backwards
-        io.setWheelSpeed(axis.getAsDouble());
+    public void reverseWheelMotor(Double axis) { //This will run the intake wheels backwards
+        io.setWheelSpeed(axis);
     }
 
     public void runWheelRollers(double value) { //This will run the intake wheels forward
@@ -41,7 +43,7 @@ public class Intake extends SubsystemBase{
         io.setWheelSpeed(.5);
     }
 
-    public void raiseJoint() { //Bro I don't even know what this does
+    public void raiseJoint() { //Bro I don't even know what this does like what is it setting the freaking speed of rasing up?
         io.setJointSpeed(.5);
     }
 
