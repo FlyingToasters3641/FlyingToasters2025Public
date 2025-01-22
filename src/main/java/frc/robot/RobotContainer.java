@@ -19,16 +19,23 @@ import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
+import java.io.IOException;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.PathFindToPose;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -144,6 +152,7 @@ public class RobotContainer {
         autoChooser.addOption("testAuto", new PathPlannerAuto("testAuto"));
         autoChooser.addOption("testAuto2", new PathPlannerAuto("testAuto2"));
 
+
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -158,7 +167,7 @@ public class RobotContainer {
         drive.setDefaultCommand(DriveCommands.joystickDrive(
                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
 
-        // Lock to 0° when A button is held
+        // Lock to 0 when A button is held
         controller
                 .a()
                 .whileTrue(DriveCommands.joystickDriveAtAngle(
@@ -173,12 +182,14 @@ public class RobotContainer {
                 : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
         controller.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
-        
-
         //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
 
         controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_stop(elevator));
         controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_stop(elevator));
+
+        //Pathfinds to the desired pose off constants in the constants class
+        controller.y().whileTrue(new PathFindToPose(drive, () -> Constants.targetPose, Constants.speedMultiplier, Constants.goalVelocity));
+
     }
 
     /**
@@ -213,4 +224,5 @@ public class RobotContainer {
         Logger.recordOutput(
                 "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
     }
+
 }
