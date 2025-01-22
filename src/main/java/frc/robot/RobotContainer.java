@@ -175,13 +175,10 @@ public class RobotContainer {
 
         
 
-        //TODO: Add butting bindings for elevator to move up/down for later usages for SIM.
+        //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
 
-        // controller.b().whileTrue(ElevatorCommands.setTestNegativeGoalSetpoint(elevator)).onFalse(ElevatorCommands.setRestGoalSetpoint(elevator));
-
-        // controller.y().whileTrue(ElevatorCommands.setTestGoalSetpoint(elevator)).onFalse(ElevatorCommands.setRestGoalSetpoint(elevator));
-
-        controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
+        controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_stop(elevator));
+        controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_stop(elevator));
     }
 
     /**

@@ -61,10 +61,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     public void updateInputs(ElevatorIOInputs inputs){;
         inputs.EL_position.mut_replace(Inches.of(EL_CANCoder.getPosition().getValueAsDouble()));
 
+        //Logs from TalonFX simulation.
 
-        
-
-        Logger.recordOutput("Elevator/absolute", EL_CANCoder.getPosition().getValueAsDouble());
         Logger.recordOutput("Elevator/motorOnePos", EL_TalonFXOne.getPosition().getValueAsDouble());
         Logger.recordOutput("Elevator/motorTwoPos", EL_TalonFXTwo.getPosition().getValueAsDouble());
         Logger.recordOutput("Elevator/voltage", EL_TalonFXOne.getMotorVoltage().getValueAsDouble());

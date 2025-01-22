@@ -26,7 +26,7 @@ public class ElevatorIOSim implements ElevatorIO{
     
     private static final String CANbusName = "idk"; // TODO: Update CANbus Name
     private static final TalonFX EL_TalonFXOne = new TalonFX(1, CANbusName);// TODO: Update CANIDs
-    private static final TalonFX EL_TalonFXTwo = new TalonFX(2, CANbusName); // TODO: Standardize Names for Motors
+    private static final TalonFX EL_TalonFXTwo = new TalonFX(2, CANbusName); // TODO: Standardize Names for ElevatorMotors
     private static final TalonFXSimState EL_TalonFXOneSim = new TalonFXSimState(EL_TalonFXOne);
 	private static final TalonFXSimState EL_TalonFXTwoSim = new TalonFXSimState(EL_TalonFXTwo);;
 
@@ -52,7 +52,7 @@ public class ElevatorIOSim implements ElevatorIO{
     
     public ElevatorIOSim(){
 
-
+        //Defines the TalonFX sims to be equal to the WPILib Sims
 
         EL_TalonFXOneSim.setRawRotorPosition(EL_sim.getPositionMeters() / ElevatorConstants.METERS_PER_ROTATION.in(Meters));
 		EL_TalonFXOneSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond() / ElevatorConstants.METERS_PER_ROTATION.in(Meters));
@@ -64,7 +64,7 @@ public class ElevatorIOSim implements ElevatorIO{
     }
 
     
-
+    //Updates all the sim values and the logger values.
     @Override
     public void updateInputs(ElevatorIOInputs inputs){
 
@@ -72,11 +72,16 @@ public class ElevatorIOSim implements ElevatorIO{
 
         inputs.EL_position.mut_replace(EL_sim.getPositionMeters(), Meters);
         inputs.EL_velocity.mut_replace(EL_sim.getVelocityMetersPerSecond(), InchesPerSecond);
+;
+        inputs.EL_voltage.mut_replace(EL_appliedVolts);
 
-        // inputs.EL_appliedVoltsLeader.mut_replace(appliedVolts, Volts);
-        // inputs.EL_appliedVoltsFollower.mut_replace(appliedVolts, Volts);
+        inputs.position.mut_replace(EL_sim.getPositionMeters(), Meters);
 
+        inputs.setpointPosition.mut_replace(EL_PID_controller.getSetpoint().position, Meters);
+        inputs.setpointVelocity.mut_replace(0, MetersPerSecond);
 
+        //TalonFX Sim Values
+    
         EL_TalonFXOneSim.setRawRotorPosition(EL_sim.getPositionMeters());
         EL_TalonFXTwoSim.setRawRotorPosition(EL_sim.getPositionMeters());
 
@@ -85,33 +90,11 @@ public class ElevatorIOSim implements ElevatorIO{
         EL_TalonFXTwoSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond());
 
         
-        inputs.position.mut_replace(EL_sim.getPositionMeters(), Meters);
-
-        inputs.setpointPosition.mut_replace(EL_PID_controller.getSetpoint().position, Meters);
-        inputs.setpointVelocity.mut_replace(0, MetersPerSecond);
+        
     }
         
 
-    // }
-
-    // //trying out voltage sim
-    // @Override
-    // public void setELGoal(Distance position){
-    //     simGoal.mut_replace(position.in(Inches), Inches);
-
-    //     Distance currentHeight = Meters.of(EL_sim.getPositionMeters());
-    //     LinearVelocity currentVelocity = MetersPerSecond.of(EL_sim.getVelocityMetersPerSecond());
-
-    //     EL_PID_controller.setGoal(position.in(Inches));
-
-
-    //     appliedVolts = EL_PID_controller.calculate(currentHeight.in(Inches), position.in(Inches)) + EL_FeedForward.calculate(currentVelocity.in(MetersPerSecond));
-
-
-
-    //     EL_sim.setInputVoltage(appliedVolts);
-    // }
-
+    //Calculate to go to a specific point up into the elevator.
     @Override
     public void EL_runSetpoint(Distance position) {
         Distance currentHeight = Meters.of(EL_sim.getPositionMeters());
@@ -125,6 +108,7 @@ public class ElevatorIOSim implements ElevatorIO{
         EL_runVolts(effort);
     }
 
+    //Limits volts to go between a certain high and low value
     @Override
     public void EL_runVolts(Voltage volts) {
         double clampedEffort = MathUtil.clamp(volts.in(Volts), -12, 12);
@@ -132,11 +116,13 @@ public class ElevatorIOSim implements ElevatorIO{
         EL_sim.setInputVoltage(clampedEffort);
     }
 
+    
     @Override
     public void EL_setPID(double p, double i, double d) {
         EL_PID_controller.setPID(p, i, d);
     }
 
+    //Just in case
     @Override
     public void ELStop() {
         EL_runVolts(Volts.of(0));

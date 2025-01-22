@@ -20,12 +20,9 @@ public interface ElevatorIO {
         public MutDistance EL_position = Inches.mutable(0);
         public MutLinearVelocity EL_velocity = InchesPerSecond.mutable(0);
 
-        public MutVoltage EL_appliedVoltsLeader = Volts.mutable(0);
-        public MutVoltage EL_appliedVoltsFollower = Volts.mutable(0);
-
-        public MutDistance EL_Goalpoint = Inches.mutable(0);
-
         public MutDistance position = Inches.mutable(0);
+
+        public MutVoltage EL_voltage = Volts.mutable(0);
 
         public MutLinearVelocity setpointVelocity = InchesPerSecond.mutable(0);
         public MutDistance setpointPosition = Inches.mutable(0);
@@ -36,10 +33,6 @@ public interface ElevatorIO {
     public default void setELPosition(double position) {};
 
     public default void ELStop() {};
-
-    // public default void setELGoal(Distance position) {};
-
-    // public default void applyELVolts() {};
 
     default void EL_runSetpoint(Distance position) {}
 

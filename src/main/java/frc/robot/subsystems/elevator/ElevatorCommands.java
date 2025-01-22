@@ -9,12 +9,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 public class ElevatorCommands {
     
 
-    
+    //A few quick commands for general usage. Consider merging this file with Elevator.java later
+
     public static Command EL_setPosition (Elevator m_Elevator, Distance m_position){
-        return Commands.run(() -> m_Elevator.setpoint = m_position);
+        return Commands.run(() -> m_Elevator.EL_setpoint = m_position);
     }
 
-    // public static Command EL_goToTestPosition(Elevator m_Elevator){
-    //     return Commands.run(() -> ElevatorConstants.EL_setPosition(m_Elevator, 15));
-    // }
+    public static Command EL_stop (Elevator m_Elevator){
+        return Commands.run(() -> m_Elevator.ELStop());
+    }
+
 }

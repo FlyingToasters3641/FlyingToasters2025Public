@@ -10,6 +10,8 @@ import static edu.wpi.first.units.Units.*;
 
 public class ElevatorStates {
 
+
+    //Measures to feed into the Visualizer.
     private static ElevatorStates EL_measuredInstance;
     private static ElevatorStates EL_desiredInstance;
     private static ElevatorStates EL_goalInstance;

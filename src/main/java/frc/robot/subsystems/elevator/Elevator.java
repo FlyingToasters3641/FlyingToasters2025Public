@@ -18,23 +18,23 @@ public class Elevator extends SubsystemBase{
     private final ElevatorVisualizer EL_measuredVisualizer;
     private final ElevatorVisualizer EL_goalVisualizer;
 
-    private final ElevatorStates actual;
-    private final ElevatorStates target;
-    private final ElevatorStates goal;
+    private final ElevatorStates EL_actual;
+    private final ElevatorStates EL_target;
+    private final ElevatorStates EL_goal;
 
 
 
 
-    public Distance setpoint = Inches.of(0.0);
+    public Distance EL_setpoint = Inches.of(0.0);
 
     public Elevator(ElevatorIO io){
         this.io = io;
         this.io.EL_setPID(0.3, 0, 0);
-        this.actual = ElevatorStates.getEL_measuredInstance();
-        this.target = ElevatorStates.getEL_desiredInstance();
-        this.goal = ElevatorStates.getEL_goalInstance();
+        this.EL_actual = ElevatorStates.getEL_measuredInstance();
+        this.EL_target = ElevatorStates.getEL_desiredInstance();
+        this.EL_goal = ElevatorStates.getEL_goalInstance();
 
-
+        //Goal shows where the elevator wants to be. Measures shows where the Elevator is currently.
         EL_measuredVisualizer = new ElevatorVisualizer("Measured", Color.kBlack);
         EL_goalVisualizer = new ElevatorVisualizer("Goal", Color.kBlue);
     }
@@ -43,36 +43,35 @@ public class Elevator extends SubsystemBase{
     public void periodic() {
         super.periodic();
 
+        
         this.io.updateInputs(inputs);
         Logger.processInputs("Elevator", inputs);
 
+        //Updates all positions in ElevatorStates and for the simulation
         EL_measuredVisualizer.update(this.inputs.position);
-        EL_goalVisualizer.update(this.setpoint);
+        EL_goalVisualizer.update(this.EL_setpoint);
 
         if(edu.wpi.first.wpilibj.RobotState.isDisabled()) {
             this.io.ELStop();
         } else {
-            this.io.EL_runSetpoint(this.setpoint);
+            this.io.EL_runSetpoint(this.EL_setpoint);
         }
 
 
-        actual.updateElevatorPosition(this.inputs.position);
-        target.updateElevatorPosition(this.inputs.setpointPosition);
-        goal.updateElevatorPosition(this.setpoint);
+        EL_actual.updateElevatorPosition(this.inputs.position);
+        EL_target.updateElevatorPosition(this.inputs.setpointPosition);
+        EL_goal.updateElevatorPosition(this.EL_setpoint);
 
     }
+
 
     public void setELPosition(double position){
         io.setELPosition(position);
     }
 
-    // public void setGoal(Distance goal){
-    //     io.setELGoal(goal);
-    // }
-
-    // public void applyELVolts(){
-    //     io.applyELVolts();
-    // }
+    public void ELStop(){
+        io.ELStop();
+    }
     
 
 }
