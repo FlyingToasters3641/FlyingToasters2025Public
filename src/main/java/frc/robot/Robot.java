@@ -88,15 +88,21 @@ public class Robot extends LoggedRobot {
         // Start AdvantageKit logger
         Logger.start();
 
-        FollowPathCommand.warmupCommand().schedule();
-        PathfindingCommand.warmupCommand().schedule();
-
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
     }
 
     /** This function is called periodically during all modes. */
+
+    @Override
+    public void robotInit() {
+        // Set up the simulation
+        
+
+        FollowPathCommand.warmupCommand().schedule();
+        PathfindingCommand.warmupCommand().schedule();
+    }
     @Override
     public void robotPeriodic() {
         // Switch thread to high priority to improve loop timing

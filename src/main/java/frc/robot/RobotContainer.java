@@ -47,6 +47,7 @@ import frc.robot.commands.PathFindToPose;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BehaviorTree.BehaviorTreeCommand;
 import frc.robot.lib.BehaviorTree.Blackboard;
+import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
 import frc.robot.lib.BehaviorTree.trees.ExampleTree;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -190,7 +191,7 @@ public class RobotContainer {
 
         controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_stop(elevator));
         controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_stop(elevator));
-        controller.rightBumper().whileTrue(new ExampleTree(blackboard).execute());
+        controller.rightBumper().whileTrue(new ExampleTree(blackboard).execute()).onFalse(Commands.runOnce(() -> SequenceNode.setIndex(0)));
 
         //Pathfinds to the desired pose off constants in the constants class
         controller.y().whileTrue(new PathFindToPose(drive, () -> Constants.targetPose, Constants.speedMultiplier, Constants.goalVelocity));
