@@ -32,6 +32,7 @@ public final class Constants {
         Units.degreesToRadians(540), Units.degreesToRadians(720));
     
     public static final Pose2d targetPose = new Pose2d(5.8, 4, new Rotation2d(3.1415926589793));
+    public static final Pose2d humanPlayerStationRight = new Pose2d(1.5, 1.5, new Rotation2d(Units.degreesToRadians(20)));
     public static final int goalVelocity = 1;
     public static final int speedMultiplier = 3;
 
