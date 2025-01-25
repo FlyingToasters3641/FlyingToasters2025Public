@@ -38,5 +38,6 @@ public class BehaviorTreeCommand extends Command {
         } else {
             System.out.println("BehaviorTreeCommand completed successfully.");
         }
+        root.reset();
     }
 }
