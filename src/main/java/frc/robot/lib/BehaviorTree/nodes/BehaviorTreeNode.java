@@ -11,4 +11,8 @@ public abstract class BehaviorTreeNode {
     }
 
     public abstract ExecutionStatus execute();
+
+    public void reset() {
+        // Do nothing by default
+    }
 }

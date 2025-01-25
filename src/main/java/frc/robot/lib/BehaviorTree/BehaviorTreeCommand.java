@@ -5,6 +5,7 @@ import frc.robot.lib.BehaviorTree.nodes.BehaviorTreeNode;
 
 public class BehaviorTreeCommand extends Command {
     private final BehaviorTreeNode root;
+    private boolean isCompleted = false;
 
     public BehaviorTreeCommand(BehaviorTreeNode root) {
         this.root = root;
@@ -12,21 +13,30 @@ public class BehaviorTreeCommand extends Command {
 
     @Override
     public void initialize() {
-        // Optionally reset the tree
+        isCompleted = false;
     }
 
     @Override
     public void execute() {
-        root.execute();
+        if(!isCompleted) {
+            ExecutionStatus status = root.execute();
+            if(status == ExecutionStatus.SUCCESS || status == ExecutionStatus.FAILURE) {
+                isCompleted = true;
+            }
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return root.execute() == ExecutionStatus.SUCCESS;
+        return isCompleted;
     }
 
     @Override
     public void end(boolean interrupted) {
-        // Cleanup if necessary
+        if (interrupted) {
+            System.out.println("BehaviorTreeCommand was interrupted.");
+        } else {
+            System.out.println("BehaviorTreeCommand completed successfully.");
+        }
     }
 }

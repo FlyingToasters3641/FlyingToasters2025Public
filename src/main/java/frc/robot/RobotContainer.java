@@ -190,10 +190,8 @@ public class RobotContainer {
 
         controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_stop(elevator));
         controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_stop(elevator));
-        controller.rightBumper().whileTrue(new ExampleTree(blackboard).execute());
+        controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute());
 
-        //Pathfinds to the desired pose off constants in the constants class
-        controller.y().whileTrue(new PathFindToPose(drive, () -> Constants.targetPose, Constants.speedMultiplier, Constants.goalVelocity));
 
     }
 

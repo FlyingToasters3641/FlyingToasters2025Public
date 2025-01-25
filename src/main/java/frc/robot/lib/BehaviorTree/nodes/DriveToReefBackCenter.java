@@ -27,4 +27,11 @@ public class DriveToReefBackCenter extends BehaviorTreeNode {
         return ExecutionStatus.RUNNING;
     }
     
+    @Override
+    public void reset() {
+        if (driveToHumanPlayerStationRight.isScheduled()) {
+            driveToHumanPlayerStationRight.cancel();
+            
+        }
+    }
 }

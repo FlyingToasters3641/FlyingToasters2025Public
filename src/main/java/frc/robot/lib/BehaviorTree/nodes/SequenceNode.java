@@ -30,7 +30,15 @@ public class SequenceNode extends BehaviorTreeNode {
             currentIndex++;
         }
 
-        currentIndex = 0; // Reset for next execution
+        currentIndex = 0;
         return ExecutionStatus.SUCCESS;
+    }
+
+    @Override
+    public void reset() {
+        currentIndex = 0;
+        for (BehaviorTreeNode child : children) {
+            ((SequenceNode)child).reset();
+        }
     }
 }
