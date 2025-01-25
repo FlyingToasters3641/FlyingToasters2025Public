@@ -23,7 +23,6 @@ public class SequenceNode extends BehaviorTreeNode {
         @Override
         public ExecutionStatus execute() {
             while (currentIndex < (children.size())) {
-                Logger.recordOutput("BehaviorTree/Index", currentIndex);
                 ExecutionStatus status = children.get(currentIndex).execute();
     
                 if (status == ExecutionStatus.RUNNING || status == ExecutionStatus.FAILURE) {
@@ -31,11 +30,9 @@ public class SequenceNode extends BehaviorTreeNode {
                 }
     
                 currentIndex++;
-                Logger.recordOutput("BehaviorTree/Index2", currentIndex);
             }
     
             currentIndex = 0; // Reset for next execution
-            Logger.recordOutput("BehaviorTree/Index3", currentIndex);
             return ExecutionStatus.SUCCESS;
         }
     
