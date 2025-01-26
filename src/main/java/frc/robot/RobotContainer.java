@@ -125,13 +125,9 @@ public class RobotContainer {
                                 camera0Name, robotToCamera0, driveSimulation::getSimulatedDriveTrainPose),
                         new VisionIOPhotonVisionSim(
                                 camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
-                elevator = new Elevator(
-                         new ElevatorIOSim()
-                );
+                elevator = new Elevator(new ElevatorIOSim());
+                intake = new Intake(new IntakeIOSim());
                 break;
-
-                 intake = new Intake(new IntakeIOSim());
-                 break;
             default:
                 // Replayed robot, disable IO implementations
                 drive = new Drive(
