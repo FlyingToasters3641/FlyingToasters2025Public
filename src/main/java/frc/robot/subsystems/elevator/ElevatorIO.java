@@ -38,7 +38,6 @@ public interface ElevatorIO {
 
     default void EL_runVolts(Voltage volts) {}
 
-
     default void EL_setPID(double p, double i, double d) {}
 
     

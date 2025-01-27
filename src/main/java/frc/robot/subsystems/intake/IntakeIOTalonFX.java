@@ -20,22 +20,6 @@ public class IntakeIOTalonFX implements IntakeIO {
 
 
     @Override
-    public void setJointSpeed(double speed){ 
-        IN_JointTalonFX.set(speed);
-    }
-
-    @Override
-    public void setWheelSpeed(double speed){
-        IN_WheelTalonFX.set(speed);
-    }
-
-    @Override
-    public void stopJoint(){
-        IN_JointTalonFX.set(0.0);;
-    }
-
-    @Override
-    public void stopWheel(){
-        IN_WheelTalonFX.set(0.0);
+    public void setINAngle(double angle) {
     }
 }
