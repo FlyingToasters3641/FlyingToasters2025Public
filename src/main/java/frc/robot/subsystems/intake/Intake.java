@@ -23,6 +23,13 @@ public class Intake extends SubsystemBase{
         Logger.processInputs("Intake", inputs); // Log telemetry
     }
 
-    
+    public void IN_setRunning(boolean runIntake) {
+        io.IN_setRunning(runIntake);
+    }
+
+    public void IN_reverseIntake(boolean reverse) {
+        io.IN_reverseIntake(reverse);
+    }
+
    
 }

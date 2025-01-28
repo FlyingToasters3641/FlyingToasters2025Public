@@ -1,6 +1,12 @@
 package frc.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Radians;
+
+import org.ironmaple.simulation.IntakeSimulation;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -16,6 +22,9 @@ public class IntakeIOSim implements IntakeIO {
     private static final TalonFX IN_TalonFXTwo = new TalonFX(4, CANbusName); // TODO: Standardize Names for IntakeMotors
 
     private final ProfiledPIDController IN_PID_Controller = new ProfiledPIDController(IntakeConstants.IN_PROFILED_PID_CONSTANTS.kP, IntakeConstants.IN_PROFILED_PID_CONSTANTS.kI, IntakeConstants.IN_PROFILED_PID_CONSTANTS.kD, IntakeConstants.TRAPEZOID_PROFILE_CONSTRAINTS);
+    private final IntakeSimulation intakeSimulation;
+    private double appliedVoltage;
+    private final SimulatedArena simulatedArena;
 
     private final SingleJointedArmSim IN_ARM_sim = new SingleJointedArmSim(
         IntakeConstants.kArmPlant,
@@ -28,13 +37,22 @@ public class IntakeIOSim implements IntakeIO {
         IntakeConstants.kArmStartAngle
     );
 
-    private final FlywheelSim IN_WHEEL_sim = new FlywheelSim(null, null, null);
-        private double appliedVoltage;
+        
     
-    
+    public IntakeIOSim(AbstractDriveTrainSimulation driveTrainSimulation, SimulatedArena simulatedArena){
+        this.intakeSimulation = IntakeSimulation.OverTheBumperIntake(
+                "Algae",
+                driveTrainSimulation,
+                Inches.of(19.0),
+                Inches.of(19.0),
+                IntakeSimulation.IntakeSide.BACK,
+                1);
+        this.simulatedArena = simulatedArena;
+    }
         @Override
         public void updateInputs(IntakeIOInputs inputs) {
             IN_ARM_sim.update(.02);
+            Logger.recordOutput("Intake/GamepieceCount", intakeSimulation.getGamePiecesAmount());
             
         }
     
@@ -47,6 +65,24 @@ public class IntakeIOSim implements IntakeIO {
         public void IN_runVolts(double volts) {
             appliedVoltage = MathUtil.clamp(volts, -12.0, 12.0);
             IN_ARM_sim.setInputVoltage(appliedVoltage);
+        }
+
+        @Override
+        public void IN_setRunning(boolean runIntake) {
+            Logger.recordOutput("Intake/Running", runIntake);
+            if(runIntake){
+                intakeSimulation.startIntake();
+            } else {
+                intakeSimulation.stopIntake();
+            }
+        }
+
+        @Override
+        public void IN_reverseIntake(boolean reverse) {
+            if (reverse){
+                intakeSimulation.obtainGamePieceFromIntake();
+            } else {
+            }
         }
 
 

@@ -24,7 +24,7 @@ public interface IntakeIO {
    
     public default void setINAngle(double angle) {};
     
-    public default void setINWheelSpeed(double speed) {};
+    public default void IN_setRunning(boolean runIntake) {};
 
     public default void INStop() {};
 
@@ -33,5 +33,7 @@ public interface IntakeIO {
     public default void IN_runVolts(double volts) {}
 
     public default void IN_setPID(double p, double i, double d) {}
+
+    public default void IN_reverseIntake(boolean reverse) {}
 
 }

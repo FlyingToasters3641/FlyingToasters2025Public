@@ -88,9 +88,6 @@ public class ElevatorIOSim implements ElevatorIO{
         
         EL_TalonFXOneSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond());
         EL_TalonFXTwoSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond());
-
-        
-        
     }
         
 

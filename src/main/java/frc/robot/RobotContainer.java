@@ -21,6 +21,7 @@ import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -29,6 +30,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -112,6 +114,10 @@ public class RobotContainer {
                 // Sim robot, instantiate physics sim IO implementations
                 driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, (startingAutoPose));
                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                Logger.recordOutput("FieldSimulation/Algae",
+                                SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+                Logger.recordOutput("FieldSimulation/Coral",
+                                SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
                 drive = new Drive(
                         new GyroIOSim(driveSimulation.getGyroSimulation()),
                         new ModuleIOSim(driveSimulation.getModules()[0]),
@@ -126,7 +132,7 @@ public class RobotContainer {
                         new VisionIOPhotonVisionSim(
                                 camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
                 elevator = new Elevator(new ElevatorIOSim());
-                intake = new Intake(new IntakeIOSim());
+                intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance()));
                 break;
             default:
                 // Replayed robot, disable IO implementations
@@ -189,8 +195,8 @@ public class RobotContainer {
         controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute());
         controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
         controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
-
-
+        controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
+        controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
     }
 
     /**
