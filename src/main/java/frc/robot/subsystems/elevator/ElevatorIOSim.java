@@ -42,7 +42,7 @@ public class ElevatorIOSim implements ElevatorIO{
     private final ElevatorSim EL_sim = new ElevatorSim(
         DCMotor.getKrakenX60Foc(2),
         5,
-        Kilograms.of(7.5).in(Kilograms),
+        Kilograms.of(10).in(Pounds),
         Inches.of(.07225).in(Meters),
         Inches.of(0).in(Meters),
         Inches.of(26.25).in(Meters),
@@ -88,9 +88,6 @@ public class ElevatorIOSim implements ElevatorIO{
         
         EL_TalonFXOneSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond());
         EL_TalonFXTwoSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond());
-
-        
-        
     }
         
 

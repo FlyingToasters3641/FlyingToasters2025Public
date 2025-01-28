@@ -19,23 +19,18 @@ import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
-import java.io.IOException;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.json.simple.parser.ParseException;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,6 +40,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathFindToPose;
 import frc.robot.generated.TunerConstants;
+import frc.robot.lib.BehaviorTree.BehaviorTreeCommand;
+import frc.robot.lib.BehaviorTree.Blackboard;
+import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
+import frc.robot.lib.BehaviorTree.trees.ExampleTree;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -57,6 +56,11 @@ import frc.robot.subsystems.elevator.ElevatorCommands;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeCommands;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
@@ -73,7 +77,9 @@ public class RobotContainer {
     private final Vision vision;
     private final Drive drive;
     private final Elevator elevator;
+    private final Intake intake;
     private SwerveDriveSimulation driveSimulation = null;
+    public Blackboard blackboard = new Blackboard();
 
     // Controller
     private final CommandXboxController controller = new CommandXboxController(0);
@@ -100,15 +106,18 @@ public class RobotContainer {
                         drive,
                         new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
                         new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
-                elevator = new Elevator(
-                         new ElevatorIOTalonFX() {}
-                );
+                elevator = new Elevator(new ElevatorIOTalonFX() {});
+                intake = new Intake(new IntakeIOTalonFX());
                 break;
-
+                       
             case SIM:
                 // Sim robot, instantiate physics sim IO implementations
                 driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, (startingAutoPose));
                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                Logger.recordOutput("FieldSimulation/Algae",
+                                SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+                Logger.recordOutput("FieldSimulation/Coral",
+                                SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
                 drive = new Drive(
                         new GyroIOSim(driveSimulation.getGyroSimulation()),
                         new ModuleIOSim(driveSimulation.getModules()[0]),
@@ -122,17 +131,16 @@ public class RobotContainer {
                                 camera0Name, robotToCamera0, driveSimulation::getSimulatedDriveTrainPose),
                         new VisionIOPhotonVisionSim(
                                 camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
-                elevator = new Elevator(
-                         new ElevatorIOSim()
-                );
+                elevator = new Elevator(new ElevatorIOSim());
+                intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance()));
                 break;
-
             default:
                 // Replayed robot, disable IO implementations
                 drive = new Drive(
                         new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
                 vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
                 elevator = new Elevator(new ElevatorIO() {});
+                intake = new Intake(new IntakeIO() {});
                 break;
         }
 
@@ -184,12 +192,11 @@ public class RobotContainer {
 
         //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
 
-        controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_stop(elevator));
-        controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_stop(elevator));
-
-        //Pathfinds to the desired pose off constants in the constants class
-        controller.y().whileTrue(new PathFindToPose(drive, () -> Constants.targetPose, Constants.speedMultiplier, Constants.goalVelocity));
-
+        controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute());
+        controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
+        controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
+        controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
+        controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
     }
 
     /**
