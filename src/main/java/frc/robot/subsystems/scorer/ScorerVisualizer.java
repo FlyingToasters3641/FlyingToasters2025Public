@@ -22,14 +22,14 @@ public class ScorerVisualizer {
 
     public ScorerVisualizer(String key, Color color) {
         this.key = key;
-        this.panel = new LoggedMechanism2d(Inches.of(100).in(Meters), Inches.of(100).in(Meters),
+        this.panel = new LoggedMechanism2d(Inches.of(100).in(Meters), Inches.of(19).in(Meters),
                 new Color8Bit(Color.kWhite));
-        this.root = panel.getRoot("Scorer", Inches.of(7.35).in(Meters), Inches.of(10).in(Meters));
+        this.root = panel.getRoot("Scorer", Inches.of(0).in(Meters), Inches.of(10).in(Meters));
         this.Scorer = root.append(
                 new LoggedMechanismLigament2d(
                         "Scorer",
-                        Inches.of(0).in(Meters),
-                        90,
+                        Inches.of(19).in(Inches),
+                        0,
                         10,
                         new Color8Bit(color)));
         Logger.recordOutput("Scorer/Mechanism2d/" + key, this.panel);

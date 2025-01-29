@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.AutoLog;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Voltage;
 
 public interface ScorerIO {
     @AutoLog
@@ -17,7 +18,7 @@ public interface ScorerIO {
         public MutVoltage CS_voltage = Volts.mutable(0);
 
         public MutAngle CS_setpointAngle = Radians.mutable(0);
-
+        
     }
 
     public default void updateInputs(ScorerIOInputs inputs) {};
@@ -30,7 +31,7 @@ public interface ScorerIO {
 
     public default void CS_runSetpoint(Angle angle) {}
 
-    public default void CS_runVolts(double volts) {}
+    public default void CS_runVolts(Voltage volts) {}
 
     public default void CS_setPID(double p, double i, double d) {}
 

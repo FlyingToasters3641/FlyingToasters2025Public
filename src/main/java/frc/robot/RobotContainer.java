@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
 import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
@@ -62,6 +63,10 @@ import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.scorer.Scorer;
+import frc.robot.subsystems.scorer.ScorerCommands;
+import frc.robot.subsystems.scorer.ScorerIO;
+import frc.robot.subsystems.scorer.ScorerIOSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
@@ -79,6 +84,7 @@ public class RobotContainer {
     private final Drive drive;
     private final Elevator elevator;
     private final Intake intake;
+    private final Scorer scorer;
     private SwerveDriveSimulation driveSimulation = null;
     public Blackboard blackboard = new Blackboard();
 
@@ -108,7 +114,8 @@ public class RobotContainer {
                         new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
                         new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
                 elevator = new Elevator(new ElevatorIOTalonFX() {});
-                intake = new Intake(new IntakeIOTalonFX());
+                intake = new Intake(new IntakeIOTalonFX() {});
+                scorer = new Scorer(new ScorerIO() {});
                 break;
                        
             case SIM:
@@ -134,6 +141,7 @@ public class RobotContainer {
                                 camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
                 elevator = new Elevator(new ElevatorIOSim());
                 intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance()));
+                scorer = new Scorer(new ScorerIOSim());
                 break;
             default:
                 // Replayed robot, disable IO implementations
@@ -142,6 +150,7 @@ public class RobotContainer {
                 vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
                 elevator = new Elevator(new ElevatorIO() {});
                 intake = new Intake(new IntakeIO() {});
+                scorer = new Scorer(new ScorerIO() {});
                 break;
         }
 
@@ -197,6 +206,7 @@ public class RobotContainer {
         controller.y().toggleOnTrue(new DrivingTree(blackboard, Constants.drivingPoses).execute());
         controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
         controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
+        controller.a().whileTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30))).onFalse(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
         controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
     }
