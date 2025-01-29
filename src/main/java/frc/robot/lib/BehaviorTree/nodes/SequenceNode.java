@@ -22,7 +22,9 @@ public class SequenceNode extends BehaviorTreeNode {
     
         @Override
         public ExecutionStatus execute() {
+
             while (currentIndex < (children.size())) {
+                
                 ExecutionStatus status = children.get(currentIndex).execute();
     
                 if (status == ExecutionStatus.RUNNING || status == ExecutionStatus.FAILURE) {

@@ -43,6 +43,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BehaviorTree.BehaviorTreeCommand;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
+import frc.robot.lib.BehaviorTree.trees.DrivingTree;
 import frc.robot.lib.BehaviorTree.trees.ExampleTree;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -193,6 +194,7 @@ public class RobotContainer {
         //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
 
         controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute());
+        controller.y().toggleOnTrue(new DrivingTree(blackboard, Constants.drivingPoses).execute());
         controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
         controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));

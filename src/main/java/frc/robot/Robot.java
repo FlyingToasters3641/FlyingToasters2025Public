@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.LocalADStarAK;
 
+import java.util.ArrayList;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -38,6 +40,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 public class Robot extends LoggedRobot {
     private Command autonomousCommand;
     private RobotContainer robotContainer;
+    
 
     public Robot() {
         
@@ -102,6 +105,8 @@ public class Robot extends LoggedRobot {
 
         FollowPathCommand.warmupCommand().schedule();
         PathfindingCommand.warmupCommand().schedule();
+
+        ArrayList<String> stack = new ArrayList<String>();
     }
     @Override
     public void robotPeriodic() {

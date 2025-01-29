@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -46,6 +49,8 @@ public final class Constants {
     public static final Pose2d reefBranchJ = new Pose2d(5.0, 5.21, new Rotation2d(Units.degreesToRadians(-120)));
     public static final Pose2d reefBranchK = new Pose2d(4.0, 5.22, new Rotation2d(Units.degreesToRadians(-60)));
     public static final Pose2d reefBranchL = new Pose2d(3.72, 5.04, new Rotation2d(Units.degreesToRadians(-60)));
+
+    public static final ArrayList<Pose2d> drivingPoses = new ArrayList<Pose2d>(Arrays.asList(reefBranchA, humanPlayerStationRight, reefBranchH));
 
     public static final int goalVelocity = 1;
     public static final int speedMultiplier = 3;
