@@ -20,7 +20,7 @@ public class ControlTree {
 
     public ControlTree(Blackboard blackboard) {
         this.blackboard = blackboard;
-        this.tree = new InfiniteLoopNode(blackboard, new SequenceNode(blackboard), stopCondition);
+        //this.tree = new InfiniteLoopNode(blackboard, new SequenceNode(blackboard), stopCondition);
         this.command = new BehaviorTreeCommand(tree);
     }
 
