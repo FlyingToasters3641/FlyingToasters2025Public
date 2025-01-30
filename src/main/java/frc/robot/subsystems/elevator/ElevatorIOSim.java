@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -20,6 +22,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 
 public class ElevatorIOSim implements ElevatorIO{
@@ -79,6 +83,9 @@ public class ElevatorIOSim implements ElevatorIO{
 
         inputs.setpointPosition.mut_replace(EL_PID_controller.getSetpoint().position, Meters);
         inputs.setpointVelocity.mut_replace(0, MetersPerSecond);
+
+        Logger.recordOutput("Odometry/ZeroedComponentPoses", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()}); //TODO: Temporary loggers used for estimating positions of the elevator. Remove this when not needed.
+        Logger.recordOutput("Odometry/FinalComponentPoses", new Pose3d[] {new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0))});
 
         //TalonFX Sim Values
     

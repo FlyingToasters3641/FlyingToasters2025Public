@@ -22,8 +22,6 @@ public class ElevatorVisualizer {
     private final LoggedMechanismRoot2d root;
     private final LoggedMechanismLigament2d elevator;
 
-    private static final double ElevatorXModifier = -Math.cos(Degrees.of(45).in(Radians));
-    private static final double ElevatorZModifier = Math.sin(Degrees.of(45).in(Radians));
 
     private LoggedMechanism2d ElevatorLogged;
 
@@ -52,11 +50,12 @@ public class ElevatorVisualizer {
 
     public void update(Distance position) {
         elevator.setLength(position.in(Meters));
-        Logger.recordOutput("Elevator/Mechanism2d/" + key, this.panel);
-
-        Distance elevatorX = position.times(ElevatorXModifier);
-        Distance elevatorZ = position.times(ElevatorZModifier);
-        Pose3d elevator3d = new Pose3d(elevatorX, Inches.zero(), elevatorZ, new Rotation3d());
+        Logger.recordOutput("Elevator/Mechanism2d/" + key, this.panel); //TODO: Find a better way to do this so that it gets incorporated with every subsystem
+        Pose3d elevator3d = new Pose3d(Inches.zero(), Inches.zero(), position, new Rotation3d()); //3d view changed to be a straight line up.
         Logger.recordOutput("Elevator/Mechanism3d/" + key, elevator3d);
+
+        Logger.recordOutput("Elevator/ComponentPoses", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), elevator3d, elevator3d}); 
     }
+
+    
   }

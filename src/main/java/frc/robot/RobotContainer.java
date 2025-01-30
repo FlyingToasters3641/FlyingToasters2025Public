@@ -97,6 +97,8 @@ public class RobotContainer {
     //starting Auto Pose for simulation
     private final Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
 
+    private final Pose2d startingComponentCalibrationPose = new Pose2d(0,0,new Rotation2d(0));
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
 
@@ -120,7 +122,7 @@ public class RobotContainer {
                        
             case SIM:
                 // Sim robot, instantiate physics sim IO implementations
-                driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, (startingAutoPose));
+                driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, (startingComponentCalibrationPose));
                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
                 Logger.recordOutput("FieldSimulation/Algae",
                                 SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
