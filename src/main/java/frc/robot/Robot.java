@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -117,6 +119,18 @@ public class Robot extends LoggedRobot {
 
         // Return to normal thread priority
         Threads.setCurrentThreadPriority(false, 10);
+
+        Logger.recordOutput("Odometry/ZeroedComponentPoses", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()});
+        // robot component positions
+        Logger.recordOutput("Odometry/FinalComponentPoses", new Pose3d[] {
+            new Pose3d(0, -0.305, 0.937, new Rotation3d(0, 0, 0)), 
+            new Pose3d(0, -0.102, 0.725, new Rotation3d(0, 0, 0)), 
+            new Pose3d(0.311, 0, 0.273, new Rotation3d(0, 0, 0)), 
+            new Pose3d(0, 0.254, 0.210, new Rotation3d(0, 0, 0)), 
+            new Pose3d(0, 0.4, 0.738, new Rotation3d(0, 0, 0)), 
+            new Pose3d(0, -0.247, 0.081, new Rotation3d(0, 0, 0)), 
+            new Pose3d(0, -0.3267, 0.070, new Rotation3d(0, 0, 0))});
+
     }
 
     /** This function is called once when the robot is disabled. */
