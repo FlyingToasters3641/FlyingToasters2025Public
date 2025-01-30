@@ -71,8 +71,8 @@ public class ScorerIOSim implements ScorerIO {
         }
 
         @Override
-        public void CS_setRunning(boolean runScorer) {
-            Logger.recordOutput("Scorer/Running", runScorer);
+        public void CS_setRoller(double speed) {
+            Logger.recordOutput("Scorer/Running", speed);
         }
 
         @Override

@@ -25,7 +25,7 @@ public interface ScorerIO {
    
     public default void setCSAngle(double angle) {};
     
-    public default void CS_setRunning(boolean runScorer) {};
+    public default void CS_setRoller(double speed) {};
 
     public default void CSStop() {};
 

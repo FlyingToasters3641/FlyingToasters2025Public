@@ -19,10 +19,10 @@ public class SelectorNode extends BehaviorTreeNode{
     }
 
     @Override
-    public ExecutionStatus execute() {
+    public ExecutionStatus run() {
         for (ChildNodeConditionPair pair : children) {
             if (pair.condition.test(blackboard)) {
-                ExecutionStatus status = pair.child.execute();
+                ExecutionStatus status = pair.child.run();
                 if (status == ExecutionStatus.RUNNING || status == ExecutionStatus.SUCCESS) {
                     return status;
                 }
