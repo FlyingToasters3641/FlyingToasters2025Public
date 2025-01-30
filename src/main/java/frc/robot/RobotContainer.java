@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -82,7 +83,8 @@ public class RobotContainer {
     public Blackboard blackboard = new Blackboard();
 
     // Controller
-    private final CommandXboxController controller = new CommandXboxController(0);
+    private final CommandXboxController xboxController = new CommandXboxController(0);
+    private final CommandPS5Controller ps5Controller = new CommandPS5Controller(0);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -170,33 +172,69 @@ public class RobotContainer {
      * {@link GenericHID} or one of its subclasses ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}),
      * and then passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
-    private void configureButtonBindings() {
-        // Default command, normal field-relative drive
-        drive.setDefaultCommand(DriveCommands.joystickDrive(
-                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
+    public void configureButtonBindings() {
 
-        // Lock to 0 when A button is held
-        controller
-                .a()
-                .whileTrue(DriveCommands.joystickDriveAtAngle(
-                        drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> new Rotation2d()));
+        // xbox controller code
+        if (xboxController.isConnected()) {
+                // Default command, normal field-relative drive
+                drive.setDefaultCommand(DriveCommands.joystickDrive(
+                        drive, () -> -xboxController.getLeftY(), () -> -xboxController.getLeftX(), () -> -xboxController.getRightX()));
 
-        // Switch to X pattern when X button is pressed
-        controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+                // Lock to 0 when A button is held
+                xboxController
+                        .a()
+                        .whileTrue(DriveCommands.joystickDriveAtAngle(
+                                drive, () -> -xboxController.getLeftY(), () -> -xboxController.getLeftX(), () -> new Rotation2d()));
 
-        // Reset gyro / odometry
-        final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
-                ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
-                : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
-        controller.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
+                // Switch to X pattern when X button is pressed
+                xboxController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-        //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
+                // Reset gyro / odometry
+                final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
+                        ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
+                        : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
+                xboxController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
-        controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute());
-        controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
-        controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
-        controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
-        controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
+                //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
+
+                xboxController.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_stop(elevator));
+                xboxController.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_stop(elevator));
+
+                //Pathfinds to the desired pose off constants in the constants class
+                xboxController.y().whileTrue(new PathFindToPose(drive, () -> Constants.targetPose, Constants.speedMultiplier, Constants.goalVelocity));
+        }
+
+        // ps5 controller code
+        else if (ps5Controller.isConnected()) { 
+                // Default command, normal field-relative drive
+                drive.setDefaultCommand(DriveCommands.joystickDrive(
+                        drive, () -> -ps5Controller.getLeftY(), () -> -ps5Controller.getLeftX(), () -> -ps5Controller.getRightX()));
+
+                // Lock to 0 when A button is held
+                ps5Controller.cross()
+                        .whileTrue(DriveCommands.joystickDriveAtAngle(
+                                drive, () -> -ps5Controller.getLeftY(), () -> -ps5Controller.getLeftX(), () -> new Rotation2d()));
+
+                // Switch to X pattern when X button is pressed
+                ps5Controller.square().onTrue(Commands.runOnce(drive::stopWithX, drive));
+
+                // Reset gyro / odometry
+                final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
+                        ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
+                        : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
+                ps5Controller.options().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
+
+                //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
+
+                ps5Controller.circle().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_stop(elevator));
+                ps5Controller.square().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_stop(elevator));
+
+                //Pathfinds to the desired pose off constants in the constants class
+                ps5Controller.triangle().whileTrue(new PathFindToPose(drive, () -> Constants.targetPose, Constants.speedMultiplier, Constants.goalVelocity));
+        } else {
+                // no controller connected
+                System.out.println("No controller connected");
+        }
     }
 
     /**
@@ -230,6 +268,9 @@ public class RobotContainer {
                 "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
         Logger.recordOutput(
                 "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+
+        // test for the controller to be connected
+        configureButtonBindings();
     }
 
 }
