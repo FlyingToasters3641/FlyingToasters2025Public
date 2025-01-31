@@ -42,14 +42,14 @@ public class ElevatorIOSim implements ElevatorIO{
     private MutVoltage EL_appliedVolts = Volts.mutable(0);
     
 
-    //new sim as of 1/18/2025
+    //new sim as of 1/30/2025
     private final ElevatorSim EL_sim = new ElevatorSim(
         DCMotor.getKrakenX60Foc(2),
         5,
-        Kilograms.of(10).in(Pounds),
-        Inches.of(.07225).in(Meters),
+        Pounds.of(11).in(Pounds),
+        Inches.of(1).in(Meters),
         Inches.of(0).in(Meters),
-        Inches.of(26.25).in(Meters),
+        Inches.of(52.5).in(Meters),
         true,
         Inches.of(10.25).in(Meters)
     );
@@ -84,8 +84,6 @@ public class ElevatorIOSim implements ElevatorIO{
         inputs.setpointPosition.mut_replace(EL_PID_controller.getSetpoint().position, Meters);
         inputs.setpointVelocity.mut_replace(0, MetersPerSecond);
 
-        Logger.recordOutput("Odometry/ZeroedComponentPoses", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()}); //TODO: Temporary loggers used for estimating positions of the elevator. Remove this when not needed.
-        Logger.recordOutput("Odometry/FinalComponentPoses", new Pose3d[] {new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0)), new Pose3d(0,0,0.5, new Rotation3d(0,0,0))});
 
         //TalonFX Sim Values
     
@@ -105,7 +103,7 @@ public class ElevatorIOSim implements ElevatorIO{
         LinearVelocity currentVelocity = MetersPerSecond.of(EL_sim.getVelocityMetersPerSecond());
 
         Voltage controllerVoltage = Volts.of(EL_PID_controller.calculate(currentHeight.in(Inches), position.in(Inches)));
-        Voltage feedForwardVoltage = Volts.of(EL_FeedForward.calculate(currentVelocity.in(MetersPerSecond)));
+        Voltage feedForwardVoltage = Volts.of(EL_FeedForward.calculate(currentVelocity.in(InchesPerSecond)));
 
         Voltage effort = controllerVoltage.plus(feedForwardVoltage);
 

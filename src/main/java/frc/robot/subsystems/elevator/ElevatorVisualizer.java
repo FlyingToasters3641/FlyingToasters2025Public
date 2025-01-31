@@ -7,12 +7,14 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.Constants;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -51,10 +53,11 @@ public class ElevatorVisualizer {
     public void update(Distance position) {
         elevator.setLength(position.in(Meters));
         Logger.recordOutput("Elevator/Mechanism2d/" + key, this.panel); //TODO: Find a better way to do this so that it gets incorporated with every subsystem
-        Pose3d elevator3d = new Pose3d(Inches.zero(), Inches.zero(), position, new Rotation3d()); //3d view changed to be a straight line up.
+        Transform3d elevator3d = new Transform3d(Inches.zero(), Inches.zero(), position, new Rotation3d(0,0,0)); //3d view changed to be a straight line up.
+        Transform3d elevatorHalf3d = new Transform3d(Inches.zero(), Inches.zero(), position.div(2), new Rotation3d(0,0,0));
         Logger.recordOutput("Elevator/Mechanism3d/" + key, elevator3d);
 
-        Logger.recordOutput("Elevator/ComponentPoses", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), elevator3d, elevator3d}); 
+        Logger.recordOutput("Elevator/ComponentPoses" + key, new Pose3d[] {Constants.scorerPoseOffset, Constants.scorerRollerPoseOffset, Constants.climberPoseOffset, Constants.coralIntakePoseOffset, Constants.coralIntakeRollerPoseOffset, Constants.elevatorOneIntakeOffset.plus(elevator3d), Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d)}); 
     }
 
     
