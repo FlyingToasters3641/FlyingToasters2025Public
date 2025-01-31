@@ -19,7 +19,7 @@ public class Subtree extends BehaviorTreeNode {
     }
 
     @Override
-    public ExecutionStatus execute() {
+    public ExecutionStatus run() {
         for (BehaviorTreeNode child : children) {
             ExecutionStatus status = child.execute();
             if (status != ExecutionStatus.SUCCESS) {

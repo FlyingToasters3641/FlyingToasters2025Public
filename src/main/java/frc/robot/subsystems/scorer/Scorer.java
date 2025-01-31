@@ -31,7 +31,7 @@ public class Scorer extends SubsystemBase{
     }
 
     public void CS_setRunning(boolean runScorer) {
-        io.CS_setRunning(runScorer);
+      //  io.CS_setRunning(runScorer);
     }
 
     public void CS_reverseScorer(boolean reverse) {

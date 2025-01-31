@@ -142,7 +142,7 @@ public class RobotContainer {
                         new VisionIOPhotonVisionSim(
                                 camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
                 elevator = new Elevator(new ElevatorIOSim());
-                intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance()));
+                intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance(), blackboard));
                 scorer = new Scorer(new ScorerIOSim());
                 break;
             default:

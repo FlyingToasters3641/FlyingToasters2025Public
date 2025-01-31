@@ -8,13 +8,20 @@ import frc.robot.Constants;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.lib.BehaviorTree.ExecutionStatus;
 
-public class DriveToTargetPose extends BehaviorTreeNode {
+public class DriveToIntake extends BehaviorTreeNode {
     Command driveToCommand;
     private Pose2d pose;
+    boolean isAlgae;
 
-    public DriveToTargetPose(Blackboard blackboard) {
+    public DriveToIntake(Blackboard blackboard) {
         super(blackboard);
-        pose = blackboard.getTargetPose("target");
+        isAlgae = blackboard.isTargetAlgae("target");
+        if (isAlgae) {
+            //TODO: change both constants for intaking to actual stuff 
+            pose = Constants.reefBranchA;
+        } else {
+            pose = Constants.humanPlayerStationLeft;
+        }
         driveToCommand = AutoBuilder.pathfindToPose(pose, Constants.constraints);
     }
 
