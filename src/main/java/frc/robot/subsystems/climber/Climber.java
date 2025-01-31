@@ -4,4 +4,8 @@ public class Climber {
     private ClimberIO io;
     private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
+
+    public Climber(ClimberIO io) {
+        this.io = io;
+    }
 }
