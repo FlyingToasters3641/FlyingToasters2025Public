@@ -14,11 +14,11 @@ public class BehaviorTreeCommand extends Command {
     @Override
     public void initialize() {
         isCompleted = false;
-        root.start();
     }
 
     @Override
     public void execute() {
+        root.start();
         if(!isCompleted) {
             ExecutionStatus status = root.execute();
             if(status == ExecutionStatus.SUCCESS || status == ExecutionStatus.FAILURE) {
