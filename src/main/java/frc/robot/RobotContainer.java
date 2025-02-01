@@ -114,8 +114,8 @@ public class RobotContainer {
                         drive,
                         new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
                         new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
-                elevator = new Elevator(new ElevatorIOTalonFX() {});
-                intake = new Intake(new IntakeIOTalonFX() {});
+                elevator = new Elevator(new ElevatorIO() {});
+                intake = new Intake(new IntakeIO() {});
                 scorer = new Scorer(new ScorerIO() {});
                 break;
                        
