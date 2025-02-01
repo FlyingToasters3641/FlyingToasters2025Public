@@ -6,11 +6,15 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class ClimberIOSim implements ClimberIO {
@@ -63,7 +67,7 @@ public class ClimberIOSim implements ClimberIO {
         inputs.rotation.mut_replace(CL_sim.getAngleRads(), Radians);
 
         inputs.setpointRotation.mut_replace(CL_PID_controller.getSetpoint().position, Radians);
-        inputs.setpointAngularVelocity.mut_replace(0, RadiansPerSecond);
+        inputs.setpointAngularVelocity.mut_replace(1, RadiansPerSecond);
 
         //TalonFX Sim Values
     
@@ -71,5 +75,44 @@ public class ClimberIOSim implements ClimberIO {
 
         
         CL_TalonFXSim.setRotorVelocity(CL_sim.getVelocityRadPerSec());
+    }
+
+    //Calculate to go to a specific point up into the elevator.
+    @Override
+    public void CL_runSetpoint(Angle rotation) {
+        double currentAngle = CL_sim.getAngleRads();
+        double currentVelocity = CL_sim.getVelocityRadPerSec();
+
+        Voltage controllerVoltage = Volts.of(CL_PID_controller.calculate(currentAngle, new TrapezoidProfile.State(currentAngle, currentVelocity)));
+        Voltage feedForwardVoltage = Volts.of(CL_FeedForward.calculate(currentVelocity));
+
+        Voltage effort = controllerVoltage.plus(feedForwardVoltage);
+
+        CL_runVolts(effort);
+    }
+
+    //Limits volts to go between a certain high and low value
+    @Override
+    public void CL_runVolts(Voltage volts) {
+        double clampedEffort = MathUtil.clamp(volts.in(Volts), -12, 12);
+        CL_appliedVolts.mut_replace(clampedEffort, Volts);
+        CL_sim.setInputVoltage(clampedEffort);
+    }
+
+    
+    @Override
+    public void CL_setPID(double p, double i, double d) {
+        CL_PID_controller.setPID(p, i, d);
+    }
+
+    //Just in case
+    @Override
+    public void CLStop() {
+        CL_runVolts(Volts.of(0));
+    }
+
+    @Override
+    public Angle getCLrotation() {
+        return Radians.of(CL_sim.getAngleRads());
     }
 }

@@ -14,6 +14,8 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Radian;
+import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
 import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
@@ -29,8 +31,12 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,6 +51,11 @@ import frc.robot.lib.BehaviorTree.BehaviorTreeCommand;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
 import frc.robot.lib.BehaviorTree.trees.ExampleTree;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberCommands;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -79,6 +90,7 @@ public class RobotContainer {
     private final Drive drive;
     private final Elevator elevator;
     private final Intake intake;
+    private final Climber climber;
     private SwerveDriveSimulation driveSimulation = null;
     public Blackboard blackboard = new Blackboard();
 
@@ -110,6 +122,7 @@ public class RobotContainer {
                         new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
                 elevator = new Elevator(new ElevatorIOTalonFX() {});
                 intake = new Intake(new IntakeIOTalonFX());
+                climber = new Climber(new ClimberIOTalonFX());
                 break;
                        
             case SIM:
@@ -135,6 +148,7 @@ public class RobotContainer {
                                 camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
                 elevator = new Elevator(new ElevatorIOSim());
                 intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance()));
+                climber = new Climber(new ClimberIOSim());
                 break;
             default:
                 // Replayed robot, disable IO implementations
@@ -143,6 +157,7 @@ public class RobotContainer {
                 vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
                 elevator = new Elevator(new ElevatorIO() {});
                 intake = new Intake(new IntakeIO() {});
+                climber = new Climber(new ClimberIO() {});
                 break;
         }
 
@@ -197,7 +212,10 @@ public class RobotContainer {
 
                 //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
 
-                xboxController.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_stop(elevator));
+                xboxController.b().whileTrue(ClimberCommands.CL_setRotation(climber, Radians.of(15)));
+                xboxController.b().whileFalse(ClimberCommands.CL_setRotation(climber, Radians.of(0)));
+
+                //xboxController.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_stop(elevator));
                 xboxController.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_stop(elevator));
 
                 //Pathfinds to the desired pose off constants in the constants class
@@ -226,7 +244,10 @@ public class RobotContainer {
 
                 //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
 
-                ps5Controller.circle().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_stop(elevator));
+                ps5Controller.circle().whileTrue(ClimberCommands.CL_setRotation(climber, Radians.of(15)));
+                ps5Controller.circle().whileFalse(ClimberCommands.CL_setRotation(climber, Radians.of(0)));
+
+                //ps5Controller.circle().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_stop(elevator));
                 ps5Controller.square().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_stop(elevator));
 
                 //Pathfinds to the desired pose off constants in the constants class
@@ -271,6 +292,16 @@ public class RobotContainer {
 
         // test for the controller to be connected
         configureButtonBindings();
+
+
+        Logger.recordOutput("Odometry/FinalComponentPoses", new Pose3d[] {
+            new Pose3d(Constants.algaeArmOffset.getX(), Constants.algaeArmOffset.getY(), Constants.algaeArmOffset.getZ(), Constants.algaeArmOffset.getRotation()),
+            new Pose3d(Constants.algaeArmRollerOffset.getX(), Constants.algaeArmRollerOffset.getY(), Constants.algaeArmRollerOffset.getZ(), Constants.algaeArmRollerOffset.getRotation()),
+            new Pose3d(Constants.climberOffset.getX(), Constants.climberOffset.getY(), Constants.climberOffset.getZ(), Constants.climberOffset.getRotation().rotateBy(new Rotation3d(ClimberCommands.CL_getRotation(climber), new Rotation2d(0, 0).getMeasure(), new Rotation2d(0, 0).getMeasure()))),
+            new Pose3d(Constants.coralIntakeOffset.getX(), Constants.coralIntakeOffset.getY(), Constants.coralIntakeOffset.getZ(), Constants.coralIntakeOffset.getRotation()),
+            new Pose3d(Constants.coralIntakeRollerOffset.getX(), Constants.coralIntakeRollerOffset.getY(), Constants.coralIntakeRollerOffset.getZ(), Constants.coralIntakeRollerOffset.getRotation()),
+            new Pose3d(Constants.elevatorInnerOffset.getX(), Constants.elevatorInnerOffset.getY(), Constants.elevatorInnerOffset.getZ(), Constants.elevatorInnerOffset.getRotation()),
+            new Pose3d(Constants.elevatorOuterOffset.getX(), Constants.elevatorOuterOffset.getY(), Constants.elevatorOuterOffset.getZ(), Constants.elevatorOuterOffset.getRotation())});
     }
 
 }

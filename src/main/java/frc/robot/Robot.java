@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.util.LocalADStarAK;
 
 import org.ironmaple.simulation.SimulatedArena;
@@ -121,15 +122,6 @@ public class Robot extends LoggedRobot {
         Threads.setCurrentThreadPriority(false, 10);
 
         Logger.recordOutput("Odometry/ZeroedComponentPoses", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()});
-        // robot component positions
-        Logger.recordOutput("Odometry/FinalComponentPoses", new Pose3d[] {
-            new Pose3d(0, -0.305, 0.937, new Rotation3d(0, 0, 0)), 
-            new Pose3d(0, -0.102, 0.725, new Rotation3d(0, 0, 0)), 
-            new Pose3d(0.311, 0, 0.273, new Rotation3d(0, 0, 0)), 
-            new Pose3d(0, 0.254, 0.210, new Rotation3d(0, 0, 0)), 
-            new Pose3d(0, 0.4, 0.738, new Rotation3d(0, 0, 0)), 
-            new Pose3d(0, -0.247, 0.081, new Rotation3d(0, 0, 0)), 
-            new Pose3d(0, -0.3267, 0.070, new Rotation3d(0, 0, 0))});
 
     }
 

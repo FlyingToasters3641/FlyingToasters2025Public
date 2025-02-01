@@ -25,7 +25,7 @@ public class ClimberConstants {
 
     }
 
-	public static final PIDConstants CL_PROFILED_PID_CONSTANTS = new PIDConstants(2, 0, 0, 0);
+	public static final PIDConstants CL_PROFILED_PID_CONSTANTS = new PIDConstants(0, 0, 0, 0);
 
     public static final FFConstants CL_FF_CONSTANTS = new FFConstants(0, 0, 0, 0);
 }
