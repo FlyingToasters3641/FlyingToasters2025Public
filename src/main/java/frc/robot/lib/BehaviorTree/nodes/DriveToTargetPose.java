@@ -24,15 +24,17 @@ public class DriveToTargetPose extends BehaviorTreeNode {
             } else {
                 driveToCommand = null;
             }
-        if(!driveToCommand.isScheduled() && driveToCommand != null) {
-            driveToCommand.schedule();
-        }
     }
 
     @Override
     public ExecutionStatus run() {
+        
+        if(!driveToCommand.isScheduled() && driveToCommand != null) {
+            driveToCommand.schedule();
+        }
     
         if (driveToCommand.isFinished()) {
+            blackboard.set("isDone", true);
             return ExecutionStatus.SUCCESS;
         }
 

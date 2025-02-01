@@ -22,7 +22,12 @@ public class Blackboard {
     }
 
     public boolean getBoolean(String key) {
+        if (data.get(key) == null) {
+            //TODO: THIS SETS A RANDOM VARIABLE IF NULL: FIX LATER
+            return false;
+        } else {
         return (boolean) data.get(key);
+        }
     }
 
     public boolean isTargetAlgae(String key) {
@@ -59,149 +64,152 @@ public class Blackboard {
                 case NET:
                     targetPose = Constants.netPose;
                     break;
-                case AL1:
+                case A1:
                     targetPose = Constants.reefBranchA;
                     break;
-                case AL2:
+                case A2:
                     targetPose = Constants.reefBranchA;
                     break;
-                case AL3:
+                case A3:
                     targetPose = Constants.reefBranchA;
                     break;
-                case AL4:
+                case A4:
                     targetPose = Constants.reefBranchA;
                     break;
-                case BL1:
+                case B1:
                     targetPose = Constants.reefBranchB;
                     break;
-                case BL2:
+                case B2:
                     targetPose = Constants.reefBranchB;
                     break;
-                case BL3:
+                case B3:
                     targetPose = Constants.reefBranchB;
                     break;
-                case BL4:
+                case B4:
                     targetPose = Constants.reefBranchB;
                     break;
-                case CL1:
+                case C1:
                     targetPose = Constants.reefBranchC;
                     break;
-                case CL2:
+                case C2:
                     targetPose = Constants.reefBranchC;
                     break;
-                case CL3:
+                case C3:
                     targetPose = Constants.reefBranchC;
                     break;
-                case CL4:
+                case C4:
                     targetPose = Constants.reefBranchC;
                     break;
-                case DL1:
+                case D1:
                     targetPose = Constants.reefBranchD;
                     break;
-                case DL2:
+                case D2:
                     targetPose = Constants.reefBranchD;
                     break;
-                case DL3:
+                case D3:
                     targetPose = Constants.reefBranchD;
                     break;
-                case DL4:
+                case D4:
                     targetPose = Constants.reefBranchD;
                     break;
-                case EL1:
+                case E1:
                     targetPose = Constants.reefBranchE;
                     break;
-                case EL2:
+                case E2:
                     targetPose = Constants.reefBranchE;
                     break;
-                case EL3:
+                case E3:
                     targetPose = Constants.reefBranchE;
                     break;
-                case EL4:
+                case E4:
                     targetPose = Constants.reefBranchE;
                     break;
-                case FL1:
+                case F1:
                     targetPose = Constants.reefBranchF;
                     break;
-                case FL2:
+                case F2:
                     targetPose = Constants.reefBranchF;
                     break;
-                case FL3:
+                case F3:
                     targetPose = Constants.reefBranchF;
                     break;
-                case FL4:
+                case F4:
                     targetPose = Constants.reefBranchF;
                     break;
-                case GL1:
+                case G1:
                     targetPose = Constants.reefBranchG;
                     break;
-                case GL2:
+                case G2:
                     targetPose = Constants.reefBranchG;
                     break;
-                case GL3:
+                case G3:
                     targetPose = Constants.reefBranchG;
                     break;
-                case GL4:
+                case G4:
                     targetPose = Constants.reefBranchG;
                     break;
-                case HL1:
+                case H1:
                     targetPose = Constants.reefBranchH;
                     break;
-                case HL2:
+                case H2:
                     targetPose = Constants.reefBranchH;
                     break;
-                case HL3:
+                case H3:
                     targetPose = Constants.reefBranchH;
                     break;
-                case HL4:
+                case H4:
                     targetPose = Constants.reefBranchH;
                     break;
-                case IL1:
+                case I1:
                     targetPose = Constants.reefBranchI;
                     break;
-                case IL2:
+                case I2:
                     targetPose = Constants.reefBranchI;
                     break;
-                case IL3:
+                case I3:
                     targetPose = Constants.reefBranchI;
                     break;
-                case IL4:
+                case I4:
                     targetPose = Constants.reefBranchI;
                     break;
-                case JL1:
+                case J1:
                     targetPose = Constants.reefBranchJ;
                     break;
-                case JL2:
+                case J2:
                     targetPose = Constants.reefBranchJ;
                     break;
-                case JL3:
+                case J3:
                     targetPose = Constants.reefBranchJ;
                     break;
-                case JL4:
+                case J4:
                     targetPose = Constants.reefBranchJ;
                     break;
-                case KL1:
+                case K1:
                     targetPose = Constants.reefBranchK;
                     break;
-                case KL2:
+                case K2:
                     targetPose = Constants.reefBranchK;
                     break;
-                case KL3:
+                case K3:
                     targetPose = Constants.reefBranchK;
                     break;
-                case KL4:
+                case K4:
                     targetPose = Constants.reefBranchK;
                     break;
-                case LL1:
+                case L1:
                     targetPose = Constants.reefBranchL;
                     break;
-                case LL2:
+                case L2:
                     targetPose = Constants.reefBranchL;
                     break;
-                case LL3:
+                case L3:
                     targetPose = Constants.reefBranchL;
                     break;
-                case LL4:
+                case L4:
                     targetPose = Constants.reefBranchL;
+                    break;
+                case NONE:
+                    targetPose = null;
                     break;
             }
         } else {

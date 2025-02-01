@@ -48,6 +48,7 @@ import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
 import frc.robot.lib.BehaviorTree.trees.ControlTree;
 import frc.robot.lib.BehaviorTree.trees.DrivingTree;
 import frc.robot.lib.BehaviorTree.trees.ExampleTree;
+import frc.robot.lib.BehaviorTree.trees.Stack;
 import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -89,7 +90,9 @@ public class RobotContainer {
     private final Intake intake;
     private final Scorer scorer;
     private SwerveDriveSimulation driveSimulation = null;
-    public Blackboard blackboard = new Blackboard();
+    public static Blackboard blackboard = new Blackboard();
+    
+    public static Stack stack = new Stack(blackboard);
 
     // Controller
     private final CommandXboxController controller = new CommandXboxController(0);
@@ -176,10 +179,10 @@ public class RobotContainer {
         autoChooser.addOption("testAuto2", new PathPlannerAuto("testAuto2"));
 
         targetChooser = new LoggedDashboardChooser<>("Target Choices");
-        targetChooser.addOption("AL1", Targets.AL1);
+        targetChooser.addOption("A1", Targets.A1);
         targetChooser.addOption("Processor", Targets.PROCESSOR);
-        targetChooser.addOption("GL1", Targets.GL1);
-        targetChooser.addOption("LL1", Targets.LL1);
+        targetChooser.addOption("G1", Targets.G1);
+        targetChooser.addOption("L1", Targets.L1);
 
 
         // Configure the button bindings
@@ -216,7 +219,8 @@ public class RobotContainer {
         //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
 
         controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute());
-        controller.y().toggleOnTrue(Commands.runOnce(() -> getTreeTarget()).andThen(new ControlTree(blackboard).execute()));
+        controller.leftBumper().onTrue(Commands.runOnce(() -> addToStack()));
+        controller.y().toggleOnTrue(new ControlTree(blackboard).execute());
         controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
         controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
         controller.a().whileTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30))).onFalse(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
@@ -236,12 +240,14 @@ public class RobotContainer {
     public void getTreeTarget() {
         Targets targetValue = targetChooser.get();
         if (targetValue != null) {
-        blackboard.set("hasTarget", true);
         blackboard.set("target", targetValue);
         } else {
-        blackboard.set("hasTarget", true);
         }
+    }
 
+    public void addToStack() {
+        Targets targetValue = targetChooser.get();
+        stack.add(targetValue);
     }
 
     public void resetSimulation() {
