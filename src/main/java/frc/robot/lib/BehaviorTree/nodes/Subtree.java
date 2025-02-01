@@ -14,6 +14,13 @@ public class Subtree extends BehaviorTreeNode {
     super(blackboard);
     }
 
+    @Override
+    public void initialize() {
+        for (BehaviorTreeNode child: children) {
+            child.initialize();
+        }
+    }
+
     public void addChild(BehaviorTreeNode child) {
         children.add(child);
     }

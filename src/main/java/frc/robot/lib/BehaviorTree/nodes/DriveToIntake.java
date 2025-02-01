@@ -15,6 +15,11 @@ public class DriveToIntake extends BehaviorTreeNode {
 
     public DriveToIntake(Blackboard blackboard) {
         super(blackboard);
+
+    }
+
+    @Override
+    public void initialize() {
         isAlgae = blackboard.isTargetAlgae("target");
         if (isAlgae) {
             //TODO: change both constants for intaking to actual stuff 
@@ -23,6 +28,7 @@ public class DriveToIntake extends BehaviorTreeNode {
             pose = Constants.humanPlayerStationLeft;
         }
         driveToCommand = AutoBuilder.pathfindToPose(pose, Constants.constraints);
+        
     }
 
     @Override

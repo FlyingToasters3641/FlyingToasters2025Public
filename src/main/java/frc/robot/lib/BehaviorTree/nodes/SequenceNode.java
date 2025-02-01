@@ -15,6 +15,13 @@ public class SequenceNode extends BehaviorTreeNode {
         public SequenceNode(Blackboard blackboard) {
             super(blackboard);
         }
+
+        @Override
+        public void initialize() {
+            for (BehaviorTreeNode child : children) {
+                child.initialize();
+            }
+        }
     
         public void addChild(BehaviorTreeNode child) {
             child.setParent(this);

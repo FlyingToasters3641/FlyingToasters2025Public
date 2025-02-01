@@ -14,16 +14,24 @@ public class DriveToTargetPose extends BehaviorTreeNode {
 
     public DriveToTargetPose(Blackboard blackboard) {
         super(blackboard);
-        pose = blackboard.getTargetPose("target");
-        driveToCommand = AutoBuilder.pathfindToPose(pose, Constants.constraints);
+    }
+
+    @Override
+    public void initialize() {
+        if ((blackboard.getTargetPose("target")) != null) {
+            pose = blackboard.getTargetPose("target");
+            driveToCommand = AutoBuilder.pathfindToPose(pose, Constants.constraints);
+            } else {
+                driveToCommand = null;
+            }
+        if(!driveToCommand.isScheduled() && driveToCommand != null) {
+            driveToCommand.schedule();
+        }
     }
 
     @Override
     public ExecutionStatus run() {
-        if(!driveToCommand.isScheduled() && driveToCommand != null) {
-            driveToCommand.schedule();
-        }
-
+    
         if (driveToCommand.isFinished()) {
             return ExecutionStatus.SUCCESS;
         }

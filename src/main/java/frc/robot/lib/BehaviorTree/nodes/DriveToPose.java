@@ -18,6 +18,11 @@ public class DriveToPose extends BehaviorTreeNode {
     }
 
     @Override
+    public void initialize() {
+        
+    }
+
+    @Override
     public ExecutionStatus run() {
         driveToCommand = AutoBuilder.pathfindToPose(pose, Constants.constraints);
         if(!driveToCommand.isScheduled() && driveToCommand != null) {

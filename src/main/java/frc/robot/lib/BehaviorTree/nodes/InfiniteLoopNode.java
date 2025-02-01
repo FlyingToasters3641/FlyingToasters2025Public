@@ -14,6 +14,11 @@ public class InfiniteLoopNode extends BehaviorTreeNode {
         this.child = child;
         this.condition = condition;
     }
+    
+    @Override
+    public void initialize() {
+        
+    }
 
     @Override
     public ExecutionStatus run() {

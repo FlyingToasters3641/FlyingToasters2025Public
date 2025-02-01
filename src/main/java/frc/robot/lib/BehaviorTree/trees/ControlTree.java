@@ -53,9 +53,6 @@ public class ControlTree {
         this.intakeCoral = new SequenceNode(blackboard);
         this.intakeAlgae = new SequenceNode(blackboard);
 
-        blackboard.set("hasTarget", true);
-        blackboard.set("target", Targets.DL1);
-
 
         ((SelectorNode)findTarget).addChild(findPiece, (Blackboard bb) -> bb.getBoolean("hasTarget"));
         ((SelectorNode)findTarget).addChild(emptyleafnode, (Blackboard bb) -> !bb.getBoolean("hasTarget"));
