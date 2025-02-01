@@ -206,7 +206,7 @@ public class RobotContainer {
         //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
 
         controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute().andThen(() -> debugger.printTreeSummary()));
-        controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))));
+        controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
         controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
         controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
         controller.a().whileTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30))).onFalse(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
