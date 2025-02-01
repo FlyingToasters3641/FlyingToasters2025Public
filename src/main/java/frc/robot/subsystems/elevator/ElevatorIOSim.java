@@ -24,6 +24,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import frc.robot.Constants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 
 public class ElevatorIOSim implements ElevatorIO{
@@ -44,14 +45,14 @@ public class ElevatorIOSim implements ElevatorIO{
 
     //new sim as of 1/30/2025
     private final ElevatorSim EL_sim = new ElevatorSim(
-        DCMotor.getKrakenX60Foc(2),
-        5,
-        Pounds.of(11).in(Pounds),
-        Inches.of(1).in(Meters),
-        Inches.of(0).in(Meters),
-        Inches.of(52.5).in(Meters),
-        true,
-        Inches.of(10.25).in(Meters)
+        ElevatorConstants.EL_kKrakenX60Foc,
+        ElevatorConstants.EL_GEARING,
+        ElevatorConstants.EL_CARRIAGE_MASS,
+        ElevatorConstants.EL_DRUM_SPOOL_RADIUS,
+        ElevatorConstants.EL_MIN_HEIGHT,
+        ElevatorConstants.EL_MAX_HEIGHT,
+        ElevatorConstants.EL_SIMULATE_GRAVITY,
+        ElevatorConstants.EL_STARTING_HEIGHT
     );
     
     public ElevatorIOSim(){
@@ -93,6 +94,7 @@ public class ElevatorIOSim implements ElevatorIO{
         
         EL_TalonFXOneSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond());
         EL_TalonFXTwoSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond());
+
     }
         
 

@@ -25,9 +25,6 @@ public class ElevatorVisualizer {
     private final LoggedMechanismLigament2d elevator;
 
 
-    private LoggedMechanism2d ElevatorLogged;
-
-    //Copied over from the training video for nowsies. ;)
 
     public ElevatorVisualizer(String key, Color color) {
         this.key = key;
@@ -52,13 +49,11 @@ public class ElevatorVisualizer {
 
     public void update(Distance position) {
         elevator.setLength(position.in(Meters));
-        Logger.recordOutput("Elevator/Mechanism2d/" + key, this.panel); //TODO: Find a better way to do this so that it gets incorporated with every subsystem
-        Transform3d elevator3d = new Transform3d(Inches.zero(), Inches.zero(), position, new Rotation3d(0,0,0)); //3d view changed to be a straight line up.
-        Transform3d elevatorHalf3d = new Transform3d(Inches.zero(), Inches.zero(), position.div(2), new Rotation3d(0,0,0));
-        Logger.recordOutput("Elevator/Mechanism3d/" + key, elevator3d);
-
-        Logger.recordOutput("Elevator/ComponentPoses" + key, new Pose3d[] {Constants.scorerPoseOffset, Constants.scorerRollerPoseOffset, Constants.climberPoseOffset, Constants.coralIntakePoseOffset, Constants.coralIntakeRollerPoseOffset, Constants.elevatorOneIntakeOffset.plus(elevator3d), Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d)}); 
+        Logger.recordOutput("Elevator/Mechanism2d/" + key, this.panel);
+       
     }
 
+
+    
     
   }

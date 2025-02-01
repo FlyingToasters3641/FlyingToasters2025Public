@@ -58,7 +58,7 @@ public final class Constants {
     public static final int speedMultiplier = 3;
 
     public static final Pose3d scorerPoseOffset = new Pose3d(0, -0.305, 0.937, new Rotation3d(0, 0, 0));
-    public static final Pose3d scorerRollerPoseOffset = new Pose3d(0, -0.102, 0.725, new Rotation3d(0, 0, 0));
+    public static final Pose3d scorerRollerPoseOffset = new Pose3d(0, -0.305, 0.937, new Rotation3d(0, 0, 0));//0, -0.102, 0.725
     public static final Pose3d climberPoseOffset = new Pose3d(0.311, 0, 0.273, new Rotation3d(0, 0, 0));
     public static final Pose3d coralIntakePoseOffset =  new Pose3d(0, 0.254, 0.210, new Rotation3d(0, 0, 0));
     public static final Pose3d coralIntakeRollerPoseOffset = new Pose3d(0, 0.4, 0.738, new Rotation3d(0, 0, 0));

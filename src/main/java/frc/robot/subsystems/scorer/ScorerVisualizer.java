@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.Constants;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.units.measure.Angle;
@@ -38,8 +39,5 @@ public class ScorerVisualizer {
     public void update(Angle position) {
         Scorer.setAngle(position.in(Radians));
         Logger.recordOutput("Scorer/Mechanism2d/" + key, this.panel);
-        Angle ScorerAngle = position.times(ScorerConstants.SCORER_ANGLE_MODIFIER);
-        Pose3d Scorer3d = new Pose3d(Inches.zero(), Inches.zero(), Inches.zero(), new Rotation3d(0, 0, ScorerAngle.in(Radians)));
-        Logger.recordOutput("Scorer/Mechanism3d/" + key, Scorer3d);
     }
 }

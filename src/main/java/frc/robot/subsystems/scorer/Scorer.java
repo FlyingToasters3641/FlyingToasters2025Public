@@ -42,5 +42,9 @@ public class Scorer extends SubsystemBase{
         io.CS_runSetpoint(angle);
     }
 
+    public Angle getCSAngle() {
+        return(this.inputs.CS_angle);
+    }
+
    
 }
