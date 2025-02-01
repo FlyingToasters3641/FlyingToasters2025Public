@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class ScorerCommands {
-    public static Command CS_setRunning(Scorer m_Scorer, boolean runScorer) {
-        return Commands.run(() -> m_Scorer.CS_setRunning(runScorer));
+    public static Command CS_setRunning(Scorer m_Scorer, double speed) {
+        return Commands.run(() -> m_Scorer.CS_setRoller(speed));
     }
 
     public static Command CS_reverseScorer(Scorer m_Scorer, boolean reverse) {

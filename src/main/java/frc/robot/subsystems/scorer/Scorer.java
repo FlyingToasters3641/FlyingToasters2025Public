@@ -30,8 +30,8 @@ public class Scorer extends SubsystemBase{
         CS_measuredVisualizer.update(this.inputs.CS_angle);
     }
 
-    public void CS_setRunning(boolean runScorer) {
-        io.CS_setRunning(runScorer);
+    public void CS_setRoller(double speed) {
+        io.CS_setRoller(speed);
     }
 
     public void CS_reverseScorer(boolean reverse) {
