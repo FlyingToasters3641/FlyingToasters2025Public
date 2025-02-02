@@ -20,7 +20,7 @@ import frc.robot.lib.BehaviorTree.nodes.Subtree;
 
 public class ControlTree {
     Blackboard blackboard;
-    InfiniteLoopNode tree;
+    SequenceNode tree;
     BehaviorTreeCommand command;
     Predicate<Blackboard> stopCondition;
     //scoring tree
@@ -54,7 +54,6 @@ public class ControlTree {
         this.intakeCoral = new SequenceNode(blackboard);
         this.intakeAlgae = new SequenceNode(blackboard);
 
-        blackboard.set("treeOn", true);
 
 
         ((SelectorNode)findTarget).addChild(findPiece, (Blackboard bb) -> bb.getBoolean("hasTarget"));
@@ -77,7 +76,8 @@ public class ControlTree {
         ((SequenceNode)intakeAlgae).addChild(new DriveToIntake(blackboard));
 
 
-        this.tree = new InfiniteLoopNode(blackboard, scoringTree, (Blackboard bb) -> !bb.getBoolean("treeOn"));
+        this.tree = new SequenceNode(blackboard);
+        ((SequenceNode)tree).addChild(scoringTree);
     
 
         this.command = new BehaviorTreeCommand(tree);
