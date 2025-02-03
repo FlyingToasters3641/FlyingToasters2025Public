@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -20,6 +22,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import frc.robot.Constants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 
 public class ElevatorIOSim implements ElevatorIO{
@@ -38,16 +43,16 @@ public class ElevatorIOSim implements ElevatorIO{
     private MutVoltage EL_appliedVolts = Volts.mutable(0);
     
 
-    //new sim as of 1/18/2025
+    //new sim as of 1/30/2025
     private final ElevatorSim EL_sim = new ElevatorSim(
-        DCMotor.getKrakenX60Foc(2),
-        5,
-        Kilograms.of(10).in(Pounds),
-        Inches.of(.07225).in(Meters),
-        Inches.of(0).in(Meters),
-        Inches.of(26.25).in(Meters),
-        true,
-        Inches.of(10.25).in(Meters)
+        ElevatorConstants.EL_kKrakenX60Foc,
+        ElevatorConstants.EL_GEARING,
+        ElevatorConstants.EL_CARRIAGE_MASS,
+        ElevatorConstants.EL_DRUM_SPOOL_RADIUS,
+        ElevatorConstants.EL_MIN_HEIGHT,
+        ElevatorConstants.EL_MAX_HEIGHT,
+        ElevatorConstants.EL_SIMULATE_GRAVITY,
+        ElevatorConstants.EL_STARTING_HEIGHT
     );
     
     public ElevatorIOSim(){
@@ -80,6 +85,7 @@ public class ElevatorIOSim implements ElevatorIO{
         inputs.setpointPosition.mut_replace(EL_PID_controller.getSetpoint().position, Meters);
         inputs.setpointVelocity.mut_replace(0, MetersPerSecond);
 
+
         //TalonFX Sim Values
     
         EL_TalonFXOneSim.setRawRotorPosition(EL_sim.getPositionMeters());
@@ -88,6 +94,7 @@ public class ElevatorIOSim implements ElevatorIO{
         
         EL_TalonFXOneSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond());
         EL_TalonFXTwoSim.setRotorVelocity(EL_sim.getVelocityMetersPerSecond());
+
     }
         
 
@@ -98,7 +105,7 @@ public class ElevatorIOSim implements ElevatorIO{
         LinearVelocity currentVelocity = MetersPerSecond.of(EL_sim.getVelocityMetersPerSecond());
 
         Voltage controllerVoltage = Volts.of(EL_PID_controller.calculate(currentHeight.in(Inches), position.in(Inches)));
-        Voltage feedForwardVoltage = Volts.of(EL_FeedForward.calculate(currentVelocity.in(MetersPerSecond)));
+        Voltage feedForwardVoltage = Volts.of(EL_FeedForward.calculate(currentVelocity.in(InchesPerSecond)));
 
         Voltage effort = controllerVoltage.plus(feedForwardVoltage);
 

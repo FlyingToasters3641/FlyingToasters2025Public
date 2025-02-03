@@ -17,12 +17,15 @@ public class SequenceNode extends BehaviorTreeNode {
         }
     
         public void addChild(BehaviorTreeNode child) {
+            child.setParent(this);
             children.add(child);
         }
     
         @Override
-        public ExecutionStatus execute() {
+        public ExecutionStatus run() {
+
             while (currentIndex < (children.size())) {
+                
                 ExecutionStatus status = children.get(currentIndex).execute();
     
                 if (status == ExecutionStatus.RUNNING || status == ExecutionStatus.FAILURE) {

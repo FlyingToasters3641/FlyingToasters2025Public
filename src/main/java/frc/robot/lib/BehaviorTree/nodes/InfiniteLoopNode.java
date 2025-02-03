@@ -16,12 +16,12 @@ public class InfiniteLoopNode extends BehaviorTreeNode {
     }
 
     @Override
-    public ExecutionStatus execute() {
+    public ExecutionStatus run() {
         if(condition.test(blackboard)) {
             return ExecutionStatus.SUCCESS;
         }
 
-        ExecutionStatus status = child.execute();
+        ExecutionStatus status = child.run();
 
         if (status == ExecutionStatus.FAILURE){
             return ExecutionStatus.FAILURE;

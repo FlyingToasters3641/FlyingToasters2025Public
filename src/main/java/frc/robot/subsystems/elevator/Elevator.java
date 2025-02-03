@@ -69,6 +69,10 @@ public class Elevator extends SubsystemBase{
         io.setELPosition(position);
     }
 
+    public Distance getELPosition(){
+        return(this.inputs.position);
+    }
+
     public void ELStop(){
         io.ELStop();
     }
