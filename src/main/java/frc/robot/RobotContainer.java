@@ -15,6 +15,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
 import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
@@ -30,8 +31,12 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -97,6 +102,7 @@ public class RobotContainer {
 
     //starting Auto Pose for simulation
     private final Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
+
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -189,10 +195,12 @@ public class RobotContainer {
                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
 
         // Lock to 0 when A button is held
-        controller
-                .a()
-                .whileTrue(DriveCommands.joystickDriveAtAngle(
-                        drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> new Rotation2d()));
+        // controller
+        //         .a()
+        //         .whileTrue(DriveCommands.joystickDriveAtAngle(
+        //                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> new Rotation2d()));
+
+        //TODO: UNCOMMENT THIS WHEN DONE TESTING
 
         // Switch to X pattern when X button is pressed
         controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -207,8 +215,9 @@ public class RobotContainer {
 
         controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute().andThen(() -> debugger.printTreeSummary()));
         controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
-        controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
-        controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
+        controller.y().toggleOnTrue(new DrivingTree(blackboard, Constants.drivingPoses).execute());
+        controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(26.5))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
+        controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(52.5))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
         controller.a().whileTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30))).onFalse(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
         controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
@@ -245,6 +254,22 @@ public class RobotContainer {
                 "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
         Logger.recordOutput(
                 "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+    }
+
+
+    public void displayComponentPosesToAdvantageScope(){
+        if(Constants.currentMode != Constants.Mode.SIM) return;
+
+        Distance EL_simPosition = elevator.getELPosition();
+
+        Transform3d elevator3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition, new Rotation3d(0,0,0)); //3d view changed to be a straight line up.
+        Transform3d elevatorHalf3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition.div(2), new Rotation3d(0,0,0));
+
+        Rotation3d scorerRotation3d = new Rotation3d(scorer.getCSAngle().in(Radians),0,0);
+
+        Logger.recordOutput("Odometry/RobotComponentPoses", new Pose3d[] {new Pose3d(Constants.scorerPoseOffset.getX()+elevator3d.getX(),Constants.scorerPoseOffset.getY()+elevator3d.getY(),Constants.scorerPoseOffset.getZ()+elevator3d.getZ(),Constants.scorerPoseOffset.getRotation().rotateBy(scorerRotation3d)), new Pose3d(Constants.scorerRollerPoseOffset.getX()+elevator3d.getX(), Constants.scorerRollerPoseOffset.getY()+elevator3d.getY(), Constants.scorerRollerPoseOffset.getZ()+elevator3d.getZ(), Constants.scorerRollerPoseOffset.getRotation().rotateBy(scorerRotation3d)), Constants.climberPoseOffset, Constants.coralIntakePoseOffset, Constants.coralIntakeRollerPoseOffset, Constants.elevatorOneIntakeOffset.plus(elevator3d), Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d)});
+
+
     }
 
 }
