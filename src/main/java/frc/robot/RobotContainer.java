@@ -23,7 +23,6 @@ import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -35,7 +34,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -44,12 +42,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.PathFindToPose;
 import frc.robot.generated.TunerConstants;
-import frc.robot.lib.BehaviorTree.BehaviorTreeCommand;
 import frc.robot.lib.BehaviorTree.BehaviorTreeDebugger;
 import frc.robot.lib.BehaviorTree.Blackboard;
-import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
 import frc.robot.lib.BehaviorTree.trees.DrivingTree;
 import frc.robot.lib.BehaviorTree.trees.ExampleTree;
 import frc.robot.subsystems.drive.Drive;
@@ -63,12 +58,10 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorCommands;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.scorer.Scorer;
 import frc.robot.subsystems.scorer.ScorerCommands;
 import frc.robot.subsystems.scorer.ScorerIO;
@@ -147,7 +140,7 @@ public class RobotContainer {
                         new VisionIOPhotonVisionSim(
                                 camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
                 elevator = new Elevator(new ElevatorIOSim());
-                intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance()));
+                intake = new Intake(new IntakeIOSim());
                 scorer = new Scorer(new ScorerIOSim());
                 break;
             default:
@@ -264,12 +257,11 @@ public class RobotContainer {
 
         Transform3d elevator3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition, new Rotation3d(0,0,0)); //3d view changed to be a straight line up.
         Transform3d elevatorHalf3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition.div(2), new Rotation3d(0,0,0));
-
+        Rotation3d intakeRotation3d = new Rotation3d(intake.getINAngle().in(Radians),0,0);
+       
         Rotation3d scorerRotation3d = new Rotation3d(scorer.getCSAngle().in(Radians),0,0);
 
-        Logger.recordOutput("Odometry/RobotComponentPoses", new Pose3d[] {new Pose3d(Constants.scorerPoseOffset.getX()+elevator3d.getX(),Constants.scorerPoseOffset.getY()+elevator3d.getY(),Constants.scorerPoseOffset.getZ()+elevator3d.getZ(),Constants.scorerPoseOffset.getRotation().rotateBy(scorerRotation3d)), new Pose3d(Constants.scorerRollerPoseOffset.getX()+elevator3d.getX(), Constants.scorerRollerPoseOffset.getY()+elevator3d.getY(), Constants.scorerRollerPoseOffset.getZ()+elevator3d.getZ(), Constants.scorerRollerPoseOffset.getRotation().rotateBy(scorerRotation3d)), Constants.climberPoseOffset, Constants.coralIntakePoseOffset, Constants.coralIntakeRollerPoseOffset, Constants.elevatorOneIntakeOffset.plus(elevator3d), Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d)});
-
-
+        Logger.recordOutput("Odometry/RobotComponentPoses", new Pose3d[] {new Pose3d(Constants.scorerPoseOffset.getX()+elevator3d.getX(),Constants.scorerPoseOffset.getY()+elevator3d.getY(),Constants.scorerPoseOffset.getZ()+elevator3d.getZ(),Constants.scorerPoseOffset.getRotation().rotateBy(scorerRotation3d)), new Pose3d(Constants.scorerRollerPoseOffset.getX()+elevator3d.getX(), Constants.scorerRollerPoseOffset.getY()+elevator3d.getY(), Constants.scorerRollerPoseOffset.getZ()+elevator3d.getZ(), Constants.scorerRollerPoseOffset.getRotation().rotateBy(scorerRotation3d)), Constants.climberPoseOffset, Constants.coralIntakePoseOffset, Constants.coralIntakeRollerPoseOffset, Constants.elevatorOneIntakeOffset.plus(elevator3d), Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d), new Pose3d(Constants.intakePoseOffset.getX(), Constants.intakePoseOffset.getY(), Constants.intakePoseOffset.getZ(), Constants.intakeRollersPoseOffset.getRotation().rotateBy(intakeRotation3d)), new Pose3D(Constants.intakeRollersPoseOffset.getX(), Constants.intakeRollersPoseOffset.getY(), Constants.intakeRollersPoseOffset.getZ(), Constants.intakeRollersPoseOffset.getRotation().rotateBy(scorerRotation3d))});
+        
     }
-
 }
