@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 
 
 public class IntakeCommands {
-    public static Command IN_setRunning(Intake m_Intake, double speed) {
-        return Commands.run(() -> m_Intake.IN_setRoller(speed));
+    public static Command IN_setRunning(Intake m_Intake, boolean running) {
+        return Commands.run(() -> m_Intake.IN_setRoller(running));
     }
     public static Command IN_runSetangle(Intake m_Intake, Angle angle) {
         return Commands.runOnce(() -> m_Intake.IN_runSetpoint(angle));

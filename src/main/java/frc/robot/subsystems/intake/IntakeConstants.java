@@ -19,7 +19,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 
 public class IntakeConstants {
     public static final Constraints TRAPEZOID_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(0, 0);;
-    public static final PIDConstants IN_PROFILED_PID_CONSTANTS = new PIDConstants(2, 0, 0, 0);
+    public static final PIDConstants IN_PROFILED_PID_CONSTANTS = new PIDConstants(0, 0, 0, 0);
     public static double IDLE = 0.0;
     public static final Angle DEGREES_PER_ROTATION = Degrees.of(360);
     public static final DCMotor kKrakenX60Foc = DCMotor.getKrakenX60Foc(2);
@@ -32,5 +32,21 @@ public class IntakeConstants {
     public static MomentOfInertia kArmMomentOfInertia = Units.KilogramSquareMeters.of(0.3666671254);
     public static LinearSystem<N2, N1, N2> kArmPlant = LinearSystemId.createSingleJointedArmSystem(kKrakenX60Foc, kArmMomentOfInertia.baseUnitMagnitude(), kArmGearing);
     public static boolean kSimulateGravity = true;
+   
+   
+    public static class IN_pivotConfig {
+        public static final double SENSOR_TO_MECHANISM_RATIO = 1;
+        public static final double ROTOR_TO_SENSOR_RATIO = 26.4;
+        public record ProfileConstraints(double crusieVelocityRadPerSec, double accelerationRadPerSec2) {};
+        public static final double MM_CRUISE_VELOCITY = 2 * Math.PI;
+        public static final double MM_ACCELERATION = (1 * Math.PI);
+        public static final double PIVOT_MAGNET_OFFSET = 0; //FIXME: Update with correct value
+        public static ProfileConstraints MM_PROFILE_CONSTRAINTS = new ProfileConstraints(MM_CRUISE_VELOCITY, MM_ACCELERATION);
+        public static double kG = 0;
+        public static double kP = 0.1;
+        public static double kI = 0;
+        public static double kD = 0;
+    
+    }
 }
 

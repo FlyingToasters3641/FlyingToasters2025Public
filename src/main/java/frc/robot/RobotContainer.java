@@ -140,7 +140,7 @@ public class RobotContainer {
                         new VisionIOPhotonVisionSim(
                                 camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
                 elevator = new Elevator(new ElevatorIOSim());
-                intake = new Intake(new IntakeIOSim());
+                intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance()));
                 scorer = new Scorer(new ScorerIOSim());
                 break;
             default:
@@ -214,7 +214,8 @@ public class RobotContainer {
         controller.a().whileTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30))).onFalse(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
         controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
-    }
+        controller.leftBumper().whileTrue(IntakeCommands.IN_runSetangle(intake, Degrees.of(15))).onFalse(IntakeCommands.IN_runSetangle(intake, Degrees.of(0)));
+}
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -261,7 +262,7 @@ public class RobotContainer {
        
         Rotation3d scorerRotation3d = new Rotation3d(scorer.getCSAngle().in(Radians),0,0);
 
-        Logger.recordOutput("Odometry/RobotComponentPoses", new Pose3d[] {new Pose3d(Constants.scorerPoseOffset.getX()+elevator3d.getX(),Constants.scorerPoseOffset.getY()+elevator3d.getY(),Constants.scorerPoseOffset.getZ()+elevator3d.getZ(),Constants.scorerPoseOffset.getRotation().rotateBy(scorerRotation3d)), new Pose3d(Constants.scorerRollerPoseOffset.getX()+elevator3d.getX(), Constants.scorerRollerPoseOffset.getY()+elevator3d.getY(), Constants.scorerRollerPoseOffset.getZ()+elevator3d.getZ(), Constants.scorerRollerPoseOffset.getRotation().rotateBy(scorerRotation3d)), Constants.climberPoseOffset, Constants.coralIntakePoseOffset, Constants.coralIntakeRollerPoseOffset, Constants.elevatorOneIntakeOffset.plus(elevator3d), Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d), new Pose3d(Constants.intakePoseOffset.getX(), Constants.intakePoseOffset.getY(), Constants.intakePoseOffset.getZ(), Constants.intakeRollersPoseOffset.getRotation().rotateBy(intakeRotation3d)), new Pose3D(Constants.intakeRollersPoseOffset.getX(), Constants.intakeRollersPoseOffset.getY(), Constants.intakeRollersPoseOffset.getZ(), Constants.intakeRollersPoseOffset.getRotation().rotateBy(scorerRotation3d))});
+        Logger.recordOutput("Odometry/RobotComponentPoses", new Pose3d[] {new Pose3d(Constants.scorerPoseOffset.getX()+elevator3d.getX(),Constants.scorerPoseOffset.getY()+elevator3d.getY(),Constants.scorerPoseOffset.getZ()+elevator3d.getZ(),Constants.scorerPoseOffset.getRotation().rotateBy(scorerRotation3d)), new Pose3d(Constants.scorerRollerPoseOffset.getX()+elevator3d.getX(), Constants.scorerRollerPoseOffset.getY()+elevator3d.getY(), Constants.scorerRollerPoseOffset.getZ()+elevator3d.getZ(), Constants.scorerRollerPoseOffset.getRotation().rotateBy(scorerRotation3d)), Constants.climberPoseOffset, Constants.coralIntakePoseOffset, Constants.coralIntakeRollerPoseOffset, Constants.elevatorOneIntakeOffset.plus(elevator3d), Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d), new Pose3d(Constants.intakePoseOffset.getX(), Constants.intakePoseOffset.getY(), Constants.intakePoseOffset.getZ(), Constants.intakeRollersPoseOffset.getRotation().rotateBy(intakeRotation3d)), new Pose3d(Constants.intakeRollersPoseOffset.getX(), Constants.intakeRollersPoseOffset.getY(), Constants.intakeRollersPoseOffset.getZ(), Constants.intakeRollersPoseOffset.getRotation().rotateBy(scorerRotation3d))});
         
     }
 }

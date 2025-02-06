@@ -49,8 +49,8 @@ public class Intake extends SubsystemBase {
     }
 
     
-    public void IN_setRoller(double speed) {
-        io.IN_setRoller(speed);
+    public void IN_setRoller(boolean running) {
+        io.IN_setRoller(running);
     }
     public Angle getINAngle() {
         return(this.inputs.IN_angle);

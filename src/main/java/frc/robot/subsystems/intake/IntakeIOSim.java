@@ -34,7 +34,8 @@ public class IntakeIOSim implements IntakeIO {
 
         
     private MutVoltage IN_appliedVolts = Volts.mutable(0);
-    
+    private final IntakeSimulation intakeSimulation;
+    private final SimulatedArena simulatedArena;
 
     private final ProfiledPIDController IN_PID_Controller = new ProfiledPIDController(IntakeConstants.IN_PROFILED_PID_CONSTANTS.kP, IntakeConstants.IN_PROFILED_PID_CONSTANTS.kI, IntakeConstants.IN_PROFILED_PID_CONSTANTS.kD, IntakeConstants.TRAPEZOID_PROFILE_CONSTRAINTS);
 
@@ -54,15 +55,15 @@ public class IntakeIOSim implements IntakeIO {
 
         
     
-    public IntakeIOSim(){
-        // this.intakeSimulation = IntakeSimulation.OverTheBumperIntake(
-        //         "Algae",
-        //         driveTrainSimulation,
-        //         Inches.of(19.0),
-        //         Inches.of(19.0),
-        //         IntakeSimulation.IntakeSide.BACK,
-        //         1);
-        // this.simulatedArena = simulatedArena;
+    public IntakeIOSim(AbstractDriveTrainSimulation driveTrainSimulation, SimulatedArena simulatedArena){
+        this.intakeSimulation = IntakeSimulation.OverTheBumperIntake(
+                "Algae",
+                driveTrainSimulation,
+                Inches.of(19.0),
+                Inches.of(19.0),
+                IntakeSimulation.IntakeSide.BACK,
+                1);
+        this.simulatedArena = simulatedArena;
        IN_TalonFXOneSim.setRawRotorPosition(IN_ARM_sim.getAngleRads() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
 		IN_TalonFXOneSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
 
@@ -77,7 +78,7 @@ public class IntakeIOSim implements IntakeIO {
             inputs.IN_angle.mut_replace(IN_ARM_sim.getAngleRads(), Radians);
             inputs.IN_voltage.mut_replace(appliedVoltage, Volts);
             inputs.IN_setpointAngle.mut_replace(IN_PID_Controller.getSetpoint().position, Radians);
-        
+    
 
             IN_TalonFXOneSim.setRawRotorPosition(IN_ARM_sim.getAngleRads() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
 		IN_TalonFXOneSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
@@ -85,10 +86,10 @@ public class IntakeIOSim implements IntakeIO {
         IN_TalonFXTwoSim.setRawRotorPosition(IN_ARM_sim.getAngleRads() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
         IN_TalonFXTwoSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
 
-            // IN_TalonFXOneSim.setRawRotorPosition(IN_ARM_sim.getAngleRads());
-            // IN_TalonFXTwoSim.setRawRotorPosition(IN_ARM_sim.getAngleRads());
-            // IN_TalonFXOneSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec());
-            // IN_TalonFXTwoSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec());
+            IN_TalonFXOneSim.setRawRotorPosition(IN_ARM_sim.getAngleRads());
+            IN_TalonFXTwoSim.setRawRotorPosition(IN_ARM_sim.getAngleRads());
+            IN_TalonFXOneSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec());
+            IN_TalonFXTwoSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec());
             
         }
     
@@ -105,15 +106,15 @@ public class IntakeIOSim implements IntakeIO {
             IN_ARM_sim.setInputVoltage(appliedVoltage);
         }
 
-        // @Override
-        // public void IN_setRunning(boolean runIntake) {
-        //     Logger.recordOutput("Intake/Running", runIntake);
-        //     if(runIntake){
-        //         intakeSimulation.startIntake();
-        //     } else {
-        //         intakeSimulation.stopIntake();
-        //     }
-        // }
+        @Override
+        public void IN_setRunning(boolean runIntake) {
+            Logger.recordOutput("Intake/Running", runIntake);
+            if(runIntake){
+                intakeSimulation.startIntake();
+            } else {
+                intakeSimulation.stopIntake();
+            }
+        }
         
         @Override
         public void IN_setPID(double p, double i, double d) {
