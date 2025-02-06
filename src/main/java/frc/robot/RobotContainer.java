@@ -215,10 +215,8 @@ public class RobotContainer {
 
         controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute().andThen(() -> debugger.printTreeSummary()));
         controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
-        controller.y().toggleOnTrue(new DrivingTree(blackboard, Constants.drivingPoses).execute());
-        controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(26.5))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
-        controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(52.5))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
-        controller.a().whileTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30))).onFalse(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
+        controller.y().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(11.79, 3.93, new Rotation2d()))));
+        controller.b().whileTrue(new PathFindToPose(drive, () -> Constants.testPose, Constants.speedMultiplier, Constants.goalVelocity));
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
         controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
     }

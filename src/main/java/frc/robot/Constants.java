@@ -52,10 +52,12 @@ public final class Constants {
     public static final Pose2d reefBranchK = new Pose2d(4.0, 5.22, new Rotation2d(Units.degreesToRadians(-60)));
     public static final Pose2d reefBranchL = new Pose2d(3.72, 5.04, new Rotation2d(Units.degreesToRadians(-60)));
 
+    public static final Pose2d testPose = new Pose2d(10.33, 1.18, new Rotation2d());
+
     public static final ArrayList<Pose2d> drivingPoses = new ArrayList<Pose2d>(Arrays.asList(reefBranchA, humanPlayerStationRight, reefBranchH));
 
-    public static final int goalVelocity = 1;
-    public static final int speedMultiplier = 3;
+    public static final int goalVelocity = 0;
+    public static final int speedMultiplier = 9;
 
     public static final Pose3d scorerPoseOffset = new Pose3d(0, -0.305, 0.937, new Rotation3d(0, 0, 0));
     public static final Pose3d scorerRollerPoseOffset = new Pose3d(0, -0.305, 0.937, new Rotation3d(0, 0, 0));//0, -0.102, 0.725
