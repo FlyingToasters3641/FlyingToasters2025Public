@@ -67,6 +67,13 @@ public final class Constants {
 
     public static final PathPlannerPath testPath = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0, new Rotation2d(Math.PI)));
 
+    public static final Pose3d algaeArmOffset = new Pose3d(0, -0.305, 0.937, new Rotation3d(0, 0, 0));
+    public static final Pose3d algaeArmRollerOffset = new Pose3d(0, -0.102, 0.725, new Rotation3d(0, 0, 0));
+    public static final Pose3d climberOffset = new Pose3d(0.311, 0, 0.273, new Rotation3d(0, 0, 0));
+    public static final Pose3d coralIntakeOffset = new Pose3d(0, 0.254, 0.210, new Rotation3d(0, 0, 0));
+    public static final Pose3d coralIntakeRollerOffset = new Pose3d(0, 0.4, 0.738, new Rotation3d(0, 0, 0));
+    public static final Pose3d elevatorInnerOffset = new Pose3d(0, -0.247, 0.081, new Rotation3d(0, 0, 0));
+    public static final Pose3d elevatorOuterOffset = new Pose3d(0, -0.3267, 0.070, new Rotation3d(0, 0, 0));
 
     public static final ArrayList<Pose2d> drivingPoses = new ArrayList<Pose2d>(Arrays.asList(reefBranchA, humanPlayerStationRight, reefBranchH));
 

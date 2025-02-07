@@ -13,9 +13,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.util.LocalADStarAK;
 
 import java.util.ArrayList;
@@ -122,6 +125,9 @@ public class Robot extends LoggedRobot {
 
         // Return to normal thread priority
         Threads.setCurrentThreadPriority(false, 10);
+
+        Logger.recordOutput("Odometry/ZeroedComponentPoses", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()});
+
     }
 
     /** This function is called once when the robot is disabled. */
