@@ -19,6 +19,10 @@ public class ElevatorCommands {
         return Commands.run(() -> m_Elevator.ELStop());
     }
 
+    public static Command EL_goToRest (Elevator m_Elevator){
+        return Commands.run(() -> m_Elevator.EL_setpoint = Inches.of(ElevatorConstants.EL_REST_HEIGHT));
+    }
+
     public static Command EL_goToL1 (Elevator m_Elevator){
         return Commands.run(() -> m_Elevator.EL_setpoint = Inches.of(ElevatorConstants.EL_L1_HEIGHT));
     }

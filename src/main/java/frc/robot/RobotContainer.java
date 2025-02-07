@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.CombinedSubsystemCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathFindToPose;
 import frc.robot.generated.TunerConstants;
@@ -216,7 +217,7 @@ public class RobotContainer {
         controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute().andThen(() -> debugger.printTreeSummary()));
         controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
         controller.y().toggleOnTrue(new DrivingTree(blackboard, Constants.drivingPoses).execute());
-        controller.b().whileTrue(ElevatorCommands.EL_goToL1(elevator)).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
+        controller.b().whileTrue(CombinedSubsystemCommands.scoreAtL1(elevator, scorer)).onFalse(CombinedSubsystemCommands.goToRest(elevator, scorer));
         controller.a().whileTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30))).onFalse(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
         controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
