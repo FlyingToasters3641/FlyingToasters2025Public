@@ -21,6 +21,8 @@ import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
+import java.io.IOException;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
@@ -29,6 +31,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -44,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.PathFindToPath;
 import frc.robot.commands.PathFindToPose;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BehaviorTree.BehaviorTreeCommand;
@@ -77,6 +81,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
 /**
@@ -118,8 +123,8 @@ public class RobotContainer {
                         new ModuleIOTalonFX(TunerConstants.BackRight));
                 vision = new Vision(
                         drive,
-                        new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
-                        new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
+                        new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+                        new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1));
                 elevator = new Elevator(new ElevatorIO() {});
                 intake = new Intake(new IntakeIO() {});
                 scorer = new Scorer(new ScorerIO() {});
@@ -174,7 +179,7 @@ public class RobotContainer {
                 "Drive SysId (Quasistatic Reverse)", drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
         autoChooser.addOption("Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
         autoChooser.addOption("Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        
+
 
 
         // Configure the button bindings
@@ -215,7 +220,8 @@ public class RobotContainer {
         controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute().andThen(() -> debugger.printTreeSummary()));
         controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
         controller.y().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(11.79, 3.93, new Rotation2d()))));
-        controller.b().whileTrue(new PathFindToPose(drive, () -> Constants.testPose, Constants.speedMultiplier, Constants.goalVelocity));
+        controller.b().whileTrue(new PathFindToPose(drive, () -> Constants.testPose, Constants.goalVelocity));
+        controller.x().whileTrue(new PathFindToPath(drive, () -> Constants.testPath));
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
         controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
     }
