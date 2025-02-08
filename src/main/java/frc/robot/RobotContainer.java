@@ -221,8 +221,7 @@ public class RobotContainer {
         controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute());
         controller.leftBumper().onTrue(Commands.runOnce(() -> addToStack()));
         controller.y().toggleOnTrue(new ControlTree(blackboard).execute());
-        controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(15))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
-        controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
+        controller.x().onTrue(Commands.runOnce(() -> switchIntakeStateSim()));
         controller.a().whileTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30))).onFalse(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
         controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
@@ -235,6 +234,27 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return autoChooser.get();
+    }
+
+    //turns the tree on and off using the boolean that checks for the infinite loop
+    public void switchTree() {
+        if (blackboard.getBoolean("treeOn") == true) {
+                blackboard.set("treeOn", false); 
+        } else {
+                blackboard.set("treeOn", true);
+        }
+    }
+
+    //FOR SIMULATION ONLY; this method switches the states if the robot has an intaked piece or not, used for testing
+    public void switchIntakeStateSim() {
+        if (!blackboard.getBoolean("hasCoral") && !blackboard.getBoolean("hasAlgae")) {
+                blackboard.set("hasCoral", true);
+                blackboard.set("hasAlgae", true);
+        } else {
+                blackboard.set("hasCoral", false);
+                blackboard.set("hasAlgae", false);
+        }
+        Logger.recordOutput("BehaviorTree/hasCoral", blackboard.getBoolean("hasCoral"));
     }
 
     public void getTreeTarget() {
