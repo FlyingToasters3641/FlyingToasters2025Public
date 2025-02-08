@@ -17,7 +17,7 @@ public class ElevatorConstants {
 
     public static final Constraints TRAPEZOID_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(0, 0);
     
-    //Random value ;)
+  
     public static final Distance METERS_PER_ROTATION = Meters.of(1); 
 
     public static class FFConstants{
@@ -45,10 +45,17 @@ public class ElevatorConstants {
     public static final boolean EL_SIMULATE_GRAVITY = true;
     public static final double EL_STARTING_HEIGHT = Inches.of(10.25).in(Meters);
 
-	public static final PIDConstants EL_PROFILED_PID_CONSTANTS = new PIDConstants(0.8, 0, 0.2, 0);
+	public static final PIDConstants EL_PROFILED_PID_CONSTANTS = new PIDConstants(0.625, 0, 0, 0.05);
 
     public static final FFConstants EL_FF_CONSTANTS = new FFConstants(0, 0, 0, 0);
 
+
+    public static final double EL_REST_HEIGHT = 0;
+    public static final double EL_L1_HEIGHT = 4; //ALL OF THESE ARE AUTOMATICALLY TURNED INTO INCHES BTW ;)
+    public static final double EL_L2_HEIGHT = 18;
+    public static final double EL_L3_HEIGHT = 34;
+    public static final double EL_L4_HEIGHT = 40;
+    public static final double EL_NET_HEIGHT = 52.5;
     
 
 

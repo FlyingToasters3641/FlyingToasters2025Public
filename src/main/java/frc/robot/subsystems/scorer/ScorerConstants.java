@@ -21,7 +21,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 public class ScorerConstants {
 
     public static final Constraints TRAPEZOID_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(0, 0);;
-    public static final PIDConstants IN_PROFILED_PID_CONSTANTS = new PIDConstants(0.8, 0, 0, 0);
+    public static final PIDConstants IN_PROFILED_PID_CONSTANTS = new PIDConstants(0.8, 0, 0.01, 0);
     public static double IDLE = 0.0;
     
     public static final DCMotor kKrakenX60Foc = DCMotor.getKrakenX60Foc(2);

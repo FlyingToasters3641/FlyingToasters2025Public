@@ -19,4 +19,28 @@ public class ElevatorCommands {
         return Commands.run(() -> m_Elevator.ELStop());
     }
 
+    public static Command EL_goToRest (Elevator m_Elevator){
+        return Commands.run(() -> m_Elevator.EL_setpoint = Inches.of(ElevatorConstants.EL_REST_HEIGHT));
+    }
+
+    public static Command EL_goToL1 (Elevator m_Elevator){
+        return Commands.run(() -> m_Elevator.EL_setpoint = Inches.of(ElevatorConstants.EL_L1_HEIGHT));
+    }
+
+    public static Command EL_goToL2 (Elevator m_Elevator){
+        return Commands.run(() -> m_Elevator.EL_setpoint = Inches.of(ElevatorConstants.EL_L2_HEIGHT));
+    }
+
+    public static Command EL_goToL3 (Elevator m_Elevator){
+        return Commands.run(() -> m_Elevator.EL_setpoint = Inches.of(ElevatorConstants.EL_L3_HEIGHT));
+    }
+
+    public static Command EL_goToL4 (Elevator m_Elevator){
+        return Commands.run(() -> m_Elevator.EL_setpoint = Inches.of(ElevatorConstants.EL_L4_HEIGHT));
+    }
+
+    public static Command EL_goToNet (Elevator m_Elevator){
+        return Commands.run(() -> m_Elevator.EL_setpoint = Inches.of(ElevatorConstants.EL_NET_HEIGHT));
+    }
+
 }
