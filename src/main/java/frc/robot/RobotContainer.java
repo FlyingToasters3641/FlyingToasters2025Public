@@ -188,6 +188,7 @@ public class RobotContainer {
         targetChooser.addOption("Processor", Targets.PROCESSOR);
         targetChooser.addOption("G1", Targets.G1);
         targetChooser.addOption("L1", Targets.L1);
+        targetChooser.addOption("test", Targets.TEST);
 
 
         // Configure the button bindings
@@ -227,8 +228,7 @@ public class RobotContainer {
 
         controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
         controller.b().whileTrue(new PathFindToPose(drive, () -> Constants.testPose, Constants.goalVelocity));
-        controller.x().whileTrue(new PathFindToPath(drive, () -> Constants.testPath));
-        controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute());
+        controller.x().onTrue(Commands.runOnce(() -> switchIntakeStateSim()));
         controller.leftBumper().onTrue(Commands.runOnce(() -> addToStack()));
         controller.y().toggleOnTrue(new ControlTree(blackboard).execute());
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
@@ -244,6 +244,17 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return autoChooser.get();
+    }
+
+    public void switchIntakeStateSim() {
+        if (!blackboard.getBoolean("hasCoral") && !blackboard.getBoolean("hasAlgae")) {
+                blackboard.set("hasCoral", true);
+                blackboard.set("hasAlgae", true);
+        } else {
+                blackboard.set("hasCoral", false);
+                blackboard.set("hasAlgae", false);
+        }
+        Logger.recordOutput("hasCoral", blackboard.getBoolean("hasCoral"));
     }
 
     public void getTreeTarget() {

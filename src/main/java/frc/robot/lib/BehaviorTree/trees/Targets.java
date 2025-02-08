@@ -51,5 +51,7 @@ public enum Targets {
     L2,
     L3,
     L4,
+    TEST,
+    TEST2,
     NONE
 }

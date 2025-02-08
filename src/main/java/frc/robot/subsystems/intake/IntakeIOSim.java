@@ -56,13 +56,6 @@ public class IntakeIOSim implements IntakeIO {
         public void updateInputs(IntakeIOInputs inputs) {
             IN_ARM_sim.update(.02);
             Logger.recordOutput("Intake/GamepieceCount", intakeSimulation.getGamePiecesAmount());
-            if (intakeSimulation.getGamePiecesAmount() > 0) {
-                blackboard.set("hasCoral", true);
-                blackboard.set("hasAlgae", true);
-            } else {
-                blackboard.set("hasCoral", false);
-                blackboard.set("hasAlgae", false);
-            }
             
         }
     

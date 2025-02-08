@@ -41,6 +41,9 @@ public final class Constants {
         Units.degreesToRadians(540), Units.degreesToRadians(720));
     
     public static final Pose2d targetPose = new Pose2d(5.8, 4, new Rotation2d(Math.PI));
+    public static final Pose2d testPose = new Pose2d(11.07, 2.21, new Rotation2d());
+    public static final Pose2d testPose1 = new Pose2d(11.4, 5.78, new Rotation2d());
+
     public static final Pose2d humanPlayerStationRight = new Pose2d(1.67, 0.65, new Rotation2d(Units.degreesToRadians(54)));
     public static final Pose2d humanPlayerStationLeft = new Pose2d(1.62, 7.36, new Rotation2d(Units.degreesToRadians(-54)));
     public static final Pose2d processorPose = new Pose2d(6.19, 0.45, new Rotation2d(Units.degreesToRadians(90)));
@@ -58,7 +61,7 @@ public final class Constants {
     public static final Pose2d reefBranchK = new Pose2d(4.0, 5.22, new Rotation2d(Units.degreesToRadians(-60)));
     public static final Pose2d reefBranchL = new Pose2d(3.72, 5.04, new Rotation2d(Units.degreesToRadians(-60)));
 
-    public static final Pose2d testPose = new Pose2d(10.33, 1.18, new Rotation2d());
+    public static final Pose2d lineUpPose = new Pose2d(10.33, 1.18, new Rotation2d());
     //TODO: GOAL END STATE SETS THE HEADING FOR THE HOLONOMIC ROTATION, YOU WIL LHAVE TO FLIP FOR ALLIANCE COLOR
     private static final Pose2d waypoint1 = new Pose2d(6.5, 3.98, new Rotation2d(Math.PI));
     private static final Pose2d waypoint2 = new Pose2d(5.4, 3.98, new Rotation2d(Math.PI));

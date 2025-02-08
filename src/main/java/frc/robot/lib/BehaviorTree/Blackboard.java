@@ -208,6 +208,12 @@ public class Blackboard {
                 case L4:
                     targetPose = Constants.reefBranchL;
                     break;
+                case TEST:
+                    targetPose = Constants.testPose1;
+                    break;
+                case TEST2:
+                    targetPose = Constants.testPose1;
+                    break;
                 case NONE:
                     targetPose = null;
                     break;
