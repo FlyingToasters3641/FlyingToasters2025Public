@@ -1,7 +1,12 @@
 package frc.robot.subsystems.scorer;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.InchesPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import org.ironmaple.simulation.IntakeSimulation;
@@ -13,8 +18,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -25,6 +34,8 @@ public class ScorerIOSim implements ScorerIO {
     private static final TalonFXSimState CS_TalonFXOneSim = new TalonFXSimState(CS_TalonFXOne);
 
     private final ProfiledPIDController CS_PID_Controller = new ProfiledPIDController(ScorerConstants.IN_PROFILED_PID_CONSTANTS.kP, ScorerConstants.IN_PROFILED_PID_CONSTANTS.kI, ScorerConstants.IN_PROFILED_PID_CONSTANTS.kD, ScorerConstants.TRAPEZOID_PROFILE_CONSTRAINTS);
+    private final ArmFeedforward CS_FeedForward = new ArmFeedforward(0, 0, 0, 0);
+
 
     private double appliedVoltage;
 
@@ -60,8 +71,17 @@ public class ScorerIOSim implements ScorerIO {
     
         @Override
         public void CS_runSetpoint(Angle setpoint) {
-            Voltage controllerVoltage = Volts.of(CS_PID_Controller.calculate(CS_ARM_sim.getAngleRads(), setpoint.in(Radians)));
-            CS_runVolts(controllerVoltage);
+
+            Angle currentAngle = Degrees.of(CS_ARM_sim.getAngleRads());
+
+            Angle setpointAngle = Degrees.of(CS_PID_Controller.getSetpoint().position);
+            AngularVelocity setpointVelocity = DegreesPerSecond.of(CS_PID_Controller.getSetpoint().velocity);
+
+            Voltage controllerVoltage = Volts.of(CS_PID_Controller.calculate(currentAngle.in(Radians), setpoint.in(Radians)));
+
+            Voltage feedForwardVoltage = Volts.of(CS_FeedForward.calculate(setpointAngle.in(Radians), setpointVelocity.in(RadiansPerSecond)));            
+
+            CS_runVolts(controllerVoltage.plus(feedForwardVoltage));
         }
     
         @Override

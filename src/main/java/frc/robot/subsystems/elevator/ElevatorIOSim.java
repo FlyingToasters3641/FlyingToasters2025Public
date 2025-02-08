@@ -102,14 +102,11 @@ public class ElevatorIOSim implements ElevatorIO{
     @Override
     public void EL_runSetpoint(Distance position) {
         Distance currentHeight = Meters.of(EL_sim.getPositionMeters());
-        LinearVelocity currentVelocity = MetersPerSecond.of(EL_sim.getVelocityMetersPerSecond());
 
         Voltage controllerVoltage = Volts.of(EL_PID_controller.calculate(currentHeight.in(Inches), position.in(Inches)));
-        Voltage feedForwardVoltage = Volts.of(EL_FeedForward.calculate(currentVelocity.in(InchesPerSecond)));
 
-        Voltage effort = controllerVoltage.plus(feedForwardVoltage);
 
-        EL_runVolts(effort);
+        EL_runVolts(controllerVoltage);
     }
 
     //Limits volts to go between a certain high and low value
