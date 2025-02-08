@@ -19,6 +19,12 @@ public abstract class BehaviorTreeNode {
         return status;
     }
 
+    public void start() {
+        initialize();
+    }
+
+    public abstract void initialize();
+
     public void reset() {
         // Do nothing by default
     }

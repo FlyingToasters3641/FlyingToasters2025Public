@@ -14,6 +14,7 @@ public class BehaviorTreeCommand extends Command {
     @Override
     public void initialize() {
         isCompleted = false;
+        root.start();
     }
 
     @Override

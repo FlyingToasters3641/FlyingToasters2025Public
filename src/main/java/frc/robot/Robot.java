@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.util.LocalADStarAK;
 
@@ -128,6 +129,21 @@ public class Robot extends LoggedRobot {
 
         Logger.recordOutput("Odometry/ZeroedComponentPoses", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()});
 
+
+        if ((RobotContainer.blackboard.get("target")) != RobotContainer.stack.getLastElement() && RobotContainer.stack.isNotEmpty()) {
+            RobotContainer.blackboard.set("hasTarget", true);
+            RobotContainer.blackboard.set("target", RobotContainer.stack.getLastElement());
+            RobotContainer.blackboard.set("isDone", false);
+        } else if(RobotContainer.stack.isEmpty()) {
+            RobotContainer.blackboard.set("hasTarget", false);
+            RobotContainer.blackboard.set("target", Targets.NONE);
+        }
+        
+        Logger.recordOutput("BehaviorTree/theSTACK", RobotContainer.stack.getLastElement());
+
+        if ((RobotContainer.blackboard.getBoolean("isDone") == true)) {
+            RobotContainer.stack.removeLastElement();
+        }
     }
 
     /** This function is called once when the robot is disabled. */

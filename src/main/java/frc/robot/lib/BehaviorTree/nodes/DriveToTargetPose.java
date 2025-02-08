@@ -8,28 +8,33 @@ import frc.robot.Constants;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.lib.BehaviorTree.ExecutionStatus;
 
-public class DriveToPose extends BehaviorTreeNode {
+public class DriveToTargetPose extends BehaviorTreeNode {
     Command driveToCommand;
     private Pose2d pose;
 
-    public DriveToPose(Blackboard blackboard, Pose2d pose) {
+    public DriveToTargetPose(Blackboard blackboard) {
         super(blackboard);
-        this.pose = pose;
     }
 
     @Override
     public void initialize() {
-        
+        if ((blackboard.getTargetPose("target")) != null) {
+            pose = blackboard.getTargetPose("target");
+            driveToCommand = AutoBuilder.pathfindToPose(pose, Constants.constraints);
+            } else {
+                driveToCommand = null;
+            }
     }
 
     @Override
     public ExecutionStatus run() {
-        driveToCommand = AutoBuilder.pathfindToPose(pose, Constants.constraints);
+        
         if(!driveToCommand.isScheduled() && driveToCommand != null) {
             driveToCommand.schedule();
         }
-
+    
         if (driveToCommand.isFinished()) {
+            blackboard.set("isDone", true);
             return ExecutionStatus.SUCCESS;
         }
 

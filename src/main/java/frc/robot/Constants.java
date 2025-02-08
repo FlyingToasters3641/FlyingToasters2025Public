@@ -43,6 +43,8 @@ public final class Constants {
     public static final Pose2d targetPose = new Pose2d(5.8, 4, new Rotation2d(Math.PI));
     public static final Pose2d humanPlayerStationRight = new Pose2d(1.67, 0.65, new Rotation2d(Units.degreesToRadians(54)));
     public static final Pose2d humanPlayerStationLeft = new Pose2d(1.62, 7.36, new Rotation2d(Units.degreesToRadians(-54)));
+    public static final Pose2d processorPose = new Pose2d(6.19, 0.45, new Rotation2d(Units.degreesToRadians(90)));
+    public static final Pose2d netPose = new Pose2d(7.13, 5.83, new Rotation2d(Math.PI));
     public static final Pose2d reefBranchA = new Pose2d(3.27, 4.16, new Rotation2d());
     public static final Pose2d reefBranchB = new Pose2d(3.27, 3.85, new Rotation2d());
     public static final Pose2d reefBranchC = new Pose2d(3.75, 3.05, new Rotation2d(Units.degreesToRadians(60)));

@@ -46,10 +46,15 @@ import frc.robot.commands.PathFindToPose;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BehaviorTree.BehaviorTreeDebugger;
 import frc.robot.lib.BehaviorTree.Blackboard;
+import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
+import frc.robot.lib.BehaviorTree.trees.ControlTree;
+import frc.robot.lib.BehaviorTree.trees.DrivingTree;
 import frc.robot.lib.BehaviorTree.trees.ExampleTree;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.lib.BehaviorTree.trees.Stack;
+import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -87,13 +92,17 @@ public class RobotContainer {
     private final Scorer scorer;
     private final Climber climber;
     private SwerveDriveSimulation driveSimulation = null;
-    public Blackboard blackboard = new Blackboard();
+    public static Blackboard blackboard = new Blackboard();
+    
+    public static Stack stack = new Stack(blackboard);
 
     // Controller
     private final CommandXboxController controller = new CommandXboxController(0);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
+    //Choose a target through dhasboard
+    private final LoggedDashboardChooser<Targets> targetChooser;
 
     //starting Auto Pose for simulation
     private final Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
@@ -143,7 +152,7 @@ public class RobotContainer {
                         new VisionIOPhotonVisionSim(
                                 camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
                 elevator = new Elevator(new ElevatorIOSim());
-                intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance()));
+                intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance(), blackboard));
                 scorer = new Scorer(new ScorerIOSim());
                 climber = new Climber(new ClimberIO() {});
                 break;
@@ -173,6 +182,12 @@ public class RobotContainer {
         autoChooser.addOption("Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
         autoChooser.addOption("Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+
+        targetChooser = new LoggedDashboardChooser<>("Target Choices");
+        targetChooser.addOption("A1", Targets.A1);
+        targetChooser.addOption("Processor", Targets.PROCESSOR);
+        targetChooser.addOption("G1", Targets.G1);
+        targetChooser.addOption("L1", Targets.L1);
 
 
         // Configure the button bindings
@@ -210,11 +225,12 @@ public class RobotContainer {
 
         //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
 
-        controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute().andThen(() -> debugger.printTreeSummary()));
         controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
-        controller.y().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(11.79, 3.93, new Rotation2d()))));
         controller.b().whileTrue(new PathFindToPose(drive, () -> Constants.testPose, Constants.goalVelocity));
         controller.x().whileTrue(new PathFindToPath(drive, () -> Constants.testPath));
+        controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute());
+        controller.leftBumper().onTrue(Commands.runOnce(() -> addToStack()));
+        controller.y().toggleOnTrue(new ControlTree(blackboard).execute());
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
         controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
         controller.povDown().onTrue(ClimberCommands.CL_Extend(climber));
@@ -228,6 +244,19 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return autoChooser.get();
+    }
+
+    public void getTreeTarget() {
+        Targets targetValue = targetChooser.get();
+        if (targetValue != null) {
+        blackboard.set("target", targetValue);
+        } else {
+        }
+    }
+
+    public void addToStack() {
+        Targets targetValue = targetChooser.get();
+        stack.add(targetValue);
     }
 
     public void resetSimulation() {
