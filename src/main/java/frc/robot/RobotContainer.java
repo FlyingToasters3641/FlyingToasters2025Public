@@ -73,196 +73,263 @@ import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
- * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
- * Instead, the structure of the robot (including subsystems, commands, and button mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a "declarative" paradigm, very
+ * little robot logic should actually be handled in the {@link Robot} periodic
+ * methods (other than the scheduler calls).
+ * Instead, the structure of the robot (including subsystems, commands, and
+ * button mappings) should be declared here.
  */
 public class RobotContainer {
-    // Subsystems
-    private final Vision vision;
-    private final Drive drive;
-    private final Elevator elevator;
-    private final Intake intake;
-    private final Scorer scorer;
-    private SwerveDriveSimulation driveSimulation = null;
-    public Blackboard blackboard = new Blackboard();
+        // Subsystems
+        private final Vision vision;
+        private final Drive drive;
+        private final Elevator elevator;
+        private final Intake intake;
+        private final Scorer scorer;
+        private SwerveDriveSimulation driveSimulation = null;
+        public Blackboard blackboard = new Blackboard();
 
-    // Controller
-    private final CommandXboxController controller = new CommandXboxController(0);
+        // Controller
+        private final CommandXboxController controller = new CommandXboxController(0);
 
-    // Dashboard inputs
-    private final LoggedDashboardChooser<Command> autoChooser;
+        // Dashboard inputs
+        private final LoggedDashboardChooser<Command> autoChooser;
 
-    //starting Auto Pose for simulation
-    private final Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
+        // starting Auto Pose for simulation
+        private final Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
 
+        /**
+         * The container for the robot. Contains subsystems, OI devices, and commands.
+         */
+        public RobotContainer() {
 
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainer() {
+                switch (Constants.currentMode) {
+                        case REAL:
+                                // Real robot, instantiate hardware IO implementations
+                                drive = new Drive(
+                                                new GyroIOPigeon2(),
+                                                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                                                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                                                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                                                new ModuleIOTalonFX(TunerConstants.BackRight));
+                                vision = new Vision(
+                                                drive,
+                                                new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
+                                                new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
+                                elevator = new Elevator(new ElevatorIO() {
+                                });
+                                intake = new Intake(new IntakeIO() {
+                                });
+                                scorer = new Scorer(new ScorerIO() {
+                                });
+                                break;
 
-        switch (Constants.currentMode) {
-            case REAL:
-                // Real robot, instantiate hardware IO implementations
-                drive = new Drive(
-                        new GyroIOPigeon2(),
-                        new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFX(TunerConstants.FrontRight),
-                        new ModuleIOTalonFX(TunerConstants.BackLeft),
-                        new ModuleIOTalonFX(TunerConstants.BackRight));
-                vision = new Vision(
-                        drive,
-                        new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
-                        new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
-                elevator = new Elevator(new ElevatorIO() {});
-                intake = new Intake(new IntakeIO() {});
-                scorer = new Scorer(new ScorerIO() {});
-                break;
-                       
-            case SIM:
-                // Sim robot, instantiate physics sim IO implementations
-                driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, (startingAutoPose));
-                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
-                Logger.recordOutput("FieldSimulation/Algae",
-                                SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
-                Logger.recordOutput("FieldSimulation/Coral",
-                                SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-                drive = new Drive(
-                        new GyroIOSim(driveSimulation.getGyroSimulation()),
-                        new ModuleIOSim(driveSimulation.getModules()[0]),
-                        new ModuleIOSim(driveSimulation.getModules()[1]),
-                        new ModuleIOSim(driveSimulation.getModules()[2]),
-                        new ModuleIOSim(driveSimulation.getModules()[3]));
+                        case SIM:
+                                // Sim robot, instantiate physics sim IO implementations
+                                driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, (startingAutoPose));
+                                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                                Logger.recordOutput("FieldSimulation/Algae",
+                                                SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+                                Logger.recordOutput("FieldSimulation/Coral",
+                                                SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
+                                drive = new Drive(
+                                                new GyroIOSim(driveSimulation.getGyroSimulation()),
+                                                new ModuleIOSim(driveSimulation.getModules()[0]),
+                                                new ModuleIOSim(driveSimulation.getModules()[1]),
+                                                new ModuleIOSim(driveSimulation.getModules()[2]),
+                                                new ModuleIOSim(driveSimulation.getModules()[3]));
 
-                vision = new Vision(
-                        drive,
-                        new VisionIOPhotonVisionSim(
-                                camera0Name, robotToCamera0, driveSimulation::getSimulatedDriveTrainPose),
-                        new VisionIOPhotonVisionSim(
-                                camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose));
-                elevator = new Elevator(new ElevatorIOSim());
-                intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance()));
-                scorer = new Scorer(new ScorerIOSim());
-                break;
-            default:
-                // Replayed robot, disable IO implementations
-                drive = new Drive(
-                        new GyroIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {}, new ModuleIO() {});
-                vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
-                elevator = new Elevator(new ElevatorIO() {});
-                intake = new Intake(new IntakeIO() {});
-                scorer = new Scorer(new ScorerIO() {});
-                break;
+                                vision = new Vision(
+                                                drive,
+                                                new VisionIOPhotonVisionSim(
+                                                                camera0Name, robotToCamera0,
+                                                                driveSimulation::getSimulatedDriveTrainPose),
+                                                new VisionIOPhotonVisionSim(
+                                                                camera1Name, robotToCamera1,
+                                                                driveSimulation::getSimulatedDriveTrainPose));
+                                elevator = new Elevator(new ElevatorIOSim());
+                                intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance()));
+                                scorer = new Scorer(new ScorerIOSim());
+                                break;
+                        default:
+                                // Replayed robot, disable IO implementations
+                                drive = new Drive(
+                                                new GyroIO() {
+                                                }, new ModuleIO() {
+                                                }, new ModuleIO() {
+                                                }, new ModuleIO() {
+                                                }, new ModuleIO() {
+                                                });
+                                vision = new Vision(drive, new VisionIO() {
+                                }, new VisionIO() {
+                                });
+                                elevator = new Elevator(new ElevatorIO() {
+                                });
+                                intake = new Intake(new IntakeIO() {
+                                });
+                                scorer = new Scorer(new ScorerIO() {
+                                });
+                                break;
+                }
+
+                autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+                // Set up auto routines
+
+                // Set up SysId routines
+
+                autoChooser.addOption("Drive Wheel Radius Characterization",
+                                DriveCommands.wheelRadiusCharacterization(drive));
+                autoChooser.addOption("Drive Simple FF Characterization",
+                                DriveCommands.feedforwardCharacterization(drive));
+                autoChooser.addOption(
+                                "Drive SysId (Quasistatic Forward)",
+                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+                autoChooser.addOption(
+                                "Drive SysId (Quasistatic Reverse)",
+                                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+                autoChooser.addOption("Drive SysId (Dynamic Forward)",
+                                drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+                autoChooser.addOption("Drive SysId (Dynamic Reverse)",
+                                drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+                autoChooser.addOption("testAuto", new PathPlannerAuto("testAuto"));
+                autoChooser.addOption("testAuto2", new PathPlannerAuto("testAuto2"));
+
+                // Configure the button bindings
+                configureButtonBindings();
         }
 
-        autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-        // Set up auto routines
+        /**
+         * Use this method to define your button->command mappings. Buttons can be
+         * created by instantiating a
+         * {@link GenericHID} or one of its subclasses
+         * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}),
+         * and then passing it to a
+         * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+         */
+        private void configureButtonBindings() {
+                BehaviorTreeDebugger debugger = BehaviorTreeDebugger.getInstance();
+                debugger.enableLogging(true); // Enable debugging
+                // Default command, normal field-relative drive
+                drive.setDefaultCommand(DriveCommands.joystickDrive(
+                                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(),
+                                () -> -controller.getRightX()));
 
-        // Set up SysId routines
-        
-        autoChooser.addOption("Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-        autoChooser.addOption("Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-        autoChooser.addOption(
-                "Drive SysId (Quasistatic Forward)", drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        autoChooser.addOption(
-                "Drive SysId (Quasistatic Reverse)", drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        autoChooser.addOption("Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        autoChooser.addOption("Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        autoChooser.addOption("testAuto", new PathPlannerAuto("testAuto"));
-        autoChooser.addOption("testAuto2", new PathPlannerAuto("testAuto2"));
+                // Lock to 0 when A button is held
+                // controller
+                // .a()
+                // .whileTrue(DriveCommands.joystickDriveAtAngle(
+                // drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> new
+                // Rotation2d()));
 
+                // TODO: UNCOMMENT THIS WHEN DONE TESTING
+                // Switch to X pattern when X button is pressed
+                controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-        // Configure the button bindings
-        configureButtonBindings();
-    }
+                // Reset gyro / odometry
+                final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
+                                ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
+                                : () -> drive.resetOdometry(
+                                                new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
+                controller.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
-    /**
-     * Use this method to define your button->command mappings. Buttons can be created by instantiating a
-     * {@link GenericHID} or one of its subclasses ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}),
-     * and then passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
-    private void configureButtonBindings() {
-        BehaviorTreeDebugger debugger = BehaviorTreeDebugger.getInstance();
-        debugger.enableLogging(true); // Enable debugging
-        // Default command, normal field-relative drive
-        drive.setDefaultCommand(DriveCommands.joystickDrive(
-                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
+                // Moves the elevator up towards a certain amount of inches. Only used to test
+                // simulation setpoints for now.
 
-        // Lock to 0 when A button is held
-        // controller
-        //         .a()
-        //         .whileTrue(DriveCommands.joystickDriveAtAngle(
-        //                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> new Rotation2d()));
+                controller.rightBumper().toggleOnTrue(
+                                new ExampleTree(blackboard).execute().andThen(() -> debugger.printTreeSummary()));
+                controller.start()
+                                .onTrue(Commands.runOnce(() -> drive.resetOdometry(
+                                                new Pose2d(drive.getPose().getTranslation(), new Rotation2d())))
+                                                .ignoringDisable(true));
+                controller.y().toggleOnTrue(new DrivingTree(blackboard, Constants.drivingPoses).execute());
+                controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(26.5)))
+                                .onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
+                controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(52.5)))
+                                .onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
+                controller.a().whileTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30)))
+                                .onFalse(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
+                controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_intakeCoral(intake, .5)).onFalse(IntakeCommands.IN_intakeCoral(intake, 0));
+                controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_intakeAlgae(intake, .5, true));
+                controller.leftBumper().whileTrue(IntakeCommands.IN_runSetangle(intake, Degrees.of(45))).onFalse(IntakeCommands.IN_runSetangle(intake, Degrees.of(0)));
+        }
 
-        //TODO: UNCOMMENT THIS WHEN DONE TESTING
+        /**
+         * Use this to pass the autonomous command to the main {@link Robot} class.
+         *
+         * @return the command to run in autonomous
+         */
+        public Command getAutonomousCommand() {
+                return autoChooser.get();
+        }
 
-        // Switch to X pattern when X button is pressed
-        controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+        public void resetSimulation() {
+                if (Constants.currentMode != Constants.Mode.SIM)
+                        return;
 
-        // Reset gyro / odometry
-        final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
-                ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
-                : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
-        controller.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
+                driveSimulation.setSimulationWorldPose(startingAutoPose);
+                SimulatedArena.getInstance().resetFieldForAuto();
+        }
 
-        //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
+        // An attempt to automatically update the starting pose of the simulated Auto
+        // *does not work*
+        public Pose2d getAutoStartingPose() {
+                Pose2d autoStartingPose = new PathPlannerAuto("testAuto").getStartingPose();
+                return autoStartingPose;
 
-        controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute().andThen(() -> debugger.printTreeSummary()));
-        controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
-        controller.y().toggleOnTrue(new DrivingTree(blackboard, Constants.drivingPoses).execute());
-        controller.b().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(26.5))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
-        controller.x().whileTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(52.5))).onFalse(ElevatorCommands.EL_setPosition(elevator, Inches.of(0)));
-        controller.a().whileTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30))).onFalse(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
-        controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
-        controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
-        controller.leftBumper().whileTrue(IntakeCommands.IN_runSetangle(intake, Degrees.of(15))).onFalse(IntakeCommands.IN_runSetangle(intake, Degrees.of(0)));
-}
+        }
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
-        return autoChooser.get();
-    }
+        public void displaySimFieldToAdvantageScope() {
+                if (Constants.currentMode != Constants.Mode.SIM)
+                        return;
 
-    public void resetSimulation() {
-        if (Constants.currentMode != Constants.Mode.SIM) return;
+                Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
+                Logger.recordOutput(
+                                "FieldSimulation/Coral",
+                                SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
+                Logger.recordOutput(
+                                "FieldSimulation/Algae",
+                                SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+        }
 
-        driveSimulation.setSimulationWorldPose(startingAutoPose);
-        SimulatedArena.getInstance().resetFieldForAuto();
-    }
+        public void displayComponentPosesToAdvantageScope() {
+                if (Constants.currentMode != Constants.Mode.SIM)
+                        return;
 
-    //An attempt to automatically update the starting pose of the simulated Auto *does not work*
-    public Pose2d getAutoStartingPose() {
-        Pose2d autoStartingPose = new PathPlannerAuto("testAuto").getStartingPose();
-        return autoStartingPose;
+                Distance EL_simPosition = elevator.getELPosition();
 
-    }
+                Transform3d elevator3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition,
+                                new Rotation3d(0, 0, 0)); // 3d view changed to be a straight line up.
+                Transform3d elevatorHalf3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition.div(2),
+                                new Rotation3d(0, 0, 0));
+                Rotation3d intakeRotation3d = new Rotation3d(intake.getINAngle().in(Radians), 0, 0);
 
-    public void displaySimFieldToAdvantageScope() {
-        if (Constants.currentMode != Constants.Mode.SIM) return;
+                Rotation3d scorerRotation3d = new Rotation3d(scorer.getCSAngle().in(Radians), 0, 0);
 
-        Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
-        Logger.recordOutput(
-                "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-        Logger.recordOutput(
-                "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
-    }
+                Logger.recordOutput("Odometry/RobotComponentPoses", new Pose3d[] {
+                                new Pose3d(Constants.scorerPoseOffset.getX() + elevator3d.getX(),
+                                                Constants.scorerPoseOffset.getY() + elevator3d.getY(),
+                                                Constants.scorerPoseOffset.getZ() + elevator3d.getZ(),
+                                                Constants.scorerPoseOffset.getRotation().rotateBy(scorerRotation3d)),
+                                new Pose3d(Constants.scorerRollerPoseOffset.getX() + elevator3d.getX(),
+                                                Constants.scorerRollerPoseOffset.getY() + elevator3d.getY(),
+                                                Constants.scorerRollerPoseOffset.getZ() + elevator3d.getZ(),
+                                                Constants.scorerRollerPoseOffset.getRotation()
+                                                                .rotateBy(scorerRotation3d)),
+                                Constants.climberPoseOffset,
+                                new Pose3d(Constants.intakePoseOffset.getX(), Constants.intakePoseOffset.getY(),
+                                                Constants.intakePoseOffset.getZ(),
+                                                Constants.intakeRollersPoseOffset.getRotation()
+                                                                .rotateBy(intakeRotation3d)),
+                                new Pose3d(Constants.intakeRollersPoseOffset.getX(),
+                                                Constants.intakeRollersPoseOffset.getY(),
+                                                Constants.intakeRollersPoseOffset.getZ(),
+                                                Constants.intakeRollersPoseOffset.getRotation()
+                                                                .rotateBy(intakeRotation3d)),
+                                Constants.elevatorOneIntakeOffset.plus(elevator3d),
+                                Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d),
 
+                });
 
-    public void displayComponentPosesToAdvantageScope(){
-        if(Constants.currentMode != Constants.Mode.SIM) return;
-
-        Distance EL_simPosition = elevator.getELPosition();
-
-        Transform3d elevator3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition, new Rotation3d(0,0,0)); //3d view changed to be a straight line up.
-        Transform3d elevatorHalf3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition.div(2), new Rotation3d(0,0,0));
-        Rotation3d intakeRotation3d = new Rotation3d(intake.getINAngle().in(Radians),0,0);
-       
-        Rotation3d scorerRotation3d = new Rotation3d(scorer.getCSAngle().in(Radians),0,0);
-
-        Logger.recordOutput("Odometry/RobotComponentPoses", new Pose3d[] {new Pose3d(Constants.scorerPoseOffset.getX()+elevator3d.getX(),Constants.scorerPoseOffset.getY()+elevator3d.getY(),Constants.scorerPoseOffset.getZ()+elevator3d.getZ(),Constants.scorerPoseOffset.getRotation().rotateBy(scorerRotation3d)), new Pose3d(Constants.scorerRollerPoseOffset.getX()+elevator3d.getX(), Constants.scorerRollerPoseOffset.getY()+elevator3d.getY(), Constants.scorerRollerPoseOffset.getZ()+elevator3d.getZ(), Constants.scorerRollerPoseOffset.getRotation().rotateBy(scorerRotation3d)), Constants.climberPoseOffset, Constants.coralIntakePoseOffset, Constants.coralIntakeRollerPoseOffset, Constants.elevatorOneIntakeOffset.plus(elevator3d), Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d), new Pose3d(Constants.intakePoseOffset.getX(), Constants.intakePoseOffset.getY(), Constants.intakePoseOffset.getZ(), Constants.intakeRollersPoseOffset.getRotation().rotateBy(intakeRotation3d)), new Pose3d(Constants.intakeRollersPoseOffset.getX(), Constants.intakeRollersPoseOffset.getY(), Constants.intakeRollersPoseOffset.getZ(), Constants.intakeRollersPoseOffset.getRotation().rotateBy(scorerRotation3d))});
-        
-    }
+        }
 }

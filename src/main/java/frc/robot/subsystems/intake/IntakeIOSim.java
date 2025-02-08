@@ -23,7 +23,8 @@ import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.robot.subsystems.elevator.ElevatorConstants;
+
+
 
 public class IntakeIOSim implements IntakeIO {
     private static final String CANbusName = "idk"; // TODO: Update CANbus Name
@@ -37,8 +38,9 @@ public class IntakeIOSim implements IntakeIO {
     private final IntakeSimulation intakeSimulation;
     private final SimulatedArena simulatedArena;
 
+    
     private final ProfiledPIDController IN_PID_Controller = new ProfiledPIDController(IntakeConstants.IN_PROFILED_PID_CONSTANTS.kP, IntakeConstants.IN_PROFILED_PID_CONSTANTS.kI, IntakeConstants.IN_PROFILED_PID_CONSTANTS.kD, IntakeConstants.TRAPEZOID_PROFILE_CONSTRAINTS);
-
+    private final IntakeIO intakesimIO = new IntakeIO() {};
     private double appliedVoltage;
  
 
@@ -51,9 +53,7 @@ public class IntakeIOSim implements IntakeIO {
         IntakeConstants.kArmMaxAngle,
         IntakeConstants.kSimulateGravity,
         IntakeConstants.kArmStartAngle
-    );
-
-        
+    );     
     
     public IntakeIOSim(AbstractDriveTrainSimulation driveTrainSimulation, SimulatedArena simulatedArena){
         this.intakeSimulation = IntakeSimulation.OverTheBumperIntake(
@@ -64,35 +64,27 @@ public class IntakeIOSim implements IntakeIO {
                 IntakeSimulation.IntakeSide.BACK,
                 1);
         this.simulatedArena = simulatedArena;
-       IN_TalonFXOneSim.setRawRotorPosition(IN_ARM_sim.getAngleRads() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
+        IN_TalonFXOneSim.setRawRotorPosition(IN_ARM_sim.getAngleRads() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
 		IN_TalonFXOneSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
 
         IN_TalonFXTwoSim.setRawRotorPosition(IN_ARM_sim.getAngleRads() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
         IN_TalonFXTwoSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
     }
+    
         @Override
         public void updateInputs(IntakeIOInputs inputs) {
             IN_ARM_sim.update(.02);
-         
-        
+
             inputs.IN_angle.mut_replace(IN_ARM_sim.getAngleRads(), Radians);
             inputs.IN_voltage.mut_replace(appliedVoltage, Volts);
             inputs.IN_setpointAngle.mut_replace(IN_PID_Controller.getSetpoint().position, Radians);
     
-
-            IN_TalonFXOneSim.setRawRotorPosition(IN_ARM_sim.getAngleRads() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
+        IN_TalonFXOneSim.setRawRotorPosition(IN_ARM_sim.getAngleRads() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
 		IN_TalonFXOneSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
-
         IN_TalonFXTwoSim.setRawRotorPosition(IN_ARM_sim.getAngleRads() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
-        IN_TalonFXTwoSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));
-
-            IN_TalonFXOneSim.setRawRotorPosition(IN_ARM_sim.getAngleRads());
-            IN_TalonFXTwoSim.setRawRotorPosition(IN_ARM_sim.getAngleRads());
-            IN_TalonFXOneSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec());
-            IN_TalonFXTwoSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec());
-            
-        }
-    
+        IN_TalonFXTwoSim.setRotorVelocity(IN_ARM_sim.getVelocityRadPerSec() / IntakeConstants.DEGREES_PER_ROTATION.in(Radians));        
+    }
+     
         @Override
         public void IN_runSetpoint(Angle setpoint) {
             Voltage controllerVoltage = Volts.of(IN_PID_Controller.calculate(IN_ARM_sim.getAngleRads(), setpoint.in(Radians)));
@@ -102,7 +94,6 @@ public class IntakeIOSim implements IntakeIO {
         @Override
         public void IN_runVolts(Voltage volts) {
             appliedVoltage = MathUtil.clamp(volts.in(Volts), -12.0, 12.0);
-            IN_appliedVolts.mut_replace(appliedVoltage, Volts);
             IN_ARM_sim.setInputVoltage(appliedVoltage);
         }
 
@@ -115,23 +106,15 @@ public class IntakeIOSim implements IntakeIO {
                 intakeSimulation.stopIntake();
             }
         }
-        
-        @Override
-        public void IN_setPID(double p, double i, double d) {
-            IN_PID_Controller.setPID(p, i, d);
-        }
 
         @Override
-        public void IN_reverseIntake(boolean reverse) {
-            // if (reverse){
-            //     intakeSimulation.obtainGamePieceFromIntake();
-
-            // } else {
-            // }
+        public void IN_reverseIntake(boolean reverse, double speed) {
+            if (reverse){
+                intakesimIO.IN_setRoller(-speed);
+                intakeSimulation.obtainGamePieceFromIntake();
+            } else {
+                intakesimIO.IN_setRoller(speed);
+            }
         }
-
       
-       
-
-
 }

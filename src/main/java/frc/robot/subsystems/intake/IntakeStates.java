@@ -15,7 +15,7 @@ public class IntakeStates {
     private static IntakeStates IN_measuredInstance;
     
 
-    public MutAngle IN_angle;
+    private MutAngle IN_angle;
 
     private IntakeStates() {
         IN_angle = Radians.mutable(0);
@@ -42,7 +42,7 @@ public class IntakeStates {
         return IN_measuredInstance;
     }
 
-    public Angle getIN_position() {
+    public MutAngle getIN_position() {
         return IN_angle;
     }
 

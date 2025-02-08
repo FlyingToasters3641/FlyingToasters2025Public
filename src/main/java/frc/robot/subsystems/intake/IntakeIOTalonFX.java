@@ -35,15 +35,15 @@ public class IntakeIOTalonFX implements IntakeIO{
          */
         TalonFXConfiguration IN_pivotConfig = new TalonFXConfiguration();
 
-        IN_pivotTalonFX.Feedback.FeedbackRemoteSensorID = IN_pivotTalonFX.getDeviceID();
-        IN_pivotTalonFX.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        IN_pivotTalonFX.Feedback.SensorToMechanismRatio = IntakeConstants.IN_pivotConfig.SENSOR_TO_MECHANISM_RATIO;
-        IN_pivotTalonFX.Feedback.RotorToSensorRatio = IntakeConstants.IN_pivotConfig.ROTOR_TO_SENSOR_RATIO;
+        IN_pivotConfig.Feedback.FeedbackRemoteSensorID = IN_pivotTalonFX.getDeviceID();
+        IN_pivotConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        IN_pivotConfig.Feedback.SensorToMechanismRatio = IntakeConstants.IN_pivotConfig.SENSOR_TO_MECHANISM_RATIO;
+        IN_pivotConfig.Feedback.RotorToSensorRatio = IntakeConstants.IN_pivotConfig.ROTOR_TO_SENSOR_RATIO;
 
-        IN_pivotTalonFX.Slot0.kG = IntakeConstants.IN_pivotConfig.kG;
-        IN_pivotTalonFX.Slot0.kP = IntakeConstants.IN_pivotConfig.kP;
-        IN_pivotTalonFX.Slot0.kI = IntakeConstants.IN_pivotConfig.kI;
-        IN_pivotTalonFX.Slot0.kD = IntakeConstants.IN_pivotConfig.kD;
+        IN_pivotConfig.Slot0.kG = IntakeConstants.IN_pivotConfig.kG;
+        IN_pivotConfig.Slot0.kP = IntakeConstants.IN_pivotConfig.kP;
+        IN_pivotConfig.Slot0.kI = IntakeConstants.IN_pivotConfig.kI;
+        IN_pivotConfig.Slot0.kD = IntakeConstants.IN_pivotConfig.kD;
 
         IN_pivotConfig.MotionMagic = new MotionMagicConfigs().withMotionMagicCruiseVelocity(
             Units.radiansToRotations(IntakeConstants.IN_pivotConfig.MM_CRUISE_VELOCITY))

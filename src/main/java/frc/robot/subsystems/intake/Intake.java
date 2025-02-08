@@ -40,8 +40,8 @@ public class Intake extends SubsystemBase {
         io.IN_setRunning(runIntake);
     }
 
-    public void IN_reverseIntake(boolean reverse) {
-        io.IN_reverseIntake(reverse);
+    public void IN_reverseIntake(double speed, boolean reverse) {
+        io.IN_reverseIntake(reverse, speed);
     }
 
     public void IN_runSetpoint(Angle angle) {
@@ -49,8 +49,8 @@ public class Intake extends SubsystemBase {
     }
 
     
-    public void IN_setRoller(boolean running) {
-        io.IN_setRoller(running);
+    public void IN_setRoller(double speed) {
+        io.IN_setRoller(speed);
     }
     public Angle getINAngle() {
         return(this.inputs.IN_angle);
