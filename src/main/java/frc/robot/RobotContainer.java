@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
@@ -21,24 +20,18 @@ import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
-import java.io.IOException;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -50,12 +43,12 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathFindToPath;
 import frc.robot.commands.PathFindToPose;
 import frc.robot.generated.TunerConstants;
-import frc.robot.lib.BehaviorTree.BehaviorTreeCommand;
 import frc.robot.lib.BehaviorTree.BehaviorTreeDebugger;
 import frc.robot.lib.BehaviorTree.Blackboard;
-import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
-import frc.robot.lib.BehaviorTree.trees.DrivingTree;
 import frc.robot.lib.BehaviorTree.trees.ExampleTree;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberCommands;
+import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -64,23 +57,18 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorCommands;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.scorer.Scorer;
-import frc.robot.subsystems.scorer.ScorerCommands;
 import frc.robot.subsystems.scorer.ScorerIO;
 import frc.robot.subsystems.scorer.ScorerIOSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
@@ -96,6 +84,7 @@ public class RobotContainer {
     private final Elevator elevator;
     private final Intake intake;
     private final Scorer scorer;
+    private final Climber climber;
     private SwerveDriveSimulation driveSimulation = null;
     public Blackboard blackboard = new Blackboard();
 
@@ -128,6 +117,7 @@ public class RobotContainer {
                 elevator = new Elevator(new ElevatorIO() {});
                 intake = new Intake(new IntakeIO() {});
                 scorer = new Scorer(new ScorerIO() {});
+                climber = new Climber(new ClimberIO() {});
                 break;
                        
             case SIM:
@@ -154,6 +144,7 @@ public class RobotContainer {
                 elevator = new Elevator(new ElevatorIOSim());
                 intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance()));
                 scorer = new Scorer(new ScorerIOSim());
+                climber = new Climber(new ClimberIO() {});
                 break;
             default:
                 // Replayed robot, disable IO implementations
@@ -163,6 +154,7 @@ public class RobotContainer {
                 elevator = new Elevator(new ElevatorIO() {});
                 intake = new Intake(new IntakeIO() {});
                 scorer = new Scorer(new ScorerIO() {});
+                climber = new Climber(new ClimberIO() {});
                 break;
         }
 
@@ -224,6 +216,8 @@ public class RobotContainer {
         controller.x().whileTrue(new PathFindToPath(drive, () -> Constants.testPath));
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
         controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
+        controller.povDown().onTrue(ClimberCommands.CL_Extend(climber));
+        controller.povUp().onTrue(ClimberCommands.CL_Retract(climber));
     }
 
     /**

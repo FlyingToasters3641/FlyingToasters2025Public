@@ -47,7 +47,7 @@ public class Climber extends SubsystemBase{
         CL_goalVisualizer.update(this.CL_setpoint);
 
         if(edu.wpi.first.wpilibj.RobotState.isDisabled()) {
-            this.io.CLStop();
+            this.io.CL_Stop();
         } else {
             this.io.CL_runSetpoint(this.CL_setpoint);
         }
@@ -59,16 +59,28 @@ public class Climber extends SubsystemBase{
 
     }
 
-    public void setCLRotation(double rotation){
-        io.setCLRotation(rotation);
+    public void CL_setRotation(double rotation){
+        io.CL_setRotation(rotation);
     }
 
-    public Angle getCLRotation() {
-        return io.getCLrotation();
+    public Angle CL_getRotation() {
+        return io.CL_getRotation();
     }
 
-    public void CLStop(){
-        io.CLStop();
+    public void CL_Stop(){
+        io.CL_Stop();
     }
+
+    public void CL_setServo(double angle){
+        io.CL_setServo(angle);
+    }
+
+    public void CL_Home(){
+        io.CL_Home();
+    }
+
+    public void CL_setPosition(double position){
+        io.CL_setPosition(position);
+    }   
     
 }

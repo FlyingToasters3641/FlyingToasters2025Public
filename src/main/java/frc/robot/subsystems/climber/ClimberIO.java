@@ -27,7 +27,7 @@ public interface ClimberIO {
 
     public default void updateInputs(ClimberIOInputs inputs) {};
 
-    public default void setCLRotation(double rotation) {};
+    public default void CL_setRotation(double rotation) {};
 
     public default void CL_runSetpoint(Angle rotation) {};
 
@@ -35,8 +35,14 @@ public interface ClimberIO {
 
     public default void CL_setPID(double p, double i, double d) {};
 
-    public default void CLStop() {};
+    public default void CL_Stop() {};
 
-    public default Angle getCLrotation() {return Radians.of(0);};
+    public default Angle CL_getRotation() {return Radians.of(0);};
+
+    public default void CL_setServo(double angle) {};
+
+    public default void CL_Home() {};
+
+    public default void CL_setPosition(double position) {};
 
 }

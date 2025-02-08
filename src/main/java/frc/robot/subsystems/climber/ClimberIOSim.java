@@ -99,20 +99,14 @@ public class ClimberIOSim implements ClimberIO {
         CL_sim.setInputVoltage(clampedEffort);
     }
 
-    
-    @Override
-    public void CL_setPID(double p, double i, double d) {
-        CL_PID_controller.setPID(p, i, d);
-    }
-
     //Just in case
     @Override
-    public void CLStop() {
+    public void CL_Stop() {
         CL_runVolts(Volts.of(0));
     }
 
     @Override
-    public Angle getCLrotation() {
+    public Angle CL_getRotation() {
         return Radians.of(CL_sim.getAngleRads());
     }
 }
