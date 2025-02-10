@@ -50,6 +50,7 @@ import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
 import frc.robot.lib.BehaviorTree.trees.ControlTree;
 import frc.robot.lib.BehaviorTree.trees.DrivingTree;
 import frc.robot.lib.BehaviorTree.trees.ExampleTree;
+import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -63,6 +64,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorCommands;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.intake.Intake;
@@ -93,6 +95,7 @@ public class RobotContainer {
     private final Climber climber;
     private SwerveDriveSimulation driveSimulation = null;
     public static Blackboard blackboard = new Blackboard();
+    public static Dashboard dashboard = new Dashboard();
     
     public static Stack stack = new Stack(blackboard);
 
@@ -235,6 +238,7 @@ public class RobotContainer {
         controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
         controller.povDown().onTrue(ClimberCommands.CL_Extend(climber));
         controller.povUp().onTrue(ClimberCommands.CL_Retract(climber));
+        dashboard.L1().whileTrue(ElevatorCommands.EL_goToL1(elevator)).onFalse(ElevatorCommands.EL_goToRest(elevator));
     }
 
     /**
