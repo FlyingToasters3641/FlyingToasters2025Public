@@ -26,7 +26,6 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -39,17 +38,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.CombinedSubsystemCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathFindToPath;
-import frc.robot.commands.PathFindToPose;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BehaviorTree.BehaviorTreeDebugger;
 import frc.robot.lib.BehaviorTree.Blackboard;
-import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
 import frc.robot.lib.BehaviorTree.trees.ControlTree;
-import frc.robot.lib.BehaviorTree.trees.DrivingTree;
-import frc.robot.lib.BehaviorTree.trees.ExampleTree;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberCommands;
@@ -172,10 +166,9 @@ public class RobotContainer {
         }
 
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-        // Set up auto routines
+
 
         // Set up SysId routines
-        
         autoChooser.addOption("Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
         autoChooser.addOption("Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
         autoChooser.addOption(
@@ -185,7 +178,7 @@ public class RobotContainer {
         autoChooser.addOption("Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
         autoChooser.addOption("Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-
+        //Set up the target chooser for the stack
         targetChooser = new LoggedDashboardChooser<>("Target Choices");
         targetChooser.addOption("A1", Targets.A1);
         targetChooser.addOption("Processor", Targets.PROCESSOR);
@@ -210,14 +203,6 @@ public class RobotContainer {
         drive.setDefaultCommand(DriveCommands.joystickDrive(
                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
 
-        // Lock to 0 when A button is held
-        // controller
-        //         .a()
-        //         .whileTrue(DriveCommands.joystickDriveAtAngle(
-        //                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> new Rotation2d()));
-
-        //TODO: UNCOMMENT THIS WHEN DONE TESTING
-
         // Switch to X pattern when X button is pressed
         controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
@@ -227,13 +212,17 @@ public class RobotContainer {
                 : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
         controller.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
-        //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
-
+        //Gyro reset
         controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
-        controller.b().whileTrue(new PathFindToPose(drive, () -> Constants.testPose, Constants.goalVelocity));
+        //Pathfind to a pose
+        controller.b().whileTrue(new PathFindToPath(drive, () -> Constants.testPath));
+        //Change the simulation state of the intake
         controller.x().onTrue(Commands.runOnce(() -> switchIntakeStateSim()));
+        //Add items to the stack - for testing!
         controller.leftBumper().onTrue(Commands.runOnce(() -> addToStack()));
+        //Execute the control tree
         controller.y().toggleOnTrue(new ControlTree(blackboard).execute());
+
         controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
         controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
         controller.povDown().onTrue(ClimberCommands.CL_Extend(climber));
@@ -250,6 +239,7 @@ public class RobotContainer {
         return autoChooser.get();
     }
 
+    //hardsets the intake state to true or false, used for simulation testing
     public void switchIntakeStateSim() {
         if (!blackboard.getBoolean("hasCoral") && !blackboard.getBoolean("hasAlgae")) {
                 blackboard.set("hasCoral", true);
@@ -260,15 +250,8 @@ public class RobotContainer {
         }
         Logger.recordOutput("hasCoral", blackboard.getBoolean("hasCoral"));
     }
-
-    public void getTreeTarget() {
-        Targets targetValue = targetChooser.get();
-        if (targetValue != null) {
-        blackboard.set("target", targetValue);
-        } else {
-        }
-    }
-
+    
+    //Adds item for the stack - testing for the control tree
     public void addToStack() {
         Targets targetValue = targetChooser.get();
         stack.add(targetValue);
@@ -279,13 +262,6 @@ public class RobotContainer {
 
         driveSimulation.setSimulationWorldPose(startingAutoPose);
         SimulatedArena.getInstance().resetFieldForAuto();
-    }
-
-    //An attempt to automatically update the starting pose of the simulated Auto *does not work*
-    public Pose2d getAutoStartingPose() {
-        Pose2d autoStartingPose = new PathPlannerAuto("testAuto").getStartingPose();
-        return autoStartingPose;
-
     }
 
     public void displaySimFieldToAdvantageScope() {

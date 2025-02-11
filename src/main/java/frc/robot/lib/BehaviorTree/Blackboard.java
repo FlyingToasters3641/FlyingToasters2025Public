@@ -46,7 +46,7 @@ public class Blackboard {
                 break;
         }
     } else {
-        //TODO: THIS SETS A RANDOM VARIABLE IF NULL: FIX LATER
+        //TODO: THIS SETS A RANDOM VARIABLE IF NULL
         Algae = false;
     }
         return Algae;

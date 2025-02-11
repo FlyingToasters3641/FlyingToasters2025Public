@@ -3,10 +3,7 @@ package frc.robot.subsystems.climber;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.elevator.ElevatorStates;
-import frc.robot.subsystems.elevator.ElevatorVisualizer;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Climber extends SubsystemBase{

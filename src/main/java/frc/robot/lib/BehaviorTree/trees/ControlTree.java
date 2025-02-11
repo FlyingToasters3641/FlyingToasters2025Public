@@ -1,19 +1,13 @@
 package frc.robot.lib.BehaviorTree.trees;
 
-import java.util.ArrayList;
 import java.util.function.Predicate;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.lib.BehaviorTree.BehaviorTreeCommand;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.lib.BehaviorTree.nodes.BehaviorTreeNode;
-import frc.robot.lib.BehaviorTree.nodes.DriveHumanPlayerStationRight;
 import frc.robot.lib.BehaviorTree.nodes.DriveToIntake;
-import frc.robot.lib.BehaviorTree.nodes.DriveToPose;
-import frc.robot.lib.BehaviorTree.nodes.DriveToReefBackCenter;
 import frc.robot.lib.BehaviorTree.nodes.DriveToTargetPose;
 import frc.robot.lib.BehaviorTree.nodes.EmptyNode;
-import frc.robot.lib.BehaviorTree.nodes.InfiniteLoopNode;
 import frc.robot.lib.BehaviorTree.nodes.SelectorNode;
 import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
 import frc.robot.lib.BehaviorTree.nodes.Subtree;
@@ -39,7 +33,7 @@ public class ControlTree {
     SelectorNode hasCoral;
     //Selector node to check if it has Algae
     SelectorNode hasAlgae;
-
+    //Empty leaf node to reiterate through the tree
     BehaviorTreeNode emptyleafnode;
 
 

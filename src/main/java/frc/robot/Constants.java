@@ -62,7 +62,6 @@ public final class Constants {
     public static final Pose2d reefBranchL = new Pose2d(3.72, 5.04, new Rotation2d(Units.degreesToRadians(-60)));
 
     public static final Pose2d lineUpPose = new Pose2d(10.33, 1.18, new Rotation2d());
-    //TODO: GOAL END STATE SETS THE HEADING FOR THE HOLONOMIC ROTATION, YOU WIL LHAVE TO FLIP FOR ALLIANCE COLOR
     private static final Pose2d waypoint1 = new Pose2d(6.5, 3.98, new Rotation2d(Math.PI));
     private static final Pose2d waypoint2 = new Pose2d(5.4, 3.98, new Rotation2d(Math.PI));
     private static List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
