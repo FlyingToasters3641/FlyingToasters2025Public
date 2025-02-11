@@ -13,9 +13,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.util.LocalADStarAK;
 
 import java.util.ArrayList;
@@ -106,7 +108,6 @@ public class Robot extends LoggedRobot {
         FollowPathCommand.warmupCommand().schedule();
         PathfindingCommand.warmupCommand().schedule();
 
-        ArrayList<String> stack = new ArrayList<String>();
     }
     @Override
     public void robotPeriodic() {
@@ -122,6 +123,24 @@ public class Robot extends LoggedRobot {
 
         // Return to normal thread priority
         Threads.setCurrentThreadPriority(false, 10);
+
+        Logger.recordOutput("Odometry/ZeroedComponentPoses", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d(), new Pose3d()});
+
+
+        if ((RobotContainer.blackboard.get("target")) != RobotContainer.stack.getLastElement() && RobotContainer.stack.isNotEmpty()) {
+            RobotContainer.blackboard.set("hasTarget", true);
+            RobotContainer.blackboard.set("target", RobotContainer.stack.getLastElement());
+            RobotContainer.blackboard.set("isDone", false);
+        } else if(RobotContainer.stack.isEmpty()) {
+            RobotContainer.blackboard.set("hasTarget", false);
+            RobotContainer.blackboard.set("target", Targets.NONE);
+        }
+        
+        Logger.recordOutput("BehaviorTree/theSTACK", RobotContainer.stack.getLastElement());
+
+        if ((RobotContainer.blackboard.getBoolean("isDone") == true)) {
+            RobotContainer.stack.removeLastElement();
+        }
     }
 
     /** This function is called once when the robot is disabled. */

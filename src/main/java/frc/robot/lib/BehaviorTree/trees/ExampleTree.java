@@ -1,12 +1,12 @@
 package frc.robot.lib.BehaviorTree.trees;
 
 import frc.robot.lib.BehaviorTree.BehaviorTreeCommand;
-import frc.robot.lib.BehaviorTree.BehaviorTreeDebugger;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.lib.BehaviorTree.nodes.DriveHumanPlayerStationRight;
 import frc.robot.lib.BehaviorTree.nodes.DriveToReefBackCenter;
 import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
 
+//This is the tree we used for testing
 public class ExampleTree {
     Blackboard blackboard;
     SequenceNode tree;

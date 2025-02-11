@@ -13,8 +13,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.robot.lib.BehaviorTree.Blackboard;
 
 public class IntakeIOSim implements IntakeIO {
     private static final String CANbusName = "idk"; // TODO: Update CANbus Name
@@ -25,6 +25,7 @@ public class IntakeIOSim implements IntakeIO {
     private final IntakeSimulation intakeSimulation;
     private double appliedVoltage;
     private final SimulatedArena simulatedArena;
+    private Blackboard blackboard;
 
     private final SingleJointedArmSim IN_ARM_sim = new SingleJointedArmSim(
         IntakeConstants.kArmPlant,
@@ -39,7 +40,7 @@ public class IntakeIOSim implements IntakeIO {
 
         
     
-    public IntakeIOSim(AbstractDriveTrainSimulation driveTrainSimulation, SimulatedArena simulatedArena){
+    public IntakeIOSim(AbstractDriveTrainSimulation driveTrainSimulation, SimulatedArena simulatedArena, Blackboard blackboard){
         this.intakeSimulation = IntakeSimulation.OverTheBumperIntake(
                 "Algae",
                 driveTrainSimulation,
@@ -48,6 +49,7 @@ public class IntakeIOSim implements IntakeIO {
                 IntakeSimulation.IntakeSide.BACK,
                 1);
         this.simulatedArena = simulatedArena;
+        this.blackboard = blackboard;
     }
         @Override
         public void updateInputs(IntakeIOInputs inputs) {

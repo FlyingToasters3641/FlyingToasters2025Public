@@ -13,6 +13,11 @@ public class DriveToReefBackCenter extends BehaviorTreeNode {
     public DriveToReefBackCenter(Blackboard blackboard) {
         super(blackboard);
     }
+    
+    @Override
+    public void initialize() {
+        
+    }
 
     @Override
     public ExecutionStatus run() {

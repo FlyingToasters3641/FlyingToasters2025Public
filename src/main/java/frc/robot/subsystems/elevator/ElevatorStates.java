@@ -1,11 +1,7 @@
 package frc.robot.subsystems.elevator;
 
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutDistance;
-import edu.wpi.first.wpilibj.RobotState;
-
 import static edu.wpi.first.units.Units.*;
 
 public class ElevatorStates {
