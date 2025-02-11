@@ -20,8 +20,8 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 
 public class ScorerConstants {
 
-    public static final Constraints TRAPEZOID_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(0, 0);;
-    public static final PIDConstants IN_PROFILED_PID_CONSTANTS = new PIDConstants(0.8, 0, 0.01, 0);
+    public static final Constraints TRAPEZOID_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(2 * Math.PI, 4 * Math.PI);;
+    public static final PIDConstants IN_PROFILED_PID_CONSTANTS = new PIDConstants(0.4, 0, 0.01, 0);
     public static double IDLE = 0.0;
     
     public static final DCMotor kKrakenX60Foc = DCMotor.getKrakenX60Foc(2);
@@ -32,7 +32,7 @@ public class ScorerConstants {
     public static double kArmStartAngle = Units.Degrees.of(0).in(Units.Radians);
     public static double kArmGearing = 26.4;
     public static double kArmMinAngle = Units.Degrees.of(0).in(Units.Radians);
-    public static double kArmMaxAngle = Units.Degrees.of(180).in(Units.Radians);
+    public static double kArmMaxAngle = Units.Degrees.of(270).in(Units.Radians);
     public static double kArmLength = Units.Inches.of(21.6).in(Units.Meters);
     public static MomentOfInertia kArmMomentOfInertia = Units.KilogramSquareMeters.of(0.3666671254);
     public static LinearSystem<N2, N1, N2> kArmPlant = LinearSystemId.createSingleJointedArmSystem(kKrakenX60Foc, kArmMomentOfInertia.baseUnitMagnitude(), kArmGearing);
@@ -48,7 +48,7 @@ public class ScorerConstants {
         public static final double PIVOT_MAGNET_OFFSET = 0; //FIXME: Update with correct value
         public static ProfileConstraints MM_PROFILE_CONSTRAINTS = new ProfileConstraints(MM_CRUISE_VELOCITY, MM_ACCELERATION);
         public static double kG = 0;
-        public static double kP = 0.1;
+        public static double kP = 0.00000001;
         public static double kI = 0;
         public static double kD = 0;
 

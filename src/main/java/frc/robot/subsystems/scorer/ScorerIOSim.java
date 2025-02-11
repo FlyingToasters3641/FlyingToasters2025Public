@@ -23,6 +23,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -30,14 +32,10 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class ScorerIOSim implements ScorerIO {
     private static final String CANbusName = "idk"; // TODO: Update CANbus Name
-    private static final TalonFX CS_TalonFXOne = new TalonFX(3, CANbusName);// TODO: Update CANIDs
-    private static final TalonFXSimState CS_TalonFXOneSim = new TalonFXSimState(CS_TalonFXOne);
 
     private final ProfiledPIDController CS_PID_Controller = new ProfiledPIDController(ScorerConstants.IN_PROFILED_PID_CONSTANTS.kP, ScorerConstants.IN_PROFILED_PID_CONSTANTS.kI, ScorerConstants.IN_PROFILED_PID_CONSTANTS.kD, ScorerConstants.TRAPEZOID_PROFILE_CONSTRAINTS);
     private final ArmFeedforward CS_FeedForward = new ArmFeedforward(0, 0, 0, 0);
-
-
-    private double appliedVoltage;
+    private MutVoltage CS_appliedVoltage = Volts.mutable(0);
 
     private final SingleJointedArmSim CS_ARM_sim = new SingleJointedArmSim(
         ScorerConstants.kArmPlant,
@@ -50,43 +48,32 @@ public class ScorerIOSim implements ScorerIO {
         ScorerConstants.kArmStartAngle
     );
 
-    public ScorerIOSim(){
-        CS_TalonFXOneSim.setRawRotorPosition(CS_ARM_sim.getAngleRads() / ScorerConstants.DEGREES_PER_ROTATION.in(Radians));
-        CS_TalonFXOneSim.setRotorVelocity(CS_ARM_sim.getVelocityRadPerSec() / ScorerConstants.DEGREES_PER_ROTATION.in(Radians));
-
-    }
-
         @Override
         public void updateInputs(ScorerIOInputs inputs) {
             CS_ARM_sim.update(.02);
-
             inputs.CS_angle.mut_replace(CS_ARM_sim.getAngleRads(), Radians);
-            inputs.CS_voltage.mut_replace(appliedVoltage, Volts);
-            inputs.CS_setpointAngle.mut_replace(CS_PID_Controller.getSetpoint().position, Radians);
-            
-
-            CS_TalonFXOneSim.setRawRotorPosition(CS_ARM_sim.getAngleRads() / ScorerConstants.DEGREES_PER_ROTATION.in(Radians));
-            CS_TalonFXOneSim.setRotorVelocity(CS_ARM_sim.getVelocityRadPerSec() / ScorerConstants.DEGREES_PER_ROTATION.in(Radians));
+            inputs.CS_voltage.mut_replace(CS_appliedVoltage);
+            inputs.CS_setpointAngle.mut_replace(this.CS_PID_Controller.getGoal().position, Degrees);
         }
     
         @Override
         public void CS_runSetpoint(Angle setpoint) {
-
-            Angle currentAngle = Degrees.of(CS_ARM_sim.getAngleRads());
-
+            Angle currentAngle = Radians.of(CS_ARM_sim.getAngleRads());
+            Logger.recordOutput("Scorer/Setpoint", setpoint.in(Degrees));
             Angle setpointAngle = Degrees.of(CS_PID_Controller.getSetpoint().position);
             AngularVelocity setpointVelocity = DegreesPerSecond.of(CS_PID_Controller.getSetpoint().velocity);
+            Logger.recordOutput("Scorer/CurrentAngle", currentAngle.in(Degrees));
+            Voltage controllerVoltage = Volts.of(CS_PID_Controller.calculate(currentAngle.in(Degrees), setpoint.in(Degrees)));
 
-            Voltage controllerVoltage = Volts.of(CS_PID_Controller.calculate(currentAngle.in(Radians), setpoint.in(Radians)));
+            //Voltage feedForwardVoltage = Volts.of(CS_FeedForward.calculate(setpointAngle.in(Radians), setpointVelocity.in(RadiansPerSecond)));            
 
-            Voltage feedForwardVoltage = Volts.of(CS_FeedForward.calculate(setpointAngle.in(Radians), setpointVelocity.in(RadiansPerSecond)));            
-
-            CS_runVolts(controllerVoltage.plus(feedForwardVoltage));
+            CS_runVolts(controllerVoltage);
         }
     
         @Override
         public void CS_runVolts(Voltage volts) {
-            appliedVoltage = MathUtil.clamp(volts.in(Volts), -12.0, 12.0);
+            double appliedVoltage = MathUtil.clamp(volts.in(Volts), -12.0, 12.0);
+            CS_appliedVoltage.mut_replace(appliedVoltage, Volts);
             CS_ARM_sim.setInputVoltage(appliedVoltage);
         }
 
@@ -98,6 +85,12 @@ public class ScorerIOSim implements ScorerIO {
         @Override
         public void CS_reverseScorer(boolean reverse) {
         }
+
+        @Override
+        public void CS_setPID(double p, double i, double d) {
+            CS_PID_Controller.setPID(p, i, d);
+        }
+
 
 
 }

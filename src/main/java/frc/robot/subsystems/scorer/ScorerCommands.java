@@ -1,7 +1,6 @@
 package frc.robot.subsystems.scorer;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,19 +16,19 @@ public class ScorerCommands {
     }
 
     public static Command CS_runSetpoint(Scorer m_Scorer, Angle angle) {
-        return Commands.runOnce(() -> m_Scorer.CS_runSetpoint(angle));
+        return m_Scorer.CS_runSetpoint(angle);
     }
 
     public static Command CS_goToL1(Scorer m_Scorer) {
-        return Commands.runOnce(() -> m_Scorer.CS_runSetpoint(Degrees.of(90)));
+        return m_Scorer.CS_runSetpoint(Degrees.of(90));
     }
 
     public static Command CS_goToRest(Scorer m_Scorer) {
-        return Commands.runOnce(() -> m_Scorer.CS_runSetpoint(Degrees.of(0)));
+        return m_Scorer.CS_runSetpoint(Degrees.of(0));
     }
 
     public static Command CS_net(Scorer m_Scorer) {
-        return Commands.runOnce(() -> m_Scorer.CS_runSetpoint(Degrees.of(30)));
+        return m_Scorer.CS_runSetpoint(Degrees.of(40));
     }
 
 }
