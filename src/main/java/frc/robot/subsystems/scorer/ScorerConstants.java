@@ -23,7 +23,6 @@ public class ScorerConstants {
     public static final Constraints TRAPEZOID_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(2 * Math.PI, 4 * Math.PI);;
     public static final PIDConstants IN_PROFILED_PID_CONSTANTS = new PIDConstants(0.4, 0, 0.01, 0);
     public static double IDLE = 0.0;
-    
     public static final DCMotor kKrakenX60Foc = DCMotor.getKrakenX60Foc(2);
     public static final double SCORER_ANGLE_MODIFIER = Degrees.of(0).in(Radians);
     public static final Angle DEGREES_PER_ROTATION = Degrees.of(360); //FIXME: Update with correct value
