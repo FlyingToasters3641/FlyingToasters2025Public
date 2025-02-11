@@ -6,8 +6,12 @@ package frc.robot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -37,8 +41,13 @@ public final class Constants {
         Units.degreesToRadians(540), Units.degreesToRadians(720));
     
     public static final Pose2d targetPose = new Pose2d(5.8, 4, new Rotation2d(Math.PI));
+    public static final Pose2d testPose = new Pose2d(11.07, 2.21, new Rotation2d());
+    public static final Pose2d testPose1 = new Pose2d(11.4, 5.78, new Rotation2d());
+
     public static final Pose2d humanPlayerStationRight = new Pose2d(1.67, 0.65, new Rotation2d(Units.degreesToRadians(54)));
     public static final Pose2d humanPlayerStationLeft = new Pose2d(1.62, 7.36, new Rotation2d(Units.degreesToRadians(-54)));
+    public static final Pose2d processorPose = new Pose2d(6.19, 0.45, new Rotation2d(Units.degreesToRadians(90)));
+    public static final Pose2d netPose = new Pose2d(7.13, 5.83, new Rotation2d(Math.PI));
     public static final Pose2d reefBranchA = new Pose2d(3.27, 4.16, new Rotation2d());
     public static final Pose2d reefBranchB = new Pose2d(3.27, 3.85, new Rotation2d());
     public static final Pose2d reefBranchC = new Pose2d(3.75, 3.05, new Rotation2d(Units.degreesToRadians(60)));
@@ -52,10 +61,27 @@ public final class Constants {
     public static final Pose2d reefBranchK = new Pose2d(4.0, 5.22, new Rotation2d(Units.degreesToRadians(-60)));
     public static final Pose2d reefBranchL = new Pose2d(3.72, 5.04, new Rotation2d(Units.degreesToRadians(-60)));
 
+    public static final Pose2d lineUpPose = new Pose2d(10.33, 1.18, new Rotation2d());
+    private static final Pose2d waypoint1 = new Pose2d(6.5, 3.98, new Rotation2d(Math.PI));
+    private static final Pose2d waypoint2 = new Pose2d(5.4, 3.98, new Rotation2d(Math.PI));
+    private static List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+        waypoint1,
+        waypoint2
+);
+
+    public static final PathPlannerPath testPath = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0, new Rotation2d(Math.PI)));
+
+    public static final Pose3d algaeArmOffset = new Pose3d(0, -0.305, 0.937, new Rotation3d(0, 0, 0));
+    public static final Pose3d algaeArmRollerOffset = new Pose3d(0, -0.102, 0.725, new Rotation3d(0, 0, 0));
+    public static final Pose3d climberOffset = new Pose3d(0.311, 0, 0.273, new Rotation3d(0, 0, 0));
+    public static final Pose3d coralIntakeOffset = new Pose3d(0, 0.254, 0.210, new Rotation3d(0, 0, 0));
+    public static final Pose3d coralIntakeRollerOffset = new Pose3d(0, 0.4, 0.738, new Rotation3d(0, 0, 0));
+    public static final Pose3d elevatorInnerOffset = new Pose3d(0, -0.247, 0.081, new Rotation3d(0, 0, 0));
+    public static final Pose3d elevatorOuterOffset = new Pose3d(0, -0.3267, 0.070, new Rotation3d(0, 0, 0));
+
     public static final ArrayList<Pose2d> drivingPoses = new ArrayList<Pose2d>(Arrays.asList(reefBranchA, humanPlayerStationRight, reefBranchH));
 
-    public static final int goalVelocity = 1;
-    public static final int speedMultiplier = 3;
+    public static final int goalVelocity = 0;
 
     public static final Pose3d scorerPoseOffset = new Pose3d(0, -0.305, 0.937, new Rotation3d(0, 0, 0));
     public static final Pose3d scorerRollerPoseOffset = new Pose3d(0, -0.305, 0.937, new Rotation3d(0, 0, 0));//0, -0.102, 0.725

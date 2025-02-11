@@ -1,14 +1,11 @@
 package frc.robot.lib.BehaviorTree.trees;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.BehaviorTree.Blackboard;
 
 public class Stack {
     
-    ArrayList<String> stack = new ArrayList<String>();
+    ArrayList<Targets> stack = new ArrayList<Targets>();
     Blackboard blackboard;
 
     public Stack(Blackboard blackboard) {
@@ -16,11 +13,11 @@ public class Stack {
 
     }
 
-    public void add(String item) {
+    public void add(Targets item) {
         stack.add(item);
     }
 
-    public String get(int num) {
+    public Targets get(int num) {
         return stack.get(num);
     }
 
@@ -28,11 +25,45 @@ public class Stack {
         stack.remove(num);
     }
 
-    public String getLastElement() {
+    public Targets getLastElement() {
+        if (stack == null || stack.isEmpty()) {
+            return null;
+        } else {
         int num = stack.size() - 1;
         return stack.get(num);
-        
-
+        }
     }
 
+    public void removeLastElement() {
+        if (stack == null || stack.isEmpty()) {
+
+        } else {
+        int num = stack.size() - 1;
+        stack.remove(num);
+        }
+    }
+
+    public boolean isNotEmpty() {
+        if (stack.isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean isEmpty() {
+        if (stack.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public ArrayList<Targets> getList() {
+        if (isNotEmpty()) {
+            return stack;
+        } else {
+            return null;
+        }
+    }
 }

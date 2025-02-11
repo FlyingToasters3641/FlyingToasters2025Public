@@ -14,7 +14,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutDistance;
 
 public class ElevatorIOTalonFX implements ElevatorIO {

@@ -19,6 +19,13 @@ public class SelectorNode extends BehaviorTreeNode{
     }
 
     @Override
+    public void initialize() {
+        for (ChildNodeConditionPair child : children) {
+            child.initialize();
+        }
+    }
+
+    @Override
     public ExecutionStatus run() {
         for (ChildNodeConditionPair pair : children) {
             if (pair.condition.test(blackboard)) {
@@ -39,6 +46,12 @@ public class SelectorNode extends BehaviorTreeNode{
             this.child = child;
             this.condition = condition;
         }   
+
+        public void initialize() {
+            if (child != null) {
+            child.initialize();
+            }
+        }
     }
 
     @Override
