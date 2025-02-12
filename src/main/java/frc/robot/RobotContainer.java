@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
@@ -66,6 +67,7 @@ import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.scorer.Scorer;
+import frc.robot.subsystems.scorer.ScorerCommands;
 import frc.robot.subsystems.scorer.ScorerIO;
 import frc.robot.subsystems.scorer.ScorerIOSim;
 import frc.robot.subsystems.vision.Vision;
@@ -222,9 +224,10 @@ public class RobotContainer {
         controller.leftBumper().onTrue(Commands.runOnce(() -> addToStack()));
         //Execute the control tree
         controller.y().toggleOnTrue(new ControlTree(blackboard).execute());
+        controller.a().onTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(180.0)));
 
-        controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
-        controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
+        controller.rightTrigger(0.1).onTrue(IntakeCommands.IN_runSetpoint(intake, Degrees.of(-40.0)));
+        //controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
         controller.povDown().onTrue(ClimberCommands.CL_Extend(climber));
         controller.povUp().onTrue(ClimberCommands.CL_Retract(climber));
         dashboard.L1().whileTrue(ElevatorCommands.EL_goToL1(elevator)).onFalse(ElevatorCommands.EL_goToRest(elevator));
@@ -275,19 +278,45 @@ public class RobotContainer {
     }
 
 
-    public void displayComponentPosesToAdvantageScope(){
-        if(Constants.currentMode != Constants.Mode.SIM) return;
+    public void displayComponentPosesToAdvantageScope() {
+        if (Constants.currentMode != Constants.Mode.SIM)
+                return;
 
         Distance EL_simPosition = elevator.getELPosition();
 
-        Transform3d elevator3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition, new Rotation3d(0,0,0)); //3d view changed to be a straight line up.
-        Transform3d elevatorHalf3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition.div(2), new Rotation3d(0,0,0));
+        Transform3d elevator3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition,
+                        new Rotation3d(0, 0, 0)); // 3d view changed to be a straight line up.
+        Transform3d elevatorHalf3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition.div(2),
+                        new Rotation3d(0, 0, 0));
+        Rotation3d intakeRotation3d = new Rotation3d(intake.IN_getAngle().in(Radians), 0, 0);
 
-        Rotation3d scorerRotation3d = new Rotation3d(scorer.getCSAngle().in(Radians),0,0);
+        Rotation3d scorerRotation3d = new Rotation3d(scorer.CS_getAngle().in(Radians), 0, 0);
 
-        Logger.recordOutput("Odometry/RobotComponentPoses", new Pose3d[] {new Pose3d(Constants.scorerPoseOffset.getX()+elevator3d.getX(),Constants.scorerPoseOffset.getY()+elevator3d.getY(),Constants.scorerPoseOffset.getZ()+elevator3d.getZ(),Constants.scorerPoseOffset.getRotation().rotateBy(scorerRotation3d)), new Pose3d(Constants.scorerRollerPoseOffset.getX()+elevator3d.getX(), Constants.scorerRollerPoseOffset.getY()+elevator3d.getY(), Constants.scorerRollerPoseOffset.getZ()+elevator3d.getZ(), Constants.scorerRollerPoseOffset.getRotation().rotateBy(scorerRotation3d)), Constants.climberPoseOffset, Constants.coralIntakePoseOffset, Constants.coralIntakeRollerPoseOffset, Constants.elevatorOneIntakeOffset.plus(elevator3d), Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d)});
+        Logger.recordOutput("Odometry/RobotComponentPoses", new Pose3d[] {
+                        new Pose3d(Constants.scorerPoseOffset.getX() + elevator3d.getX(),
+                                        Constants.scorerPoseOffset.getY() + elevator3d.getY(),
+                                        Constants.scorerPoseOffset.getZ() + elevator3d.getZ(),
+                                        Constants.scorerPoseOffset.getRotation().rotateBy(scorerRotation3d)),
+                        new Pose3d(Constants.scorerRollerPoseOffset.getX() + elevator3d.getX(),
+                                        Constants.scorerRollerPoseOffset.getY() + elevator3d.getY(),
+                                        Constants.scorerRollerPoseOffset.getZ() + elevator3d.getZ(),
+                                        Constants.scorerRollerPoseOffset.getRotation()
+                                                        .rotateBy(scorerRotation3d)),
+                        Constants.climberPoseOffset,
+                        new Pose3d(Constants.intakePoseOffset.getX(), Constants.intakePoseOffset.getY(),
+                                        Constants.intakePoseOffset.getZ(),
+                                        Constants.intakeRollersPoseOffset.getRotation()
+                                                        .rotateBy(intakeRotation3d)),
+                        new Pose3d(Constants.intakeRollersPoseOffset.getX(),
+                                        Constants.intakeRollersPoseOffset.getY(),
+                                        Constants.intakeRollersPoseOffset.getZ(),
+                                        Constants.intakeRollersPoseOffset.getRotation()
+                                                        .rotateBy(intakeRotation3d)),
+                        Constants.elevatorOneIntakeOffset.plus(elevator3d),
+                        Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d),
 
+        });
 
-    }
+}
 
 }

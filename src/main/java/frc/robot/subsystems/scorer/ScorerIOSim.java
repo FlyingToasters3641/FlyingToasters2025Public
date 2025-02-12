@@ -31,8 +31,6 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class ScorerIOSim implements ScorerIO {
-    private static final String CANbusName = "idk"; // TODO: Update CANbus Name
-
     private final ProfiledPIDController CS_PID_Controller = new ProfiledPIDController(ScorerConstants.IN_PROFILED_PID_CONSTANTS.kP, ScorerConstants.IN_PROFILED_PID_CONSTANTS.kI, ScorerConstants.IN_PROFILED_PID_CONSTANTS.kD, ScorerConstants.TRAPEZOID_PROFILE_CONSTRAINTS);
     private final ArmFeedforward CS_FeedForward = new ArmFeedforward(0, 0, 0, 0);
     private MutVoltage CS_appliedVoltage = Volts.mutable(0);

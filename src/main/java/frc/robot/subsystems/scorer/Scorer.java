@@ -1,12 +1,7 @@
 package frc.robot.subsystems.scorer;
 
 import static edu.wpi.first.units.Units.Degrees;
-
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,14 +12,11 @@ public class Scorer extends SubsystemBase{
     private final ScorerIOInputsAutoLogged inputs = new ScorerIOInputsAutoLogged();
     private final ScorerVisualizer CS_measuredVisualizer;
     private Angle setpoint = Degrees.of(0.0);
-    public static double frontTalonVoltage;
-    public MutAngle CS_setpoint = (MutAngle) Units.Degrees.mutable(0.0);
 
     public Scorer(ScorerIO io) {
         this.io = io;
         this.io.CS_setPID(1.1, 0.0, 0.0);
-        this.CS_measuredVisualizer = new ScorerVisualizer("Measured", Color.kBlack);
-        
+        this.CS_measuredVisualizer = new ScorerVisualizer("Measured", Color.kBlack);      
     }
 
     @Override
@@ -32,9 +24,7 @@ public class Scorer extends SubsystemBase{
         super.periodic();
         this.io.updateInputs(inputs); // Update inputs from IO
         Logger.processInputs("Scorer", inputs); // Log telemetry
-
         this.io.CS_runSetpoint(this.setpoint);
-
         this.CS_measuredVisualizer.update(this.inputs.CS_angle);
     }
 
@@ -50,7 +40,7 @@ public class Scorer extends SubsystemBase{
         return runOnce(() -> this.setpoint = angle);
     }
 
-    public Angle getCSAngle() {
+    public Angle CS_getAngle() {
         return(this.inputs.CS_angle);
     }
    

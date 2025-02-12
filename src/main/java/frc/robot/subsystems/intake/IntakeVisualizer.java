@@ -39,7 +39,7 @@ public class IntakeVisualizer {
         intake.setAngle(position.in(Radians));
         Logger.recordOutput("Intake/Mechanism2d/" + key, this.panel);
         Angle intakeAngle = position.times(IntakeConstants.INTAKE_ANGLE_MODIFIER);
-        Pose3d intake3d = new Pose3d(Inches.zero(), Inches.zero(), Inches.zero(), new Rotation3d(0, 0, intakeAngle.in(Radians)));
+        Pose3d intake3d = new Pose3d(Inches.zero(), Inches.zero(), Inches.zero(), new Rotation3d(0, 0, intakeAngle.in(Degrees)));
         Logger.recordOutput("Intake/Mechanism3d/" + key, intake3d);
     }
 }

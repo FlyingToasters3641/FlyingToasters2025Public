@@ -26,8 +26,8 @@ public class IntakeConstants {
     public static final double SENSOR_TO_MECHANISM_RATIO = 1;
     public static double kArmStartAngle = Units.Degrees.of(0).in(Units.Radians);
     public static double kArmGearing = 26.4;
-    public static double kArmMinAngle = Units.Degrees.of(0).in(Units.Radians);
-    public static double kArmMaxAngle = Units.Degrees.of(180).in(Units.Radians);
+    public static double kArmMinAngle = Units.Degrees.of(-45.0).in(Units.Radians);
+    public static double kArmMaxAngle = Units.Degrees.of(0).in(Units.Radians);
     public static double kArmLength = Units.Inches.of(21.6).in(Units.Meters);
     public static MomentOfInertia kArmMomentOfInertia = Units.KilogramSquareMeters.of(0.3666671254);
     public static LinearSystem<N2, N1, N2> kArmPlant = LinearSystemId.createSingleJointedArmSystem(kKrakenX60Foc, kArmMomentOfInertia.baseUnitMagnitude(), kArmGearing);

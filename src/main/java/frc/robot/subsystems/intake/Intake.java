@@ -1,39 +1,31 @@
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.Radians;
-
+import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.units.measure.Angle;
-
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
     private IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
     private final IntakeVisualizer IN_measuredVisualizer;
-
-    private final IntakeStates IN_actual;
-    IntakeIOTalonFX IntakeTalonFX = new IntakeIOTalonFX();
-    public static double frontTalonVoltage;
-
-    public Angle IN_setangle = Radians.of(0.0);
+    private Angle setpoint = Degrees.of(0.0);
 
     public Intake(IntakeIO io) {
         this.io = io;
-        this.IN_actual = IntakeStates.getIN_measuredInstance();
-        IN_measuredVisualizer = new IntakeVisualizer("Measured", Color.kBlack);
-        IN_actual.updateIntakePosition(this.inputs.IN_angle);
-
+        this.io.IN_setPID(8.0, 0.0, 0.0);
+        this.IN_measuredVisualizer = new IntakeVisualizer("Measured", Color.kBlack);
     }
 
     @Override
     public void periodic() {
+        super.periodic();
         io.updateInputs(inputs); // Update inputs from IO
         Logger.processInputs("Intake", inputs); // Log telemetry
-        IN_measuredVisualizer.update(this.inputs.IN_angle);
-
+        this.io.IN_runSetpoint(this.setpoint);
+        this.IN_measuredVisualizer.update(this.inputs.IN_angle);
     }
 
     public void IN_setRunning(boolean runIntake) {
@@ -44,15 +36,16 @@ public class Intake extends SubsystemBase {
         io.IN_reverseIntake(reverse, speed);
     }
 
-    public void IN_runSetpoint(Angle angle) {
-        io.IN_runSetpoint(angle);
+    public Command IN_runSetpoint(Angle angle) {
+        return runOnce(() -> this.setpoint = angle);
     }
 
     
     public void IN_setRoller(double speed) {
         io.IN_setRoller(speed);
     }
-    public Angle getINAngle() {
+
+    public Angle IN_getAngle() {
         return(this.inputs.IN_angle);
     }
 
