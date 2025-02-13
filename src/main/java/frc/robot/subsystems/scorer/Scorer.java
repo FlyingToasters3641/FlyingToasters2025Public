@@ -15,7 +15,7 @@ public class Scorer extends SubsystemBase{
 
     public Scorer(ScorerIO io) {
         this.io = io;
-        this.io.CS_setPID(1.1, 0.0, 0.0);
+        this.io.CS_setPID(0.5, 0.0, 0.0);
         this.CS_measuredVisualizer = new ScorerVisualizer("Measured", Color.kBlack);      
     }
 
@@ -42,6 +42,14 @@ public class Scorer extends SubsystemBase{
 
     public Angle CS_getAngle() {
         return(this.inputs.CS_angle);
+    }
+
+    public boolean CS_getAlgae() {
+        return(this.inputs.CS_algae);
+    }
+
+    public boolean CS_getCoral() {
+        return(this.inputs.CS_coral);
     }
    
 }

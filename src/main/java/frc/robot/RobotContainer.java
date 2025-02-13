@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.ScoreNet;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathFindToPath;
 import frc.robot.generated.TunerConstants;
@@ -60,6 +61,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorCommands;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.intake.Intake;
@@ -68,6 +70,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.scorer.Scorer;
 import frc.robot.subsystems.scorer.ScorerCommands;
+import frc.robot.subsystems.scorer.ScorerConstants;
 import frc.robot.subsystems.scorer.ScorerIO;
 import frc.robot.subsystems.scorer.ScorerIOSim;
 import frc.robot.subsystems.vision.Vision;
@@ -83,28 +86,28 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
  */
 public class RobotContainer {
     // Subsystems
-    private final Vision vision;
-    private final Drive drive;
-    private final Elevator elevator;
-    private final Intake intake;
-    private final Scorer scorer;
-    private final Climber climber;
-    private SwerveDriveSimulation driveSimulation = null;
+    public static Vision vision;
+    public static Drive drive;
+    public static Elevator elevator;
+    public static Intake intake;
+    public static Scorer scorer;
+    public static Climber climber;
+    public SwerveDriveSimulation driveSimulation = null;
     public static Blackboard blackboard = new Blackboard();
     public static Dashboard dashboard = new Dashboard();
     
     public static Stack stack = new Stack(blackboard);
 
     // Controller
-    private final CommandXboxController controller = new CommandXboxController(0);
+    private static CommandXboxController controller = new CommandXboxController(0);
 
     // Dashboard inputs
-    private final LoggedDashboardChooser<Command> autoChooser;
+    private static LoggedDashboardChooser<Command> autoChooser;
     //Choose a target through dhasboard
-    private final LoggedDashboardChooser<Targets> targetChooser;
+    private static LoggedDashboardChooser<Targets> targetChooser;
 
     //starting Auto Pose for simulation
-    private final Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
+    private static Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -223,8 +226,8 @@ public class RobotContainer {
         //Add items to the stack - for testing!
         controller.leftBumper().onTrue(Commands.runOnce(() -> addToStack()));
         //Execute the control tree
-        controller.y().toggleOnTrue(new ControlTree(blackboard).execute());
-        controller.a().onTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(180.0)));
+        controller.y().onTrue(new ScoreNet());
+        controller.a().onTrue(ScorerCommands.CS_net(scorer));
 
         controller.rightTrigger(0.1).onTrue(IntakeCommands.IN_runSetpoint(intake, Degrees.of(-40.0)));
         //controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
