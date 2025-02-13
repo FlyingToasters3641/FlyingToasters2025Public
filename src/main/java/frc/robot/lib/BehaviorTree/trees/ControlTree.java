@@ -40,8 +40,12 @@ public class ControlTree {
     SelectorNode hasCoral;
     //Selector node to check if it has Algae
     SelectorNode hasAlgae;
-
+    //Empty leaf node to cycle through the tree
     BehaviorTreeNode emptyleafnode;
+    //
+    SequenceNode hasTargetSequence;
+
+
 
 
     public ControlTree(Blackboard blackboard) {
@@ -54,6 +58,7 @@ public class ControlTree {
         this.scoringNodes = new SequenceNode(blackboard);
         this.intakeCoral = new SequenceNode(blackboard);
         this.intakeAlgae = new SequenceNode(blackboard);
+        this.hasTargetSequence = new SequenceNode(blackboard);
 
         blackboard.set("treeOn", true);
 
