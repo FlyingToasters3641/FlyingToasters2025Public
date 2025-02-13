@@ -13,12 +13,12 @@ public class Climber extends SubsystemBase{
     private final ClimberVisualizer CL_measuredVisualizer;
     private final ClimberVisualizer CL_goalVisualizer;
     public Angle CL_setpoint = new Rotation2d(0, 0).getMeasure();
+    public double CL_position = 0.0;
 
 
     public Climber(ClimberIO io) {
         this.io = io;
         this.io.CL_setPID(0.3, 0, 0);
-
         CL_measuredVisualizer = new ClimberVisualizer("Measured");
         CL_goalVisualizer = new ClimberVisualizer("Goal");
     }
@@ -65,6 +65,10 @@ public class Climber extends SubsystemBase{
 
     public void CL_setPosition(double position){
         io.CL_setPosition(position);
+    }
+
+    public boolean CL_getExtended() {
+        return io.CL_getExtended();
     }   
     
 }

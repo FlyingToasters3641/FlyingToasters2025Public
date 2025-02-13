@@ -37,7 +37,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     public void updateInputs(ClimberIOInputs inputs){;
 
         //Logs from TalonFX simulation.
-
+        inputs.CL_position = CL_TalonFX.getPosition().getValueAsDouble();
         Logger.recordOutput("Climber/motorPos", CL_TalonFX.getPosition().getValueAsDouble());
         Logger.recordOutput("Climber/voltage", CL_TalonFX.getMotorVoltage().getValueAsDouble());
         Logger.recordOutput("Climber/setpoint", setpoint);
@@ -66,5 +66,15 @@ public class ClimberIOTalonFX implements ClimberIO {
     @Override
     public void CL_setServo(double angle){
         CL_Servo.setAngle(angle);
+    }
+
+    @Override
+    public void CL_Stop(){
+        CL_TalonFX.set(0);
+    }
+
+    @Override
+    public boolean CL_getExtended(){
+        return CL_TalonFX.getPosition().getValueAsDouble() > 1000.0;//TODO: Update with actual values
     }
 }

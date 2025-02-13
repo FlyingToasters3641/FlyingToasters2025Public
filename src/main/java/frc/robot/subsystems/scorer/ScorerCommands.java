@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class ScorerCommands {
     public static Command CS_setRunning(Scorer m_Scorer, double speed) {
-        return Commands.run(() -> m_Scorer.CS_setRoller(speed));
+        return Commands.runOnce(() -> m_Scorer.CS_setRoller(speed));
     }
 
     public static Command CS_reverseScorer(Scorer m_Scorer, boolean reverse) {
@@ -36,8 +36,20 @@ public class ScorerCommands {
         return Commands.runOnce(() -> m_Scorer.CS_setRoller(-1.0)).andThen(new WaitCommand(0.5)).andThen(Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0)));
     }
 
-    public static Command CS_goToL4(Scorer scorer) {    
-        return scorer.CS_runSetpoint(Degrees.of(200));
+    public static Command CS_goToL4(Scorer m_Scorer) {    
+        return m_Scorer.CS_runSetpoint(Degrees.of(200));
+    }
+
+    public static Command CS_intakeAlgae(Scorer m_Scorer) {
+        return CS_setRunning(m_Scorer, -1.0);
+    }
+
+    public static Command CS_intakeCoral(Scorer m_Scorer) {
+        return CS_setRunning(m_Scorer, 1.0);
+    }
+
+    public static Command CS_stop(Scorer m_Scorer) {
+        return Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0));
     }
 
 }
