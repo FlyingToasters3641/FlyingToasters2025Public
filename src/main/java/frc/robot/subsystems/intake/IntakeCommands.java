@@ -18,7 +18,7 @@ public class IntakeCommands {
     }
 
     public static Command IN_intakeAlgae(Intake m_Intake){
-        return m_Intake.IN_runSetpoint(Degrees.of(160)).alongWith(IN_setRunning(m_Intake, 1.0));
+        return Commands.parallel(m_Intake.IN_runSetpoint(Degrees.of(-45)),(IN_setRunning(m_Intake, 1.0)));
     }
 
     public static Command IN_intakeCoral(Intake m_Intake){

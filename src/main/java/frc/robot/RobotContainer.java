@@ -220,21 +220,29 @@ public class RobotContainer {
 
         //Gyro reset
         controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
-        //Pathfind to a pose
-        controller.b().whileTrue(new PathFindToPath(drive, () -> Constants.testPath));
-        //Change the simulation state of the intake
-        controller.x().onTrue(Commands.runOnce(() -> switchIntakeStateSim()));
-        //Add items to the stack - for testing!
-        controller.leftBumper().onTrue(Commands.runOnce(() -> addToStack()));
-        //Execute the control tree
-        controller.y().onTrue(new ScoreNet());
-        controller.a().onTrue(ScorerCommands.CS_net(scorer));
+        //Score coral commands
+        controller.b().onTrue(new ScoreL4());
+        controller.y().onTrue(new ScoreL3());
+        controller.x().onTrue(new ScoreL2());
+        controller.a().onTrue(new ScoreL1());
 
-        controller.rightTrigger(0.1).onTrue(IntakeCommands.IN_runSetpoint(intake, Degrees.of(-40.0)));
-        //controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
-        controller.povDown().onTrue(ClimberCommands.CL_Extend(climber));
-        controller.povUp().onTrue(ClimberCommands.CL_Retract(climber));
-        dashboard.L1().whileTrue(ElevatorCommands.EL_goToL1(elevator)).onFalse(ElevatorCommands.EL_goToRest(elevator));
+        //Score net
+        controller.rightBumper().onTrue(new ScoreNet());
+
+        //Intake algae
+        controller.leftTrigger(0.1).onTrue(new IntakeGroundAlgae());
+
+        //Outake algae
+        controller.leftBumper().onTrue(new RemoveAlgae());
+
+        //Intake coral
+        controller.rightTrigger(0.1).onTrue(new IntakeCoral());
+
+        //Climber controls
+        controller.povUp().onTrue(new StartClimb());
+        controller.povDown().onTrue(new EndClimb());
+
+
     }
 
     /**

@@ -13,7 +13,9 @@ import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.scorer.ScorerCommands;
 
 public class ScoreCommands {
-    public class ScoreL1 extends SequentialCommandGroup {
+
+    //TODO: Make commands that utilize the elevator only able to run if the robot is in the safe zones on the field,
+    public static class ScoreL1 extends SequentialCommandGroup {
         public ScoreL1() {
             addCommands(
                 Commands.sequence(
@@ -27,7 +29,7 @@ public class ScoreCommands {
         }
     }
 
-    public class ScoreL2 extends SequentialCommandGroup {
+    public static class ScoreL2 extends SequentialCommandGroup {
         public ScoreL2() {
             addCommands(
                 Commands.sequence(
@@ -41,7 +43,7 @@ public class ScoreCommands {
         }
     }
 
-    public class ScoreL3 extends SequentialCommandGroup {
+    public static class ScoreL3 extends SequentialCommandGroup {
         public ScoreL3() {
             addCommands(
                 Commands.sequence(
@@ -55,7 +57,7 @@ public class ScoreCommands {
         }  
     }
 
-    public class ScoreL4 extends SequentialCommandGroup{
+    public static class ScoreL4 extends SequentialCommandGroup{
         public ScoreL4(){
             addCommands(
                 Commands.sequence(
@@ -91,20 +93,20 @@ public class ScoreCommands {
         }
     }
 
-    public class intakeGroundAlgae extends SequentialCommandGroup {
-        public intakeGroundAlgae() {
+    public static class IntakeGroundAlgae extends SequentialCommandGroup {
+        public IntakeGroundAlgae() {
             addCommands(
                 Commands.sequence(
                     Commands.parallel(IntakeCommands.IN_intakeAlgae(RobotContainer.intake), ScorerCommands.CS_intakeAlgae(RobotContainer.scorer))
                     .until(() -> RobotContainer.scorer.CS_getAlgae() == true),
                     Commands.parallel(IntakeCommands.IN_rest(RobotContainer.intake), ScorerCommands.CS_stop(RobotContainer.scorer))
-                    ).unless(() -> RobotContainer.scorer.CS_getAlgae() == true) //Don't run if we have an algae already
+                    )
             );
         }
     }
 
-    public class intakeCoral extends SequentialCommandGroup {
-        public intakeCoral() {
+    public static class IntakeCoral extends SequentialCommandGroup {
+        public IntakeCoral() {
             addCommands(
                 Commands.sequence(
                     Commands.parallel(IntakeCommands.IN_intakeCoral(RobotContainer.intake), ScorerCommands.CS_intakeCoral(RobotContainer.scorer))
@@ -115,20 +117,20 @@ public class ScoreCommands {
         }
     }
 
-    public class removeAlgae extends SequentialCommandGroup {
-        public removeAlgae() {
+    public static class RemoveAlgae extends SequentialCommandGroup {
+        public RemoveAlgae() {
             addCommands(
                 Commands.sequence(
-                    ScorerCommands.CS_removeAlgae(RobotContainer.scorer).alongWith(IntakeCommands.IN_outakeAlgae(RobotContainer.intake)
+                    Commands.parallel(ScorerCommands.CS_removeAlgae(RobotContainer.scorer),IntakeCommands.IN_outakeAlgae(RobotContainer.intake))
                     .until(() -> RobotContainer.scorer.CS_getAlgae() == false),
-                    Commands.parallel(IntakeCommands.IN_rest(RobotContainer.intake), ScorerCommands.CS_stop(RobotContainer.scorer)))
+                    Commands.parallel(IntakeCommands.IN_rest(RobotContainer.intake), ScorerCommands.CS_stop(RobotContainer.scorer))
                     ).unless(() -> RobotContainer.scorer.CS_getAlgae() == false)  //Don't run if we don't have algae
             ); 
         } 
     }
 
-    public class startClimb extends SequentialCommandGroup {
-        public startClimb() {
+    public static class StartClimb extends SequentialCommandGroup {
+        public StartClimb() {
             addCommands(
                 Commands.sequence(
                     ScorerCommands.CS_goToRest(RobotContainer.scorer),
@@ -142,13 +144,61 @@ public class ScoreCommands {
         }
     }
 
-    public class endClimb extends SequentialCommandGroup {
-        public endClimb() {
+    public static class EndClimb extends SequentialCommandGroup {
+        public EndClimb() {
             addCommands(
                 Commands.sequence(
                     ClimberCommands.CL_Retract(RobotContainer.climber),
                     Commands.waitUntil(() -> RobotContainer.climber.CL_getExtended() == false))
                 .unless(() -> RobotContainer.scorer.CS_getCoral() == false)
+            );
+        }
+    }
+
+    public static class GrabL2Algae extends SequentialCommandGroup {
+        public GrabL2Algae() {
+            addCommands(
+                Commands.sequence(
+                    ElevatorCommands.EL_goToL1(RobotContainer.elevator),
+                    Commands.waitUntil(() -> RobotContainer.elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_NET_HEIGHT - 2.0),
+                    ScorerCommands.CS_goToAlgae(RobotContainer.scorer),
+                    ScorerCommands.CS_intakeAlgae(RobotContainer.scorer),
+                    Commands.waitUntil(() -> RobotContainer.scorer.CS_getAlgae() == true),
+                    ScorerCommands.CS_stop(RobotContainer.scorer),
+                    ScorerCommands.CS_goToRest(RobotContainer.scorer),
+                    Commands.waitUntil(() -> RobotContainer.scorer.CS_getAngle().in(Degrees) <= 5.0),
+                    ElevatorCommands.EL_goToRest(RobotContainer.elevator)
+                    ).unless(() -> RobotContainer.scorer.CS_getAlgae() == true) //Don't run if we have an algae already
+            );
+        }
+    }
+
+    public static class GrabL3Algae extends SequentialCommandGroup {
+        public GrabL3Algae() {
+            addCommands(
+                Commands.sequence(
+                    ElevatorCommands.EL_goToL2(RobotContainer.elevator),
+                    Commands.waitUntil(() -> RobotContainer.elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_NET_HEIGHT - 2.0),
+                    ScorerCommands.CS_goToAlgae(RobotContainer.scorer),
+                    ScorerCommands.CS_intakeAlgae(RobotContainer.scorer),
+                    Commands.waitUntil(() -> RobotContainer.scorer.CS_getAlgae() == true),
+                    ScorerCommands.CS_stop(RobotContainer.scorer),
+                    ScorerCommands.CS_goToRest(RobotContainer.scorer),
+                    Commands.waitUntil(() -> RobotContainer.scorer.CS_getAngle().in(Degrees) <= 5.0),
+                    ElevatorCommands.EL_goToRest(RobotContainer.elevator)
+                    ).unless(() -> RobotContainer.scorer.CS_getAlgae() == true) //Don't run if we have an algae already
+            );
+        }
+    }
+
+    public static class GrabAlgaeToRest extends SequentialCommandGroup {
+        public GrabAlgaeToRest() {
+            addCommands(
+                Commands.sequence(
+                    Commands.parallel(IntakeCommands.IN_intakeAlgae(RobotContainer.intake), ScorerCommands.CS_intakeAlgae(RobotContainer.scorer))
+                    .until(() -> RobotContainer.scorer.CS_getAlgae() == true),
+                    Commands.parallel(IntakeCommands.IN_rest(RobotContainer.intake), ScorerCommands.CS_stop(RobotContainer.scorer))
+                    ).unless(() -> RobotContainer.scorer.CS_getAlgae() == false) //Don't run if we don't have an algae already
             );
         }
     }

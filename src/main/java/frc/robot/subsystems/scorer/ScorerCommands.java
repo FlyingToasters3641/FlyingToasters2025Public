@@ -52,4 +52,8 @@ public class ScorerCommands {
         return Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0));
     }
 
+    public static Command CS_goToAlgae(Scorer m_Scorer) {
+        return m_Scorer.CS_runSetpoint(Degrees.of(200));
+    }
+
 }
