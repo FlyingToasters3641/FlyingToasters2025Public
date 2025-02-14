@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.lib.BehaviorTree.ExecutionStatus;
+import frc.robot.util.AllianceFlipUtil;
 
 public class DriveToIntake extends BehaviorTreeNode {
     Command driveToCommand;
@@ -27,6 +28,7 @@ public class DriveToIntake extends BehaviorTreeNode {
         } else {
             pose = Constants.humanPlayerStationLeft;
         }
+        pose = AllianceFlipUtil.apply(pose);
         driveToCommand = AutoBuilder.pathfindToPose(pose, Constants.constraints);
         
     }

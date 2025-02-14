@@ -3,11 +3,14 @@ package frc.robot.lib.BehaviorTree.nodes;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.lib.BehaviorTree.ExecutionStatus;
 import frc.robot.lib.BehaviorTree.trees.Targets;
+import frc.robot.util.AllianceFlipUtil;
 
 public class DriveToTargetPose extends BehaviorTreeNode {
     Command driveToCommand;
@@ -22,7 +25,7 @@ public class DriveToTargetPose extends BehaviorTreeNode {
     @Override
     public void initialize() {
         if ((blackboard.getTargetPose("target")) != null && currentTarget != blackboard.getTarget("target")) {
-            pose = blackboard.getTargetPose("target");
+            pose = AllianceFlipUtil.apply(blackboard.getTargetPose("target"));
             currentTarget = blackboard.getTarget("target");
             driveToCommand = AutoBuilder.pathfindToPose(pose, Constants.constraints);
             } else if (blackboard.getTargetPose("target") != null) {
