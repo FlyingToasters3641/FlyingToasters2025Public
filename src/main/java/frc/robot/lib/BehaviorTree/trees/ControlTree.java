@@ -8,6 +8,7 @@ import frc.robot.lib.BehaviorTree.nodes.BehaviorTreeNode;
 import frc.robot.lib.BehaviorTree.nodes.DriveToIntake;
 import frc.robot.lib.BehaviorTree.nodes.DriveToTargetPose;
 import frc.robot.lib.BehaviorTree.nodes.EmptyNode;
+import frc.robot.lib.BehaviorTree.nodes.InfiniteLoopNode;
 import frc.robot.lib.BehaviorTree.nodes.SelectorNode;
 import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
 import frc.robot.lib.BehaviorTree.nodes.Subtree;

@@ -262,6 +262,7 @@ public class RobotContainer {
         } else {
                 blackboard.set("treeOn", true);
         }
+}
     public void switchIntakeStateSim() {
         if (!blackboard.getBoolean("hasCoral") && !blackboard.getBoolean("hasAlgae")) {
                 blackboard.set("hasCoral", true);
@@ -270,7 +271,8 @@ public class RobotContainer {
                 blackboard.set("hasCoral", false);
                 blackboard.set("hasAlgae", false);
         Logger.recordOutput("BehaviorTree/hasCoral", blackboard.getBoolean("hasCoral"));
-    }
+        }
+        }
 
     public void getTreeTarget() {
         Targets targetValue = targetChooser.get();
@@ -308,6 +310,7 @@ public class RobotContainer {
 
 
     public void displayComponentPosesToAdvantageScope() {
+    
         if (Constants.currentMode != Constants.Mode.SIM)
                 return;
 
@@ -345,7 +348,9 @@ public class RobotContainer {
                         Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d),
 
         });
-
+        }
 }
 
-}
+        
+
+
