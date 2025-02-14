@@ -62,6 +62,7 @@ public class IntakeIOSim implements IntakeIO {
             inputs.IN_angle.mut_replace(IN_ARM_sim.getAngleRads(), Radians);
             inputs.IN_voltage.mut_replace(IN_appliedVolts);
             inputs.IN_setpointAngle.mut_replace(IN_PID_Controller.getGoal().position, Degrees);      
+            Logger.recordOutput("Intake/GamepieceCount", intakeSimulation.getGamePiecesAmount());
         }
      
         @Override

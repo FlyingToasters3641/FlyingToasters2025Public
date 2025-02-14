@@ -51,6 +51,7 @@ import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.lib.BehaviorTree.trees.ExampleTree;
 import frc.robot.lib.BehaviorTree.trees.Stack;
 import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.drive.Drive;
@@ -254,11 +255,27 @@ public class RobotContainer {
         return autoChooser.get();
     }
 
-    //hardsets the intake state to true or false, used for simulation testing
+    //turns the tree on and off using the boolean that checks for the infinite loop
+    public void switchTree() {
+        if (blackboard.getBoolean("treeOn") == true) {
+                blackboard.set("treeOn", false); 
+        } else {
+                blackboard.set("treeOn", true);
+        }
     public void switchIntakeStateSim() {
         if (!blackboard.getBoolean("hasCoral") && !blackboard.getBoolean("hasAlgae")) {
                 blackboard.set("hasCoral", true);
                 blackboard.set("hasAlgae", true);
+        } else {
+                blackboard.set("hasCoral", false);
+                blackboard.set("hasAlgae", false);
+        Logger.recordOutput("BehaviorTree/hasCoral", blackboard.getBoolean("hasCoral"));
+    }
+
+    public void getTreeTarget() {
+        Targets targetValue = targetChooser.get();
+        if (targetValue != null) {
+        blackboard.set("target", targetValue);
         } else {
                 blackboard.set("hasCoral", false);
                 blackboard.set("hasAlgae", false);

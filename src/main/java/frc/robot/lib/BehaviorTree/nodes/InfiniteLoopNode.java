@@ -17,7 +17,7 @@ public class InfiniteLoopNode extends BehaviorTreeNode {
     
     @Override
     public void initialize() {
-        
+        child.initialize();
     }
 
     @Override

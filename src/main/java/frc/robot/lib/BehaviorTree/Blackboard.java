@@ -17,6 +17,10 @@ public class Blackboard {
         return data.get(key);
     }
 
+    public Targets getTarget(String key) {
+        return (Targets) data.get(key);
+    }
+
     public boolean containsKey(String key) {
         return data.containsKey(key);
     }

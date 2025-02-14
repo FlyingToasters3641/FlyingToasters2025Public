@@ -14,7 +14,8 @@ import frc.robot.lib.BehaviorTree.nodes.Subtree;
 
 public class ControlTree {
     Blackboard blackboard;
-    SequenceNode tree;
+    InfiniteLoopNode tree;
+    //SequenceNode tree;
     BehaviorTreeCommand command;
     Predicate<Blackboard> stopCondition;
     //scoring tree
@@ -33,8 +34,12 @@ public class ControlTree {
     SelectorNode hasCoral;
     //Selector node to check if it has Algae
     SelectorNode hasAlgae;
-    //Empty leaf node to reiterate through the tree
+    //Empty leaf node to cycle through the tree
     BehaviorTreeNode emptyleafnode;
+    //
+    SequenceNode hasTargetSequence;
+
+
 
 
     public ControlTree(Blackboard blackboard) {
@@ -47,8 +52,9 @@ public class ControlTree {
         this.scoringNodes = new SequenceNode(blackboard);
         this.intakeCoral = new SequenceNode(blackboard);
         this.intakeAlgae = new SequenceNode(blackboard);
+        this.hasTargetSequence = new SequenceNode(blackboard);
 
-
+        blackboard.set("treeOn", true);
 
         ((SelectorNode)findTarget).addChild(findPiece, (Blackboard bb) -> bb.getBoolean("hasTarget"));
         ((SelectorNode)findTarget).addChild(new EmptyNode(blackboard), (Blackboard bb) -> !bb.getBoolean("hasTarget"));
@@ -69,9 +75,9 @@ public class ControlTree {
         ((SequenceNode)intakeCoral).addChild(new DriveToIntake(blackboard));
         ((SequenceNode)intakeAlgae).addChild(new DriveToIntake(blackboard));
 
-
-        this.tree = new SequenceNode(blackboard);
-        ((SequenceNode)tree).addChild(scoringTree);
+        this.tree = new InfiniteLoopNode(blackboard, scoringTree, (Blackboard bb) -> !bb.getBoolean("treeOn"));
+        //this.tree = new SequenceNode(blackboard);
+        //((SequenceNode)tree).addChild(scoringTree);
     
 
         this.command = new BehaviorTreeCommand(tree);
