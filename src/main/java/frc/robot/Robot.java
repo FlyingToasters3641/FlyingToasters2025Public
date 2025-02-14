@@ -18,9 +18,8 @@ import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.lib.BehaviorTree.trees.Targets;
+import frc.robot.subsystems.Dashboard;
 import frc.robot.util.LocalADStarAK;
-
-import java.util.ArrayList;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -120,7 +119,7 @@ public class Robot extends LoggedRobot {
         // This must be called from the robot's periodic block in order for anything in
         // the Command-based framework to work.
         CommandScheduler.getInstance().run();
-
+        Dashboard.getTargetValue(RobotContainer.stack);
         // Return to normal thread priority
         Threads.setCurrentThreadPriority(false, 10);
 
@@ -141,6 +140,8 @@ public class Robot extends LoggedRobot {
         if ((RobotContainer.blackboard.getBoolean("isDone") == true)) {
             RobotContainer.stack.removeLastElement();
         }
+
+        
     }
 
     /** This function is called once when the robot is disabled. */

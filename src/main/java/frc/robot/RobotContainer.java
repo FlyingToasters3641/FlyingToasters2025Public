@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
@@ -41,17 +40,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ScoreCommands.*;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.PathFindToPath;
-import frc.robot.commands.ScoreCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BehaviorTree.BehaviorTreeDebugger;
 import frc.robot.lib.BehaviorTree.Blackboard;
-import frc.robot.lib.BehaviorTree.trees.ControlTree;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.subsystems.climber.ClimberIO;
-import frc.robot.lib.BehaviorTree.trees.ExampleTree;
 import frc.robot.lib.BehaviorTree.trees.Stack;
 import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.drive.Drive;
@@ -62,17 +56,12 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorCommands;
-import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.scorer.Scorer;
-import frc.robot.subsystems.scorer.ScorerCommands;
-import frc.robot.subsystems.scorer.ScorerConstants;
 import frc.robot.subsystems.scorer.ScorerIO;
 import frc.robot.subsystems.scorer.ScorerIOSim;
 import frc.robot.subsystems.vision.Vision;
@@ -222,26 +211,26 @@ public class RobotContainer {
         //Gyro reset
         controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
         //Score coral commands
-        controller.b().onTrue(new ScoreL4());
-        controller.y().onTrue(new ScoreL3());
-        controller.x().onTrue(new ScoreL2());
-        controller.a().onTrue(new ScoreL1());
+        controller.b().or(dashboard.L1()).onTrue(new ScoreL4(scorer, elevator));
+        controller.y().or(dashboard.L2()).onTrue(new ScoreL3(scorer, elevator));
+        controller.x().or(dashboard.L3()).onTrue(new ScoreL2(scorer, elevator));
+        controller.a().or(dashboard.L4()).onTrue(new ScoreL1(scorer, elevator));
 
         //Score net
-        controller.rightBumper().onTrue(new ScoreNet());
+        controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 
         //Intake algae
-        controller.leftTrigger(0.1).onTrue(new IntakeGroundAlgae());
+        controller.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
 
         //Outake algae
-        controller.leftBumper().onTrue(new RemoveAlgae());
+        controller.leftBumper().onTrue(new RemoveAlgae(scorer, intake));
 
         //Intake coral
-        controller.rightTrigger(0.1).onTrue(new IntakeCoral());
+        controller.rightTrigger(0.1).onTrue(new IntakeCoral(scorer, intake));
 
         //Climber controls
-        controller.povUp().onTrue(new StartClimb());
-        controller.povDown().onTrue(new EndClimb());
+        controller.povUp().onTrue(new StartClimb(scorer, elevator, intake));
+        controller.povDown().onTrue(new EndClimb(scorer));
 
 
     }
