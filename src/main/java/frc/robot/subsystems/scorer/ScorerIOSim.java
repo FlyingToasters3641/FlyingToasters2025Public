@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.Volts;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.hal.SimBoolean;
+import edu.wpi.first.hal.SimDevice;
+import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -21,7 +23,10 @@ public class ScorerIOSim implements ScorerIO {
     private final ProfiledPIDController CS_PID_Controller = new ProfiledPIDController(ScorerConstants.CS_PROFILED_PID_CONSTANTS.kP, ScorerConstants.CS_PROFILED_PID_CONSTANTS.kI, ScorerConstants.CS_PROFILED_PID_CONSTANTS.kD, ScorerConstants.TRAPEZOID_PROFILE_CONSTRAINTS);
     private final ArmFeedforward CS_FeedForward = new ArmFeedforward(0, 0, 0, 0);
     private MutVoltage CS_appliedVoltage = Volts.mutable(0);
-    private SimBoolean CS_algaeSwitch = new SimBoolean(0);
+    private final SimDevice CS_algaeDevice = SimDevice.create("AlgaeSwitchDevice");
+    private final SimBoolean CS_algaeSwitch = CS_algaeDevice.createBoolean("AlgaeSwitch", Direction.kInput, false);
+    private final SimDevice CS_coralDevice = SimDevice.create("CoralSwitchDevice");
+    private final SimBoolean CS_coralSwitch = CS_coralDevice.createBoolean("CoralSwitch", Direction.kInput, false);
 
     private final SingleJointedArmSim CS_ARM_sim = new SingleJointedArmSim(
         ScorerConstants.kArmPlant,
@@ -41,6 +46,7 @@ public class ScorerIOSim implements ScorerIO {
             inputs.CS_voltage.mut_replace(CS_appliedVoltage);
             inputs.CS_setpointAngle.mut_replace(this.CS_PID_Controller.getGoal().position, Degrees);
             inputs.CS_algae = CS_algaeSwitch.get();
+            inputs.CS_coral = CS_coralSwitch.get();
         }
     
         @Override

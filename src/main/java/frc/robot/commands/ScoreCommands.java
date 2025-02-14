@@ -10,7 +10,9 @@ import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.subsystems.elevator.ElevatorCommands;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.intake.IntakeCommands;
+import frc.robot.subsystems.scorer.Scorer;
 import frc.robot.subsystems.scorer.ScorerCommands;
+import frc.robot.subsystems.scorer.ScorerConstants;
 
 public class ScoreCommands {
 
@@ -49,7 +51,7 @@ public class ScoreCommands {
                 Commands.sequence(
                     ScorerCommands.CS_goToRest(RobotContainer.scorer),
                     ElevatorCommands.EL_goToL3(RobotContainer.elevator),
-                    Commands.waitUntil(() -> RobotContainer.elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_L2_HEIGHT - 2.0),
+                    Commands.waitUntil(() -> RobotContainer.elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_L3_HEIGHT - 2.0),
                     ScorerCommands.CS_scoreCoral(RobotContainer.scorer),
                     ElevatorCommands.EL_goToRest(RobotContainer.elevator))
                 .unless(() -> RobotContainer.scorer.CS_getCoral() == false)
@@ -63,8 +65,9 @@ public class ScoreCommands {
                 Commands.sequence(
                     ScorerCommands.CS_goToRest(RobotContainer.scorer),
                     ElevatorCommands.EL_goToL4(RobotContainer.elevator),
-                    Commands.waitUntil(() -> RobotContainer.elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_NET_HEIGHT - 2.0),
+                    Commands.waitUntil(() -> RobotContainer.elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_L4_HEIGHT - 2.0),
                     ScorerCommands.CS_goToL4(RobotContainer.scorer),
+                    Commands.waitUntil(() -> RobotContainer.scorer.CS_getAngle().in(Degrees) >= ScorerConstants.CS_L4_ANGLE - 5.0),
                     ScorerCommands.CS_removeAlgae(RobotContainer.scorer),
                     ScorerCommands.CS_goToRest(RobotContainer.scorer),
                     Commands.waitUntil(() -> RobotContainer.scorer.CS_getAngle().in(Degrees) <= 5.0),

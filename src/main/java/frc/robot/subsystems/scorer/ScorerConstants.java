@@ -26,6 +26,7 @@ public class ScorerConstants {
     public static final Angle DEGREES_PER_ROTATION = Degrees.of(360); //FIXME: Update with correct value
     public static final double SENSOR_TO_MECHANISM_RATIO = 1;
     public static final double ROTOR_TO_SENSOR_RATIO = 17.14;
+    public static final double CS_L4_ANGLE = 200;
     public static double kArmStartAngle = Units.Degrees.of(0).in(Units.Radians);
     public static double kArmGearing = 17.14;
     public static double kArmMinAngle = Units.Degrees.of(0).in(Units.Radians);

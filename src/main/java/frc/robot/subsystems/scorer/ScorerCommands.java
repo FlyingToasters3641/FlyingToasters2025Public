@@ -21,7 +21,11 @@ public class ScorerCommands {
     }
 
     public static Command CS_scoreCoral(Scorer m_Scorer) {
-        return Commands.run(() -> m_Scorer.CS_setRoller(0.75)).until(() -> m_Scorer.CS_getCoral()).andThen(Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0)));
+        return Commands.run(() -> m_Scorer.CS_setRoller(-0.75)).until(() -> m_Scorer.CS_getCoral() == false).andThen(Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0)));
+    }
+
+    public static Command cS_scoreCoralL4(Scorer m_Scorer) {
+        return Commands.runOnce(() -> m_Scorer.CS_setRoller(0.75)).until(() -> m_Scorer.CS_getCoral() == false).andThen(new WaitCommand(0.5)).andThen(Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0)));
     }
 
     public static Command CS_goToRest(Scorer m_Scorer) {
@@ -37,7 +41,7 @@ public class ScorerCommands {
     }
 
     public static Command CS_goToL4(Scorer m_Scorer) {    
-        return m_Scorer.CS_runSetpoint(Degrees.of(200));
+        return m_Scorer.CS_runSetpoint(Degrees.of(ScorerConstants.CS_L4_ANGLE));
     }
 
     public static Command CS_intakeAlgae(Scorer m_Scorer) {
