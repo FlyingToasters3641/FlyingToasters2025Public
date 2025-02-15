@@ -30,7 +30,7 @@ public class Dashboard extends SubsystemBase {
     }
 
     public Trigger getLevel(int level) {
-        return getLevel(1, CommandScheduler.getInstance().getDefaultButtonLoop());
+        return getLevel(level, CommandScheduler.getInstance().getDefaultButtonLoop());
     }
 
     public Trigger L1() {
