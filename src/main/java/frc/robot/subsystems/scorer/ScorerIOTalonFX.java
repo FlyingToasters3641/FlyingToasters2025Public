@@ -24,6 +24,8 @@ public class ScorerIOTalonFX implements ScorerIO{
     public static final TalonFX CS_pivotTalonFX = new TalonFX(3, CANbusName);
     public static final TalonFX CS_rollerTalonFX = new TalonFX(4, CANbusName);
     public static final CANcoder CS_pivotCANcoder = new CANcoder(5, CANbusName);
+    public static final DigitalInput CS_coralSensor = new DigitalInput(0);
+    public static final DigitalInput CS_algaeSensor = new DigitalInput(1);
 
     public ScorerIOTalonFX(){
 
@@ -61,6 +63,8 @@ public class ScorerIOTalonFX implements ScorerIO{
     public void updateInputs(ScorerIOInputs inputs) {
         inputs.CS_angle.mut_replace(CS_pivotCANcoder.getAbsolutePosition().getValue());
         inputs.CS_voltage.mut_replace(CS_pivotTalonFX.getMotorVoltage().getValue());
+        inputs.CS_algae = CS_algaeSensor.get();
+        inputs.CS_coral = CS_coralSensor.get();
     }
 
     @Override

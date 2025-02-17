@@ -13,8 +13,8 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
 import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
 import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
@@ -22,31 +22,30 @@ import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.ScoreCommands.*;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.PathFindToPose;
 import frc.robot.generated.TunerConstants;
-import frc.robot.lib.BehaviorTree.BehaviorTreeCommand;
 import frc.robot.lib.BehaviorTree.BehaviorTreeDebugger;
 import frc.robot.lib.BehaviorTree.Blackboard;
-import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
-import frc.robot.lib.BehaviorTree.trees.ControlTree;
-import frc.robot.lib.BehaviorTree.trees.ExampleTree;
+import frc.robot.subsystems.Dashboard;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.lib.BehaviorTree.trees.Stack;
 import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.drive.Drive;
@@ -57,23 +56,18 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorCommands;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.scorer.Scorer;
-import frc.robot.subsystems.scorer.ScorerCommands;
 import frc.robot.subsystems.scorer.ScorerIO;
 import frc.robot.subsystems.scorer.ScorerIOSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
 /**
@@ -83,28 +77,31 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
  */
 public class RobotContainer {
     // Subsystems
-    private final Vision vision;
-    private final Drive drive;
-    private final Elevator elevator;
-    private final Intake intake;
-    private final Scorer scorer;
-    private SwerveDriveSimulation driveSimulation = null;
+    public static Vision vision;
+    public static Drive drive;
+    public static Elevator elevator;
+    public static Intake intake;
+    public static Scorer scorer;
+    public static Climber climber;
+    public SwerveDriveSimulation driveSimulation = null;
     public static Blackboard blackboard = new Blackboard();
+    public static Dashboard dashboard = new Dashboard();
     
     public static Stack stack = new Stack(blackboard);
 
     // Controller
-    private final CommandXboxController controller = new CommandXboxController(0);
+    private static CommandXboxController controller = new CommandXboxController(0);
 
     // Dashboard inputs
-    private final LoggedDashboardChooser<Command> autoChooser;
+    private static LoggedDashboardChooser<Command> autoChooser;
     //Choose a target through dhasboard
-    private final LoggedDashboardChooser<Targets> targetChooser;
+    private static LoggedDashboardChooser<Targets> targetChooser;
     //Choose a player station through dashboard
     private final LoggedDashboardChooser<String> playerStationChooser;
 
     //starting Auto Pose for simulation
-    private final Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
+    private static Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
+
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -120,11 +117,12 @@ public class RobotContainer {
                         new ModuleIOTalonFX(TunerConstants.BackRight));
                 vision = new Vision(
                         drive,
-                        new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
-                        new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
-                elevator = new Elevator(new ElevatorIOTalonFX() {});
-                intake = new Intake(new IntakeIOTalonFX() {});
+                        new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+                        new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+                elevator = new Elevator(new ElevatorIO() {});
+                intake = new Intake(new IntakeIO() {});
                 scorer = new Scorer(new ScorerIO() {});
+                climber = new Climber(new ClimberIO() {});
                 break;
                        
             case SIM:
@@ -151,6 +149,7 @@ public class RobotContainer {
                 elevator = new Elevator(new ElevatorIOSim());
                 intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance(), blackboard));
                 scorer = new Scorer(new ScorerIOSim());
+                climber = new Climber(new ClimberIO() {});
                 break;
             default:
                 // Replayed robot, disable IO implementations
@@ -160,14 +159,14 @@ public class RobotContainer {
                 elevator = new Elevator(new ElevatorIO() {});
                 intake = new Intake(new IntakeIO() {});
                 scorer = new Scorer(new ScorerIO() {});
+                climber = new Climber(new ClimberIO() {});
                 break;
         }
 
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-        // Set up auto routines
+
 
         // Set up SysId routines
-        
         autoChooser.addOption("Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
         autoChooser.addOption("Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
         autoChooser.addOption(
@@ -176,14 +175,14 @@ public class RobotContainer {
                 "Drive SysId (Quasistatic Reverse)", drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
         autoChooser.addOption("Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
         autoChooser.addOption("Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        autoChooser.addOption("testAuto", new PathPlannerAuto("testAuto"));
-        autoChooser.addOption("testAuto2", new PathPlannerAuto("testAuto2"));
 
+        //Set up the target chooser for the stack
         targetChooser = new LoggedDashboardChooser<>("Target Choices");
         targetChooser.addOption("A1", Targets.A1);
         targetChooser.addOption("Processor", Targets.PROCESSOR);
         targetChooser.addOption("G1", Targets.G1);
         targetChooser.addOption("L1", Targets.L1);
+        targetChooser.addOption("test", Targets.TEST);
 
         playerStationChooser = new LoggedDashboardChooser<>("Human Player Station Choice:");
         playerStationChooser.addOption("Left", "left");
@@ -208,12 +207,6 @@ public class RobotContainer {
         drive.setDefaultCommand(DriveCommands.joystickDrive(
                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
 
-        // Lock to 0 when A button is held
-        controller
-                .a()
-                .whileTrue(DriveCommands.joystickDriveAtAngle(
-                        drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> new Rotation2d()));
-
         // Switch to X pattern when X button is pressed
         controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
@@ -223,15 +216,32 @@ public class RobotContainer {
                 : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
         controller.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
-        //Moves the elevator up towards a certain amount of inches. Only used to test simulation setpoints for now.
+        //Gyro reset
+        controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
+        //Score coral commands
+        
+        controller.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
+        controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        controller.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
+        controller.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
-        controller.rightBumper().toggleOnTrue(new ExampleTree(blackboard).execute());
-        controller.leftBumper().onTrue(Commands.runOnce(() -> addToStack()));
-        controller.y().toggleOnTrue(new ControlTree(blackboard).execute());
-        controller.x().onTrue(Commands.runOnce(() -> switchIntakeStateSim()));
-        controller.a().whileTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30))).onFalse(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
-        controller.rightTrigger(0.1).whileTrue(IntakeCommands.IN_setRunning(intake, true)).onFalse(IntakeCommands.IN_setRunning(intake, false));
-        controller.leftTrigger(0.1).whileTrue(IntakeCommands.IN_reverseIntake(intake, true));
+        //Score net
+        controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
+
+        //Intake algae
+        controller.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
+
+        //Outake algae
+        controller.leftBumper().onTrue(new RemoveAlgae(scorer, intake));
+
+        //Intake coral
+        controller.rightTrigger(0.1).onTrue(new IntakeCoral(scorer, intake));
+
+        //Climber controls
+        controller.povUp().onTrue(new StartClimb(scorer, elevator, intake));
+        controller.povDown().onTrue(new EndClimb(scorer));
+
+
     }
 
     /**
@@ -250,9 +260,7 @@ public class RobotContainer {
         } else {
                 blackboard.set("treeOn", true);
         }
-    }
-
-    //FOR SIMULATION ONLY; this method switches the states if the robot has an intaked piece or not, used for testing
+}
     public void switchIntakeStateSim() {
         if (!blackboard.getBoolean("hasCoral") && !blackboard.getBoolean("hasAlgae")) {
                 blackboard.set("hasCoral", true);
@@ -260,18 +268,22 @@ public class RobotContainer {
         } else {
                 blackboard.set("hasCoral", false);
                 blackboard.set("hasAlgae", false);
-        }
         Logger.recordOutput("BehaviorTree/hasCoral", blackboard.getBoolean("hasCoral"));
-    }
+        }
+        }
 
     public void getTreeTarget() {
         Targets targetValue = targetChooser.get();
         if (targetValue != null) {
         blackboard.set("target", targetValue);
         } else {
+                blackboard.set("hasCoral", false);
+                blackboard.set("hasAlgae", false);
         }
+        Logger.recordOutput("hasCoral", blackboard.getBoolean("hasCoral"));
     }
-
+    
+    //Adds item for the stack - testing for the control tree
     public void addToStack() {
         Targets targetValue = targetChooser.get();
         stack.add(targetValue);
@@ -285,13 +297,6 @@ public class RobotContainer {
         SimulatedArena.getInstance().resetFieldForAuto();
     }
 
-    //An attempt to automatically update the starting pose of the simulated Auto *does not work*
-    public Pose2d getAutoStartingPose() {
-        Pose2d autoStartingPose = new PathPlannerAuto("testAuto").getStartingPose();
-        return autoStartingPose;
-
-    }
-
     public void displaySimFieldToAdvantageScope() {
         if (Constants.currentMode != Constants.Mode.SIM) return;
 
@@ -302,4 +307,49 @@ public class RobotContainer {
                 "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
     }
 
+
+    public void displayComponentPosesToAdvantageScope() {
+    
+        if (Constants.currentMode != Constants.Mode.SIM)
+                return;
+
+        Distance EL_simPosition = elevator.getELPosition();
+
+        Transform3d elevator3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition,
+                        new Rotation3d(0, 0, 0)); // 3d view changed to be a straight line up.
+        Transform3d elevatorHalf3d = new Transform3d(Inches.zero(), Inches.zero(), EL_simPosition.div(2),
+                        new Rotation3d(0, 0, 0));
+        Rotation3d intakeRotation3d = new Rotation3d(intake.IN_getAngle().in(Radians), 0, 0);
+
+        Rotation3d scorerRotation3d = new Rotation3d(scorer.CS_getAngle().in(Radians), 0, 0);
+
+        Logger.recordOutput("Odometry/RobotComponentPoses", new Pose3d[] {
+                        new Pose3d(Constants.scorerPoseOffset.getX() + elevator3d.getX(),
+                                        Constants.scorerPoseOffset.getY() + elevator3d.getY(),
+                                        Constants.scorerPoseOffset.getZ() + elevator3d.getZ(),
+                                        Constants.scorerPoseOffset.getRotation().rotateBy(scorerRotation3d)),
+                        new Pose3d(Constants.scorerRollerPoseOffset.getX() + elevator3d.getX(),
+                                        Constants.scorerRollerPoseOffset.getY() + elevator3d.getY(),
+                                        Constants.scorerRollerPoseOffset.getZ() + elevator3d.getZ(),
+                                        Constants.scorerRollerPoseOffset.getRotation()
+                                                        .rotateBy(scorerRotation3d)),
+                        Constants.climberPoseOffset,
+                        new Pose3d(Constants.intakePoseOffset.getX(), Constants.intakePoseOffset.getY(),
+                                        Constants.intakePoseOffset.getZ(),
+                                        Constants.intakeRollersPoseOffset.getRotation()
+                                                        .rotateBy(intakeRotation3d)),
+                        new Pose3d(Constants.intakeRollersPoseOffset.getX(),
+                                        Constants.intakeRollersPoseOffset.getY(),
+                                        Constants.intakeRollersPoseOffset.getZ(),
+                                        Constants.intakeRollersPoseOffset.getRotation()
+                                                        .rotateBy(intakeRotation3d)),
+                        Constants.elevatorOneIntakeOffset.plus(elevator3d),
+                        Constants.elevatorTwoIntakeOffset.plus(elevatorHalf3d),
+
+        });
+        }
 }
+
+        
+
+

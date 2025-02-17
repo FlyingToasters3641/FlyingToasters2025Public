@@ -58,7 +58,7 @@ public class Blackboard {
                 break;
         }
     } else {
-        //TODO: THIS SETS A RANDOM VARIABLE IF NULL: FIX LATER
+        //TODO: THIS SETS A RANDOM VARIABLE IF NULL
         Algae = false;
     }
         return Algae;
@@ -220,14 +220,16 @@ public class Blackboard {
                 case L4:
                     targetPose = Constants.reefBranchL;
                     break;
-                case NONE:
+                case TEST:
+                    targetPose = Constants.testPose1;
+                    break;
+                default:
                     targetPose = null;
                     break;
             }
         } else {
             targetPose = null;
         }
-
         return targetPose;
     }
 }

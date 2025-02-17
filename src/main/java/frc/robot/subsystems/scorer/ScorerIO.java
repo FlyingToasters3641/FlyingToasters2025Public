@@ -16,8 +16,9 @@ public interface ScorerIO {
         
         public MutAngle CS_angle = Radians.mutable(0);
         public MutVoltage CS_voltage = Volts.mutable(0);
-
         public MutAngle CS_setpointAngle = Radians.mutable(0);
+        public boolean CS_algae = false;
+        public boolean CS_coral = false;
         
     }
 

@@ -1,9 +1,6 @@
 package frc.robot.lib.BehaviorTree.trees;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.BehaviorTree.Blackboard;
 
 public class Stack {
@@ -12,8 +9,7 @@ public class Stack {
     Blackboard blackboard;
 
     public Stack(Blackboard blackboard) {
-    this.blackboard = blackboard;
-
+        this.blackboard = blackboard;
     }
 
     public void add(Targets item) {
@@ -67,6 +63,14 @@ public class Stack {
             return stack;
         } else {
             return null;
+        }
+    }
+
+    public void removeMatchingElements(Targets item) {
+        for (int i = 0; i < stack.size(); i++) {
+            if (stack.get(i) == item) {
+                stack.remove(i);
+            }
         }
     }
 }
