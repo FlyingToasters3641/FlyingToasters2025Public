@@ -25,6 +25,14 @@ public class Blackboard {
         return data.containsKey(key);
     }
 
+    public boolean isPlayerStationLeft() {
+        if (data.get("playerStation") == "left") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public boolean getBoolean(String key) {
         if (data.get(key) == null) {
             //TODO: THIS SETS A RANDOM VARIABLE IF NULL: FIX LATER

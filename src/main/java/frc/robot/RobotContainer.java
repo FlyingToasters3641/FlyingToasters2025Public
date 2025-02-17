@@ -100,6 +100,8 @@ public class RobotContainer {
     private final LoggedDashboardChooser<Command> autoChooser;
     //Choose a target through dhasboard
     private final LoggedDashboardChooser<Targets> targetChooser;
+    //Choose a player station through dashboard
+    private final LoggedDashboardChooser<String> playerStationChooser;
 
     //starting Auto Pose for simulation
     private final Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
@@ -182,6 +184,12 @@ public class RobotContainer {
         targetChooser.addOption("Processor", Targets.PROCESSOR);
         targetChooser.addOption("G1", Targets.G1);
         targetChooser.addOption("L1", Targets.L1);
+
+        playerStationChooser = new LoggedDashboardChooser<>("Human Player Station Choice:");
+        playerStationChooser.addOption("Left", "left");
+        playerStationChooser.addOption("Right", "right");
+
+
 
 
         // Configure the button bindings
@@ -267,6 +275,7 @@ public class RobotContainer {
     public void addToStack() {
         Targets targetValue = targetChooser.get();
         stack.add(targetValue);
+        blackboard.set("playerStation", playerStationChooser.get());
     }
 
     public void resetSimulation() {

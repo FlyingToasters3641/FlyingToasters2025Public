@@ -26,8 +26,12 @@ public class DriveToIntake extends BehaviorTreeNode {
             //TODO: change both constants for intaking to actual stuff 
             pose = Constants.reefBranchA;
         } else {
-            pose = Constants.humanPlayerStationLeft;
+            if (blackboard.isPlayerStationLeft()) {
+                pose = Constants.humanPlayerStationLeft;
+            } else {
+            pose = Constants.humanPlayerStationRight;
         }
+    }
         pose = AllianceFlipUtil.apply(pose);
         driveToCommand = AutoBuilder.pathfindToPose(pose, Constants.constraints);
         
