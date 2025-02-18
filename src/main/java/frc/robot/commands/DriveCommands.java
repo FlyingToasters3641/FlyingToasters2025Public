@@ -53,6 +53,9 @@ public class DriveCommands {
     private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
     private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
     private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+    private static final double LINEAR_KP = 2.0;
+    private static final double LINEAR_KD = 0.0;
+    private static final double LINEAR_MAX_ACCELERATION = 26.62;
 
     private final Pose2d lineUpPose = new Pose2d(5.8, 4, new Rotation2d(3.1415926589793));
 
@@ -94,8 +97,8 @@ public class DriveCommands {
 
                     //add an if statement here and change the chassis speeds to move towards the pose2d when the button is being pressed
                     ChassisSpeeds speeds = new ChassisSpeeds(
-                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * 0.25,
+                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * 0.25,
                             omega * drive.getMaxAngularSpeedRadPerSec());
                     boolean isFlipped = DriverStation.getAlliance().isPresent()
                             && DriverStation.getAlliance().get() == Alliance.Red;
@@ -148,6 +151,45 @@ public class DriveCommands {
                 // Reset PID controller when command starts
                 .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
     }
+
+    public static Command robotJoystickDrive(
+        Drive drive, double xOffset, double yOffset, double omegaOffset) {
+
+        
+        ProfiledPIDController linearController = new ProfiledPIDController(
+                LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+                ProfiledPIDController angleController = new ProfiledPIDController(
+                ANGLE_KP, 0.0, ANGLE_KD, new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+        angleController.enableContinuousInput(-Math.PI, Math.PI);
+    return Commands.run(
+            () -> {
+                // Get linear velocity
+                double xTranslation = linearController.calculate(
+                        xOffset,
+                        0.0);
+
+                double yTranslation = linearController.calculate(
+                        yOffset,
+                        0.0);
+
+                // Apply rotation deadbande
+                double omega = angleController.calculate(
+                                    omegaOffset,
+                                    0.0);
+
+                // Convert to field relative speeds & send command
+
+                //add an if statement here and change the chassis speeds to move towards the pose2d when the button is being pressed
+                ChassisSpeeds speeds = new ChassisSpeeds(
+                        xTranslation,
+                        yTranslation,
+                        omega);
+                drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                        speeds,
+                        new Rotation2d()));
+            },
+            drive);
+}
 
     /**
      * Measures the velocity feedforward constants for the drive motors.
