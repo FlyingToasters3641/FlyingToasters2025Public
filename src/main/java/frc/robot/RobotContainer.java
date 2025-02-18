@@ -143,11 +143,11 @@ public class RobotContainer {
                 vision = new Vision(
                         drive,
                         new VisionIOPhotonVisionSim(
-                                VisionConstants.camera0Name, VisionConstants.robotToCamera0, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true),
+                                VisionConstants.camera0Name, VisionConstants.robotToCamera0, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
                         new VisionIOPhotonVisionSim(
-                                VisionConstants.camera1Name, VisionConstants.robotToCamera1, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true),
+                                VisionConstants.camera1Name, VisionConstants.robotToCamera1, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
                         new VisionIOPhotonVisionSim(
-                                VisionConstants.camera2Name, VisionConstants.robotToCamera2, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true),
+                                VisionConstants.camera2Name, VisionConstants.robotToCamera2, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
                         new VisionIOPhotonVisionSim(
                                 VisionConstants.camera3Name, VisionConstants.robotToCamera3, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true));
                 elevator = new Elevator(new ElevatorIOSim());
