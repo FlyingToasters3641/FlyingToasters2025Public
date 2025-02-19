@@ -13,7 +13,19 @@
 
 package frc.robot.subsystems.vision;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
+import static frc.robot.subsystems.vision.VisionConstants.angularStdDevBaseline;
+import static frc.robot.subsystems.vision.VisionConstants.angularStdDevMegatag2Factor;
+import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
+import static frc.robot.subsystems.vision.VisionConstants.cameraStdDevFactors;
+import static frc.robot.subsystems.vision.VisionConstants.linearStdDevBaseline;
+import static frc.robot.subsystems.vision.VisionConstants.linearStdDevMegatag2Factor;
+import static frc.robot.subsystems.vision.VisionConstants.maxAmbiguity;
+import static frc.robot.subsystems.vision.VisionConstants.maxZError;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -26,9 +38,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
-import java.util.LinkedList;
-import java.util.List;
-import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
     private final VisionConsumer consumer;
@@ -178,11 +187,17 @@ public class Vision extends SubsystemBase {
     }
 
     public double distanceToAprilTag() {
-        double PitchAngle = inputs[3].latestTargetObservationDouble.tx();
-        double YawAngle = inputs[3].latestTargetObservationDouble.ty();
+        double PitchAngle = inputs[3].latestTargetObservationDouble.ty();
+        double YawAngle = inputs[3].latestTargetObservationDouble.tx();
 
-        double offsetValue = 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle);
-        return Math.atan((offsetValue * Math.tan(PitchAngle) - 0.082) / (offsetValue + 0.185));
+        double xDist = 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle);
+        return Math.atan((xDist * Math.tan(PitchAngle) - 0.082) / (xDist + 0.185));
+    }
 
+    public double xDistanceToAprilTag() {
+        double PitchAngle = inputs[3].latestTargetObservationDouble.ty();
+        double YawAngle = inputs[3].latestTargetObservationDouble.tx();
+
+        return 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle);
     }
 }
