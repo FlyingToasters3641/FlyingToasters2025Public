@@ -181,8 +181,8 @@ public class Vision extends SubsystemBase {
         double PitchAngle = inputs[3].latestTargetObservationDouble.tx();
         double YawAngle = inputs[3].latestTargetObservationDouble.ty();
 
-        double yB = 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle); 
-        return Math.atan((yB * Math.tan(PitchAngle) - 0.082) / (yB + 0.185));
+        double offsetValue = 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle);
+        return Math.atan((offsetValue * Math.tan(PitchAngle) - 0.082) / (offsetValue + 0.185));
 
     }
 }
