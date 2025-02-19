@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.dyn4j.geometry.Rotation;
+
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -109,6 +111,36 @@ public class DriveCommands {
                 drive);
     }
 
+    public static Command robotCentricJoystickDrive(
+        Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
+    return Commands.run(
+            () -> {
+                // Get linear velocity
+                Translation2d linearVelocity =
+                        getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+                // Apply rotation deadband
+                double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+
+                // Square rotation value for more precise control
+                omega = Math.copySign(omega * omega, omega);
+
+                // Convert to field relative speeds & send command
+
+                //add an if statement here and change the chassis speeds to move towards the pose2d when the button is being pressed
+                ChassisSpeeds speeds = new ChassisSpeeds(
+                        linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * 0.25,
+                        linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * 0.25,
+                        omega * drive.getMaxAngularSpeedRadPerSec());
+                boolean isFlipped = DriverStation.getAlliance().isPresent()
+                        && DriverStation.getAlliance().get() == Alliance.Red;
+                drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                        speeds,
+                        new Rotation2d()));
+            },
+            drive);
+}
+
     /**
      * Field relative drive command using joystick for linear control and PID for angular control. Possible use cases
      * include snapping to an angle, aiming at a vision target, or controlling absolute rotation with a joystick.
@@ -152,7 +184,7 @@ public class DriveCommands {
                 .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
     }
 
-    public static Command robotJoystickDrive(
+    public static Command allAxisAutoAlign(
         Drive drive, double xOffset, double yOffset, double omegaOffset) {
 
         
@@ -189,6 +221,40 @@ public class DriveCommands {
                         new Rotation2d()));
             },
             drive);
+}
+
+public static Command xAxisAutoAlign(
+        Drive drive, double xOffset) {
+
+    // Create PID controller
+
+    ProfiledPIDController linearController = new ProfiledPIDController(
+        LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+    // Construct command
+    return Commands.run(
+                    () -> {
+                        // Get linear velocity
+                        
+                
+                        double xTranslation = linearController.calculate(
+                                xOffset,
+                                0.0);
+
+                        // Calculate angular speed
+
+                        // Convert to field relative speeds & send command
+                        ChassisSpeeds speeds = new ChassisSpeeds(
+                                xTranslation,
+                                0.0,
+                                0.0);
+                        drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                                speeds,
+                                new Rotation2d()));
+                    },
+                    drive);
+
+            // Reset PID controller when command starts
+            
 }
 
     /**

@@ -176,4 +176,11 @@ public class Vision extends SubsystemBase {
     public interface VisionConsumer {
         void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs);
     }
+
+    public double distanceToAprilTag() {
+        double PitchAngle = inputs[3].latestTargetObservationDouble.tx();
+        // DO THE CALCULATIONS HERE, YOU CAN TRY IF YOU WANT, 
+        return PitchAngle;
+
+    }
 }

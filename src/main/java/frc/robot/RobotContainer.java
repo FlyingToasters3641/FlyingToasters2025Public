@@ -208,7 +208,7 @@ public class RobotContainer {
         BehaviorTreeDebugger debugger = BehaviorTreeDebugger.getInstance();
         debugger.enableLogging(true); // Enable debugging
         // Default command, normal field-relative drive
-        drive.setDefaultCommand(DriveCommands.joystickDrive(
+        drive.setDefaultCommand(DriveCommands.robotCentricJoystickDrive(
                 drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
 
         // Switch to X pattern when X button is pressed
