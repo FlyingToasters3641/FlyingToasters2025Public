@@ -179,8 +179,10 @@ public class Vision extends SubsystemBase {
 
     public double distanceToAprilTag() {
         double PitchAngle = inputs[3].latestTargetObservationDouble.tx();
-        // DO THE CALCULATIONS HERE, YOU CAN TRY IF YOU WANT, 
-        return PitchAngle;
+        double YawAngle = inputs[3].latestTargetObservationDouble.ty();
+
+        double yB = 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle); 
+        return Math.atan((yB * Math.tan(PitchAngle) - 0.082) / (yB + 0.185));
 
     }
 }
