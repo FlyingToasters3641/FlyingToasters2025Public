@@ -17,8 +17,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     public static final double CL_ENCODER_RATIO = 0.0;
 
     private static final String CANbusName = "maximo"; // TODO: Update CANbus Name
-    public static final TalonFX CL_TalonFX = new TalonFX(0, CANbusName);// TODO: Update CANIDs
-    public static final Servo CL_Servo = new Servo(0); // TODO: Standardize Names for Motors
+    public static final TalonFX CL_TalonFX = new TalonFX(14, CANbusName);// TODO: Update CANIDs
+    public static final Servo CL_Servo = new Servo(9); // TODO: Standardize Names for Motors
 
     MutAngle setpoint = Rotations.mutable(0);
 
@@ -38,6 +38,8 @@ public class ClimberIOTalonFX implements ClimberIO {
 
         //Logs from TalonFX simulation.
         inputs.CL_position = CL_TalonFX.getPosition().getValueAsDouble();
+        inputs.CL_currentVelocity = CL_TalonFX.getVelocity().getValueAsDouble();
+        Logger.recordOutput("Climber/velocity",  CL_TalonFX.getVelocity().getValueAsDouble());
         Logger.recordOutput("Climber/motorPos", CL_TalonFX.getPosition().getValueAsDouble());
         Logger.recordOutput("Climber/voltage", CL_TalonFX.getMotorVoltage().getValueAsDouble());
         Logger.recordOutput("Climber/setpoint", setpoint);
@@ -54,13 +56,8 @@ public class ClimberIOTalonFX implements ClimberIO {
 
     @Override
     public void CL_Home(){
-        CL_TalonFX.set(0.1);
-        double currentVelocity = CL_TalonFX.getVelocity().getValueAsDouble();
-
-        if (currentVelocity < ClimberConstants.STALL_VELOCITY_THRESHOLD || CL_TalonFX.getStatorCurrent().getValueAsDouble() > ClimberConstants.STALL_CURRENT_THRESHOLD){
-            CL_TalonFX.set(0);
-            CL_TalonFX.setPosition(0);
-        }
+        CL_TalonFX.setPosition(0);
+        CL_TalonFX.set(0.0);
     }
 
     @Override
@@ -74,7 +71,17 @@ public class ClimberIOTalonFX implements ClimberIO {
     }
 
     @Override
+    public void CL_setSpeed(double speed){
+        CL_TalonFX.set(speed);
+    } 
+
+    @Override
     public boolean CL_getExtended(){
         return CL_TalonFX.getPosition().getValueAsDouble() > 1000.0;//TODO: Update with actual values
+    }
+
+    @Override
+    public boolean CL_getServoDisengaged() {
+        return CL_Servo.getAngle() > 45;
     }
 }

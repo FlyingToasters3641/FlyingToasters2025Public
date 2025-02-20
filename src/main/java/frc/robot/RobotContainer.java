@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ScoreCommands.*;
@@ -45,7 +46,10 @@ import frc.robot.lib.BehaviorTree.BehaviorTreeDebugger;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberCommands;
+import frc.robot.subsystems.climber.ClimberConstants;
 import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.lib.BehaviorTree.trees.Stack;
 import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.drive.Drive;
@@ -91,6 +95,7 @@ public class RobotContainer {
 
     // Controller
     private static CommandXboxController controller = new CommandXboxController(0);
+    private static CommandXboxController controller1 = new CommandXboxController(1);
 
     // Dashboard inputs
     private static LoggedDashboardChooser<Command> autoChooser;
@@ -120,7 +125,7 @@ public class RobotContainer {
                 elevator = new Elevator(new ElevatorIO() {});
                 intake = new Intake(new IntakeIO() {});
                 scorer = new Scorer(new ScorerIO() {});
-                climber = new Climber(new ClimberIO() {});
+                climber = new Climber(new ClimberIOTalonFX() {});
                 break;
                        
             case SIM:
@@ -201,7 +206,7 @@ public class RobotContainer {
         debugger.enableLogging(true); // Enable debugging
         // Default command, normal field-relative drive
         drive.setDefaultCommand(DriveCommands.joystickDrive(
-                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
+                drive, () -> -controller1.getLeftY(), () -> -controller1.getLeftX(), () -> -controller1.getRightX()));
 
         // Switch to X pattern when X button is pressed
         controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -234,8 +239,19 @@ public class RobotContainer {
         controller.rightTrigger(0.1).onTrue(new IntakeCoral(scorer, intake));
 
         //Climber controls
-        controller.povUp().onTrue(new StartClimb(scorer, elevator, intake));
-        controller.povDown().onTrue(new EndClimb(scorer));
+        // controller.povUp().onTrue(new StartClimb(scorer, elevator, intake));
+        // controller.povDown().onTrue(new EndClimb(scorer));
+
+        //Manual Climbing Commands
+        /*
+         * controller.povUp().onTrue(new StartClimbTest());
+         * controller.povDown().onTrue(new EndClimberTest());
+         * 
+         */
+        controller.axisGreaterThan(5,0.1).onTrue(ClimberCommands.CL_testSpeed(climber, () -> controller.getRightY(), () -> controller.getRightY() > -0.1 && controller.getRightY() < 0.1));
+        //Engages the small ratchet on the side by setting the position to 0.0
+        controller.povLeft().toggleOnTrue(new ConditionalCommand(ClimberCommands.CL_setServo(climber, 0), ClimberCommands.CL_setServo(climber, 90), () -> climber.CL_getServoDisengaged()));
+        controller.povUp().onTrue(ClimberCommands.CL_home(climber));
 
 
     }

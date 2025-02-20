@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.Dashboard;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.util.LocalADStarAK;
 
 import org.ironmaple.simulation.SimulatedArena;
@@ -179,6 +181,8 @@ public class Robot extends LoggedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+
+        ClimberCommands.CL_home(RobotContainer.climber).schedule();
     }
 
     /** This function is called periodically during operator control. */

@@ -12,10 +12,15 @@ public class ClimberConstants {
 
     public static final Constraints TRAPEZOID_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(0, 0);
     public static final Angle SERVO_RATCHET_ENGAGED = Degrees.of(0);
-    public static final Angle SERVO_RATCHET_DISENGAGED = Degrees.of(180);
-    public static final double STALL_VELOCITY_THRESHOLD = 10.0; // in encoder ticks per 100ms
+    public static final Angle SERVO_RATCHET_DISENGAGED = Degrees.of(90);
+    public static final double SERVO_RATCHET_ENGAGED_DOUBLE = 0.0;
+    public static final double SERVO_RATCHET_DISENGAGED_DOUBLE = 90.0;
+    //Velocity threshold - climber has to be moving past this to keep climbing, Value is determined by the speed climbing
+    public static final double STALL_VELOCITY_THRESHOLD = -19.0; // in encoder ticks per 100ms
     public static final double MIN_OUTPUT_PERCENT = 0.2;
-    public static final double EXTENDED_POSITION = 0.0;
+    //Robot Extended Position to get ready to climb
+    public static final double EXTENDED_POSITION = 260.0;
+    //Robot Retracted Position for cycling and climbing
     public static final double RETRACTED_POSITION = 0.0;
     public static final int STALL_CURRENT_THRESHOLD = 20;
 

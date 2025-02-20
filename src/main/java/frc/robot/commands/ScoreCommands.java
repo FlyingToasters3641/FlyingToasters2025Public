@@ -160,6 +160,26 @@ public class ScoreCommands {
         }
     }
 
+    public static class StartClimbTest extends SequentialCommandGroup {
+        public StartClimbTest() {
+            addCommands(
+                Commands.sequence(
+                    ClimberCommands.CL_Extend(RobotContainer.climber),
+                    Commands.waitUntil(() -> RobotContainer.climber.CL_getExtended() == true))
+            );
+        }
+    }
+
+    public static class EndClimbTest extends SequentialCommandGroup {
+        public EndClimbTest() {
+            addCommands(
+                Commands.sequence(
+                    ClimberCommands.CL_Retract(RobotContainer.climber),
+                    Commands.waitUntil(() -> RobotContainer.climber.CL_getExtended() == false))
+            );
+        }
+    }
+
     public static class GrabL2Algae extends SequentialCommandGroup {
         public GrabL2Algae(Scorer m_scorer, Elevator m_elevator, Intake m_intake) {
             addCommands(
