@@ -186,15 +186,15 @@ public class Vision extends SubsystemBase {
         void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs);
     }
 
-    public double distanceToAprilTag() {
+    public double CenterAngleToAprilTag() {
         double PitchAngle = inputs[3].latestTargetObservationDouble.ty();
         double YawAngle = inputs[3].latestTargetObservationDouble.tx();
 
         double xDist = 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle);
-        return Math.atan((xDist * Math.tan(PitchAngle) - 0.082) / (xDist + 0.185));
+        return Math.atan((xDist * Math.tan(YawAngle) - 0.082) / (xDist + 0.185));
     }
 
-    public double xDistanceToAprilTag() {
+    public double yCameraDistanceAprilTag() {
         double PitchAngle = inputs[3].latestTargetObservationDouble.ty();
         double YawAngle = inputs[3].latestTargetObservationDouble.tx();
 
