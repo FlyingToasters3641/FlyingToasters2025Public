@@ -96,17 +96,22 @@ public class ScorerIOSim implements ScorerIO {
 
         @Override
         public void CS_shootSimAlgae(AbstractDriveTrainSimulation driveSimulation){
+
             ReefscapeAlgaeOnFly.setHitNetCallBack(() -> System.out.println("ALGAE hits NET!"));
-SimulatedArena.getInstance()    
-    .addGamePieceProjectile(new ReefscapeAlgaeOnFly(
+        SimulatedArena.getInstance()
+        .addGamePieceProjectile(new ReefscapeAlgaeOnFly(
         driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
         new Translation2d(Constants.scorerPoseOffset.getX(), Constants.scorerPoseOffset.getY()),
         driveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
         driveSimulation.getSimulatedDriveTrainPose().getRotation(),
         ScorerConstants.CS_SCORE_NET_DISTANCE, // initial height of the ball, in meters
         ScorerConstants.CS_SCORE_NET_VELOCITY, // initial velocity, in m/s
-        ScorerConstants.CS_SCORE_NET // shooter angle;
-        ));}
+        ScorerConstants.CS_SCORE_NET) // shooter angle
+        .withProjectileTrajectoryDisplayCallBack(
+            (poses) -> Logger.recordOutput("successfulShotsTrajectory", poses.toArray(Pose3d[]::new)),
+            (poses) -> Logger.recordOutput("missedShotsTrajectory", poses.toArray(Pose3d[]::new))));
+
+        }
 
 
 
