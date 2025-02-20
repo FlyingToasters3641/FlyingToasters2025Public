@@ -194,10 +194,16 @@ public class Vision extends SubsystemBase {
         return Math.atan((xDist * Math.tan(YawAngle) - 0.082) / (xDist + 0.185));
     }
 
-    public double yCameraDistanceAprilTag() {
+    public double YCameraDistanceAprilTag() {
         double PitchAngle = inputs[3].latestTargetObservationDouble.ty();
         double YawAngle = inputs[3].latestTargetObservationDouble.tx();
 
         return 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle);
+    }
+
+    public double GetRobotCenterXOffset() {
+
+        //TODO: DO CALCULATIONS
+        return 0.0;
     }
 }

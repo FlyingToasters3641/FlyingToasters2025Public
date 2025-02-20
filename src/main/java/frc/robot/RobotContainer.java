@@ -225,9 +225,12 @@ public class RobotContainer {
         //Score coral commands
         
         controller.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
-        controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        //controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
         controller.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
         controller.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
+
+        // Auto Align
+        controller.y().whileTrue(DriveCommands.xAxisAutoAlign(drive, vision.GetRobotCenterXOffset()));
 
         //Score net
         controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
