@@ -119,7 +119,7 @@ public class RobotContainer {
                         new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1));
                 elevator = new Elevator(new ElevatorIO() {});
                 intake = new Intake(new IntakeIO() {});
-                scorer = new Scorer(new ScorerIO() {});
+                scorer = new Scorer(new ScorerIO() {}, driveSimulation);
                 climber = new Climber(new ClimberIO() {});
                 break;
                        
@@ -150,7 +150,7 @@ public class RobotContainer {
                                 VisionConstants.camera3Name, VisionConstants.robotToCamera3, driveSimulation::getSimulatedDriveTrainPose));
                 elevator = new Elevator(new ElevatorIOSim());
                 intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance(), blackboard));
-                scorer = new Scorer(new ScorerIOSim());
+                scorer = new Scorer(new ScorerIOSim(), driveSimulation);
                 climber = new Climber(new ClimberIO() {});
                 break;
             default:
@@ -160,7 +160,7 @@ public class RobotContainer {
                 vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
                 elevator = new Elevator(new ElevatorIO() {});
                 intake = new Intake(new IntakeIO() {});
-                scorer = new Scorer(new ScorerIO() {});
+                scorer = new Scorer(new ScorerIO() {}, driveSimulation);
                 climber = new Climber(new ClimberIO() {});
                 break;
         }
@@ -222,7 +222,7 @@ public class RobotContainer {
         controller.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
         //Score net
-        controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
+        controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake, driveSimulation));
 
         //Intake algae
         controller.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));

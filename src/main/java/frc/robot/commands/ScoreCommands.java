@@ -3,6 +3,8 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
+
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
@@ -80,7 +82,7 @@ public class ScoreCommands {
     }
 
     public static class ScoreNet extends SequentialCommandGroup{
-        public ScoreNet(Scorer m_scorer, Elevator m_elevator, Intake m_intake){
+        public ScoreNet(Scorer m_scorer, Elevator m_elevator, Intake m_intake, AbstractDriveTrainSimulation driveSimulation){
             addCommands(
                 Commands.sequence(
                     IntakeCommands.IN_clearElevator(m_intake),
@@ -89,6 +91,7 @@ public class ScoreCommands {
                     Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_NET_HEIGHT - 2.0),
                     IntakeCommands.IN_rest(m_intake),
                     ScorerCommands.CS_net(m_scorer),
+                    ScorerCommands.CS_shootSimAlgae(m_scorer,driveSimulation),
                     ScorerCommands.CS_removeAlgae(m_scorer),
                     ScorerCommands.CS_goToRest(m_scorer),
                     Commands.waitUntil(() -> m_scorer.CS_getAngle().in(Degrees) <= 5.0),
@@ -110,6 +113,7 @@ public class ScoreCommands {
         }
     }
 
+    
     public static class IntakeCoral extends SequentialCommandGroup {
         public IntakeCoral(Scorer m_scorer, Intake m_intake) {
             addCommands(

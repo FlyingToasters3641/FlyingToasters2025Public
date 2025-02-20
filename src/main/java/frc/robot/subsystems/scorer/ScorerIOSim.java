@@ -5,6 +5,9 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Volts;
 
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFly;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.hal.SimBoolean;
@@ -13,11 +16,14 @@ import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.robot.Constants;
 
 public class ScorerIOSim implements ScorerIO {
     private final ProfiledPIDController CS_PID_Controller = new ProfiledPIDController(ScorerConstants.CS_PROFILED_PID_CONSTANTS.kP, ScorerConstants.CS_PROFILED_PID_CONSTANTS.kI, ScorerConstants.CS_PROFILED_PID_CONSTANTS.kD, ScorerConstants.TRAPEZOID_PROFILE_CONSTRAINTS);
@@ -38,6 +44,10 @@ public class ScorerIOSim implements ScorerIO {
         ScorerConstants.kSimulateGravity,
         ScorerConstants.kArmStartAngle
     );
+    
+        public ScorerIOSim(){
+
+        }
 
         @Override
         public void updateInputs(ScorerIOInputs inputs) {
@@ -83,6 +93,20 @@ public class ScorerIOSim implements ScorerIO {
         public void CS_setPID(double p, double i, double d) {
             CS_PID_Controller.setPID(p, i, d);
         }
+
+        @Override
+        public void CS_shootSimAlgae(AbstractDriveTrainSimulation driveSimulation){
+            ReefscapeAlgaeOnFly.setHitNetCallBack(() -> System.out.println("ALGAE hits NET!"));
+SimulatedArena.getInstance()    
+    .addGamePieceProjectile(new ReefscapeAlgaeOnFly(
+        driveSimulation.getSimulatedDriveTrainPose().getTranslation(),
+        new Translation2d(Constants.scorerPoseOffset.getX(), Constants.scorerPoseOffset.getY()),
+        driveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative(),
+        driveSimulation.getSimulatedDriveTrainPose().getRotation(),
+        ScorerConstants.CS_SCORE_NET_DISTANCE, // initial height of the ball, in meters
+        ScorerConstants.CS_SCORE_NET_VELOCITY, // initial velocity, in m/s
+        ScorerConstants.CS_SCORE_NET // shooter angle;
+        ));}
 
 
 

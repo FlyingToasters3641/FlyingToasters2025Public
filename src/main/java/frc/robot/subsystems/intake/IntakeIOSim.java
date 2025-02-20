@@ -47,7 +47,7 @@ public class IntakeIOSim implements IntakeIO {
     public IntakeIOSim(AbstractDriveTrainSimulation driveTrainSimulation, SimulatedArena simulatedArena, Blackboard blackboard){
         this.intakeSimulation = IntakeSimulation.OverTheBumperIntake(
                 "Algae",
-                driveTrainSimulation,
+                 driveTrainSimulation,
                 Inches.of(19.0),
                 Inches.of(19.0),
                 IntakeSimulation.IntakeSide.BACK,
