@@ -232,4 +232,87 @@ public class Blackboard {
         }
         return targetPose;
     }
+
+    public boolean isTargetLeftBranch(String key) {
+        Targets currentTarget = (Targets)data.get(key);
+        boolean isTargetLeft;
+        switch(currentTarget) {
+            case A1:
+            isTargetLeft = true;
+            break;
+            case A2:
+            isTargetLeft = true;
+            break;
+            case A3:
+            isTargetLeft = true;
+            break;
+            case A4:
+            isTargetLeft = true;
+            break;
+            case C1:
+            isTargetLeft = true;
+            break;
+            case C2:
+            isTargetLeft = true;
+            break;
+            case C3:
+            isTargetLeft = true;
+            break;
+            case C4:
+            isTargetLeft = true;
+            break;
+            case E1:
+            isTargetLeft = true;
+            break;
+            case E2:
+            isTargetLeft = true;
+            break;
+            case E3:
+            isTargetLeft = true;
+            break;
+            case E4:
+            isTargetLeft = true;
+            break;
+            case G1:
+            isTargetLeft = true;
+            break;
+            case G2:
+            isTargetLeft = true;
+            break;
+            case G3:
+            isTargetLeft = true;
+            break;
+            case G4:
+            isTargetLeft = true;
+            break;
+            case I1:
+            isTargetLeft = true;
+            break;
+            case I2:
+            isTargetLeft = true;
+            break;
+            case I3:
+            isTargetLeft = true;
+            break;
+            case I4:
+            isTargetLeft = true;
+            break;
+            case K1:
+            isTargetLeft = true;
+            break;
+            case K2:
+            isTargetLeft = true;
+            break;
+            case K3:
+            isTargetLeft = true;
+            break;
+            case K4:
+            isTargetLeft = true;
+            break;
+            default:
+            isTargetLeft = false;
+            break;
+        }
+        return isTargetLeft;
+    }
 }

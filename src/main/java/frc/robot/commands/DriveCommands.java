@@ -21,6 +21,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.dyn4j.geometry.Rotation;
+import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
@@ -42,12 +43,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.drive.Drive;
 import edu.wpi.first.math.controller.PIDController;
 
 public class DriveCommands {
     private static final double DEADBAND = 0.1;
-    private static final double ANGLE_KP = 5.0;
+    private static final double ANGLE_KP = 8.0;
     private static final double ANGLE_KD = 0.4;
     private static final double ANGLE_MAX_VELOCITY = 8.0;
     private static final double ANGLE_MAX_ACCELERATION = 20.0;
@@ -55,8 +58,8 @@ public class DriveCommands {
     private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
     private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
     private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
-    private static final double LINEAR_KP = 2.0;
-    private static final double LINEAR_KD = 0.0;
+    private static final double LINEAR_KP = 7.0;
+    private static final double LINEAR_KD = 0.5;
     private static final double LINEAR_MAX_ACCELERATION = 26.62;
 
     private final Pose2d lineUpPose = new Pose2d(5.8, 4, new Rotation2d(3.1415926589793));
@@ -185,36 +188,39 @@ public class DriveCommands {
     }
 
     public static Command allAxisAutoAlign(
-        Drive drive, double xOffset, double yOffset, double omegaOffset) {
+        Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, Supplier<Rotation2d> rotationSupplier) {
 
         
-        ProfiledPIDController linearController = new ProfiledPIDController(
+        ProfiledPIDController xlinearController = new ProfiledPIDController(
                 LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
-                ProfiledPIDController angleController = new ProfiledPIDController(
+        ProfiledPIDController ylinearController = new ProfiledPIDController(
+                LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+
+        ProfiledPIDController angleController = new ProfiledPIDController(
                 ANGLE_KP, 0.0, ANGLE_KD, new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
         angleController.enableContinuousInput(-Math.PI, Math.PI);
     return Commands.run(
             () -> {
                 // Get linear velocity
-                double xTranslation = linearController.calculate(
-                        xOffset,
+                double xTranslation = xlinearController.calculate(
+                        xOffset.getAsDouble(),
                         0.0);
 
-                double yTranslation = linearController.calculate(
-                        yOffset,
-                        0.0);
+                double yTranslation = ylinearController.calculate(
+                        yOffset.getAsDouble(),
+                        0.45);
 
                 // Apply rotation deadbande
                 double omega = angleController.calculate(
-                                    omegaOffset,
-                                    0.0);
+                        drive.getRotation().getRadians(),
+                        rotationSupplier.get().getRadians());
 
                 // Convert to field relative speeds & send command
 
                 //add an if statement here and change the chassis speeds to move towards the pose2d when the button is being pressed
                 ChassisSpeeds speeds = new ChassisSpeeds(
+                        -yTranslation,
                         xTranslation,
-                        yTranslation,
                         omega);
                 drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
                         speeds,
@@ -223,29 +229,38 @@ public class DriveCommands {
             drive);
 }
 
-public static Command xAxisAutoAlign(
-        Drive drive, double xOffset) {
+public static Command xyAxisAutoAlign(
+        Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset) {
 
     // Create PID controller
 
-    ProfiledPIDController linearController = new ProfiledPIDController(
+    ProfiledPIDController xlinearController = new ProfiledPIDController(
         LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+
+        ProfiledPIDController ylinearController = new ProfiledPIDController(
+                LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
     // Construct command
     return Commands.run(
                     () -> {
                         // Get linear velocity
                         
+                        Logger.recordOutput("LineUp/CommandXCenterOffset", xOffset);
+                        Logger.recordOutput("LineUp/CommandYCenterOffset", yOffset);
                 
-                        double xTranslation = linearController.calculate(
-                                xOffset,
+                        double xTranslation = xlinearController.calculate(
+                                xOffset.getAsDouble(),
                                 0.0);
+
+                        double yTranslation = ylinearController.calculate(
+                                yOffset.getAsDouble(), 
+                        0.45);
 
                         // Calculate angular speed
 
                         // Convert to field relative speeds & send command
                         ChassisSpeeds speeds = new ChassisSpeeds(
+                                -yTranslation,
                                 xTranslation,
-                                0.0,
                                 0.0);
                         drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
                                 speeds,
@@ -253,9 +268,49 @@ public static Command xAxisAutoAlign(
                     },
                     drive);
 
-            // Reset PID controller when command starts
             
 }
+
+public static Command omegaAxisAutoAlign(
+        Drive drive, Supplier<Rotation2d> rotationSupplier) {
+
+    // Create PID controller
+    ProfiledPIDController angleController = new ProfiledPIDController(
+            ANGLE_KP, 0.0, ANGLE_KD, new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+    // Construct command
+    return Commands.run(
+                    () -> {
+
+                        // Calculate angular speed
+                        double omega = angleController.calculate(
+                                drive.getRotation().getRadians(),
+                                rotationSupplier.get().getRadians());
+
+                        // Convert to field relative speeds & send command
+                        ChassisSpeeds speeds = new ChassisSpeeds(
+                                0.0,
+                                0.0,
+                                omega);
+                        drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                                speeds,
+                                new Rotation2d()));
+                    },
+                    drive)
+
+            // Reset PID controller when command starts
+            .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+}
+
+public static SequentialCommandGroup AutoAlign(Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, Supplier<Rotation2d> rotationSupplier) {
+        return new SequentialCommandGroup(
+                omegaAxisAutoAlign(drive, rotationSupplier).raceWith(new WaitCommand(0.25)),
+                allAxisAutoAlign(drive, xOffset, yOffset, rotationSupplier)
+        );
+}
+
+
 
     /**
      * Measures the velocity feedforward constants for the drive motors.

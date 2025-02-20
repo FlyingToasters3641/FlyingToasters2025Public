@@ -230,8 +230,9 @@ public class RobotContainer {
         controller.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
         // Auto Align
-        controller.y().whileTrue(DriveCommands.xAxisAutoAlign(drive, vision.GetRobotCenterXOffset()));
-
+        //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
+        //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
+        controller.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag(), () -> Constants.reefBranchK.getRotation()));
         //Score net
         controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 

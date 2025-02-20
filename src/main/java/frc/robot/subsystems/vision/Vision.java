@@ -34,9 +34,14 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 
 public class Vision extends SubsystemBase {
@@ -44,6 +49,7 @@ public class Vision extends SubsystemBase {
     private final VisionIO[] io;
     private final VisionIOInputsAutoLogged[] inputs;
     private final Alert[] disconnectedAlerts;
+    public static double CenterXDistance;
 
     public Vision(VisionConsumer consumer, VisionIO... io) {
         this.consumer = consumer;
@@ -164,6 +170,7 @@ public class Vision extends SubsystemBase {
             Logger.recordOutput(
                   "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesRejected",          
                     robotPosesRejected.toArray(new Pose3d[robotPosesRejected.size()]));
+            
             allTagPoses.addAll(tagPoses);
             allRobotPoses.addAll(robotPoses);
             allRobotPosesAccepted.addAll(robotPosesAccepted);
@@ -179,6 +186,15 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput(
                 "Vision/Summary/RobotPosesRejected",
                 allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+
+                
+
+            Logger.recordOutput("LineUp/CenterXOffset", xRobotCenterOffset());
+            Logger.recordOutput("LineUp/CameraDistanceToRobot", CameraDistanceToAprilTag());
+            Logger.recordOutput("LineUp/YCenterAprilTagDistance", YCenterDistanceAprilTag());
+            Logger.recordOutput("LineUp/CenterAngle", CenterAngleToAprilTag());
+            Logger.recordOutput("LineUp/CentertoAprilTagDistance", CenterRobottoAprilTagDistance());
+            CenterXDistance = xRobotCenterOffset();
     }
 
     @FunctionalInterface
@@ -186,24 +202,65 @@ public class Vision extends SubsystemBase {
         void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs);
     }
 
+    // public double CenterAngleToAprilTag() {
+    //     double PitchAngle = inputs[3].latestTargetObservationDouble.ty();
+    //     double YawAngle = inputs[3].latestTargetObservationDouble.tx();
+
+
+
+    //     double xDist = 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle);
+    //     return Math.atan((xDist * Math.tan(YawAngle) - 0.082) / (xDist + 0.185));
+    // }
+
+    public double CameraDistanceToAprilTag() {
+        double PitchAngle = inputs[3].latestTargetObservationDouble.ty();
+        PitchAngle = Units.degreesToRadians(PitchAngle);
+        double distance = .0624 / Math.tan(PitchAngle);
+        return distance;
+    }
+
+    public double xRobotCenterOffset() {
+        double distance = CameraDistanceToAprilTag();
+        double YawAngle = inputs[3].latestTargetObservationDouble.tx();
+        Logger.recordOutput("LineUp/RawYawAngle", YawAngle);
+        YawAngle = Units.degreesToRadians(YawAngle + 25);
+        Logger.recordOutput("LineUp/ProcessedYawAngle", YawAngle);
+        double CameraXOffset = distance * Math.sin(YawAngle);
+        Logger.recordOutput("LineUp/CameraXOffsetToAprilTag", CameraXOffset);
+        CameraXOffset -= .082;
+        if (Double.isInfinite(CameraXOffset)) {
+            return 0.0;
+        } else {
+        return CameraXOffset;
+        }
+    }
+
+    public double YCenterDistanceAprilTag() {
+        double YawAngle = inputs[3].latestTargetObservationDouble.tx();
+          YawAngle = Units.degreesToRadians(YawAngle + 25);
+        double distance = CameraDistanceToAprilTag();
+        double yOffset = distance * Math.cos(YawAngle);
+        yOffset += .185;
+        return yOffset;
+    }
+
     public double CenterAngleToAprilTag() {
-        double PitchAngle = inputs[3].latestTargetObservationDouble.ty();
-        double YawAngle = inputs[3].latestTargetObservationDouble.tx();
-
-        double xDist = 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle);
-        return Math.atan((xDist * Math.tan(YawAngle) - 0.082) / (xDist + 0.185));
+        double xOffset = xRobotCenterOffset();
+        double yOffset = YCenterDistanceAprilTag();
+        double centerAngle = Math.atan2(xOffset, yOffset);
+        centerAngle = Units.radiansToDegrees(centerAngle);
+        return centerAngle;
     }
 
-    public double YCameraDistanceAprilTag() {
-        double PitchAngle = inputs[3].latestTargetObservationDouble.ty();
-        double YawAngle = inputs[3].latestTargetObservationDouble.tx();
-
-        return 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle);
+    public double CenterRobottoAprilTagDistance() {
+        double xOffset = xRobotCenterOffset();
+        double yOffset = YCenterDistanceAprilTag();
+        double centerDistance = Math.hypot(xOffset, yOffset);
+        return centerDistance;
     }
 
-    public double GetRobotCenterXOffset() {
-
-        //TODO: DO CALCULATIONS
-        return 0.0;
+    public Rotation2d centerAngleToAprilTagRotation2d() {
+        double centerAngle = CenterAngleToAprilTag();
+        return Rotation2d.fromDegrees(centerAngle);
     }
 }
