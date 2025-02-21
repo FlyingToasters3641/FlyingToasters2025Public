@@ -3,6 +3,7 @@ package frc.robot.lib.BehaviorTree;
 import java.util.concurrent.ConcurrentHashMap;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.lib.BehaviorTree.trees.Targets;
 
@@ -314,5 +315,160 @@ public class Blackboard {
             break;
         }
         return isTargetLeft;
+    }
+
+    public Rotation2d getTargetRotation(String key) {
+        Targets currentTarget = (Targets)data.get(key);
+        Rotation2d targetRotation = new Rotation2d();
+        switch (currentTarget) {
+            case A1:
+            targetRotation = Constants.reefBranchA.getRotation();
+            break;
+            case A2:
+            targetRotation = Constants.reefBranchA.getRotation();
+            break;
+            case A3:
+            targetRotation = Constants.reefBranchA.getRotation();
+            break;
+            case A4:
+            targetRotation = Constants.reefBranchA.getRotation();
+            break;
+            case B1:
+            targetRotation = Constants.reefBranchB.getRotation();
+            break;
+            case B2:
+            targetRotation = Constants.reefBranchB.getRotation();
+            break;
+            case B3:
+            targetRotation = Constants.reefBranchB.getRotation();
+            break;
+            case B4:
+            targetRotation = Constants.reefBranchB.getRotation();
+            break;
+            case C1:
+            targetRotation = Constants.reefBranchC.getRotation();
+            break;
+            case C2:
+            targetRotation = Constants.reefBranchC.getRotation();
+            break;
+            case C3:
+            targetRotation = Constants.reefBranchC.getRotation();
+            break;
+            case C4:
+            targetRotation = Constants.reefBranchC.getRotation();
+            break;
+            case D1:
+            targetRotation = Constants.reefBranchD.getRotation();
+            break;
+            case D2:
+            targetRotation = Constants.reefBranchD.getRotation();
+            break;
+            case D3:
+            targetRotation = Constants.reefBranchD.getRotation();
+            break;
+            case D4:
+            targetRotation = Constants.reefBranchD.getRotation();
+            break;
+            case E1:
+            targetRotation = Constants.reefBranchE.getRotation();
+            break;
+            case E2:
+            targetRotation = Constants.reefBranchE.getRotation();
+            break;
+            case E3:
+            targetRotation = Constants.reefBranchE.getRotation();
+            break;
+            case E4:
+            targetRotation = Constants.reefBranchE.getRotation();
+            break;
+            case F1:
+            targetRotation = Constants.reefBranchF.getRotation();
+            break;
+            case F2:
+            targetRotation = Constants.reefBranchF.getRotation();
+            break;
+            case F3:
+            targetRotation = Constants.reefBranchF.getRotation();
+            break;
+            case F4:
+            targetRotation = Constants.reefBranchF.getRotation();
+            break;
+            case G1:
+            targetRotation = Constants.reefBranchG.getRotation();
+            break;
+            case G2:
+            targetRotation = Constants.reefBranchG.getRotation();
+            break;
+            case G3:
+            targetRotation = Constants.reefBranchG.getRotation();
+            break;
+            case G4:
+            targetRotation = Constants.reefBranchG.getRotation();
+            break;
+            case H1:
+            targetRotation = Constants.reefBranchH.getRotation();
+            break;
+            case H2:
+            targetRotation = Constants.reefBranchH.getRotation();
+            break;
+            case H3:
+            targetRotation = Constants.reefBranchH.getRotation();
+            break;
+            case H4:
+            targetRotation = Constants.reefBranchH.getRotation();
+            break;
+            case I1:
+            targetRotation = Constants.reefBranchI.getRotation();
+            break;
+            case I2:
+            targetRotation = Constants.reefBranchI.getRotation();
+            break;
+            case I3:
+            targetRotation = Constants.reefBranchI.getRotation();
+            break;
+            case I4:
+            targetRotation = Constants.reefBranchI.getRotation();
+            break;
+            case J1:
+            targetRotation = Constants.reefBranchJ.getRotation();
+            break;
+            case J2:
+            targetRotation = Constants.reefBranchK.getRotation();
+            break;
+            case J3:
+            targetRotation = Constants.reefBranchJ.getRotation();
+            break;
+            case J4:
+            targetRotation = Constants.reefBranchJ.getRotation();
+            break;
+            case K1:
+            targetRotation = Constants.reefBranchK.getRotation();
+            break;
+            case K2:
+            targetRotation = Constants.reefBranchK.getRotation();
+            break;
+            case K3:
+            targetRotation = Constants.reefBranchK.getRotation();
+            break;
+            case K4:
+            targetRotation = Constants.reefBranchK.getRotation();
+            break;
+            case L1:
+            targetRotation = Constants.reefBranchL.getRotation();
+            break;
+            case L2:
+            targetRotation = Constants.reefBranchL.getRotation();
+            break;
+            case L3:
+            targetRotation = Constants.reefBranchL.getRotation();
+            break;
+            case L4:
+            targetRotation = Constants.reefBranchL.getRotation();
+            break;
+            default:
+            targetRotation = Rotation2d.fromRadians(0);
+        }
+        return targetRotation;
+        
     }
 }

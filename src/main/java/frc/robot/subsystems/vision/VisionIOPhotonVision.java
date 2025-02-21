@@ -50,7 +50,6 @@ public class VisionIOPhotonVision implements VisionIO {
         for (var result : camera.getAllUnreadResults()) {
             // Update latest target observation
             if (result.hasTargets()) {
-                if (result.getBestTarget().getFiducialId() == 19) {
                 inputs.latestTargetObservation = new TargetObservation(
                         Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
                         Rotation2d.fromDegrees(result.getBestTarget().getPitch()),
@@ -58,8 +57,7 @@ public class VisionIOPhotonVision implements VisionIO {
                         result.getBestTarget().getArea());
                 inputs.latestTargetObservationDouble = new TargetObservationDouble(
                     result.getBestTarget().getYaw(), 
-                    result.getBestTarget().getPitch());
-                }            
+                    result.getBestTarget().getPitch());       
             } else {
                 inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d(), 0.0, 0.0);
             }

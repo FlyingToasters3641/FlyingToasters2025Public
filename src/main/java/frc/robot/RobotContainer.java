@@ -232,9 +232,14 @@ public class RobotContainer {
         // Auto Align
         //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
         //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
-        controller.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag(), () -> Constants.reefBranchK.getRotation()));
+        controller.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, 
+                () -> vision.xRobotCenterOffset(blackboard), 
+                () -> vision.YCenterDistanceAprilTag(blackboard), 
+                () -> blackboard.getTargetRotation("target")));
+
+        controller.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
         //Score net
-        controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
+        //controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 
         //Intake algae
         controller.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
@@ -280,22 +285,30 @@ public class RobotContainer {
         }
         }
 
-    public void getTreeTarget() {
-        Targets targetValue = targetChooser.get();
-        if (targetValue != null) {
-        blackboard.set("target", targetValue);
-        } else {
-                blackboard.set("hasCoral", false);
-                blackboard.set("hasAlgae", false);
-        }
-        Logger.recordOutput("hasCoral", blackboard.getBoolean("hasCoral"));
-    }
+//     public void getTreeTarget() {
+//         Targets targetValue = targetChooser.get();
+//         if (targetValue != null) {
+//         blackboard.set("target", targetValue);
+//         } else {
+//                 blackboard.set("hasCoral", false);
+//                 blackboard.set("hasAlgae", false);
+//         }
+//         Logger.recordOutput("hasCoral", blackboard.getBoolean("hasCoral"));
+//     }
     
     //Adds item for the stack - testing for the control tree
     public void addToStack() {
         Targets targetValue = targetChooser.get();
         stack.add(targetValue);
         blackboard.set("playerStation", playerStationChooser.get());
+    }
+
+    public Targets getTreeTarget() {
+        return targetChooser.get();
+    }
+
+    public void setTreeTarget() {
+        blackboard.set("target", targetChooser.get());
     }
 
     public void resetSimulation() {
