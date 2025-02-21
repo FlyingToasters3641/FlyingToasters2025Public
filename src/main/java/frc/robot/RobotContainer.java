@@ -208,8 +208,8 @@ public class RobotContainer {
         BehaviorTreeDebugger debugger = BehaviorTreeDebugger.getInstance();
         debugger.enableLogging(true); // Enable debugging
         // Default command, normal field-relative drive
-        drive.setDefaultCommand(DriveCommands.robotCentricJoystickDrive(
-                drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
+        // drive.setDefaultCommand(DriveCommands.robotCentricJoystickDrive(
+        //         drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> -controller.getRightX()));
 
         // Switch to X pattern when X button is pressed
         controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -232,7 +232,7 @@ public class RobotContainer {
         // Auto Align
         //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
         //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
-        controller.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, () -> vision.robotXOffsetToAprilTag(), () -> vision.robotYOffsetToAprilTag(), () -> Constants.reefBranchK.getRotation()));
+        //controller.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, () -> vision.robotXOffsetToAprilTag(), () -> vision.robotYOffsetToAprilTag(), () -> Constants.reefBranchK.getRotation()));
         //Score net
         controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 

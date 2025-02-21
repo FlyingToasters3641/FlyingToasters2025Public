@@ -183,14 +183,6 @@ public class Vision extends SubsystemBase {
                 "Vision/Summary/RobotPosesRejected",
                 allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
-                
-
-            Logger.recordOutput("LineUp/RobotXOffset", robotXOffsetToAprilTag());
-            Logger.recordOutput("LineUp/CameraDistanceToAprilTag", cameraDistanceToAprilTag());
-            Logger.recordOutput("LineUp/RobotYOffset", robotYOffsetToAprilTag());
-            Logger.recordOutput("LineUp/RobotAngle", robotAngleToAprilTag());
-            Logger.recordOutput("LineUp/RobotDistanceToAprilTag", robotDistanceToAprilTag());
-            CenterXDistance = robotXOffsetToAprilTag();
     }
 
     @FunctionalInterface
