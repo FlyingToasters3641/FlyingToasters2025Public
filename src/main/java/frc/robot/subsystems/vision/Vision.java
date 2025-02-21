@@ -261,8 +261,4 @@ public class Vision extends SubsystemBase {
         double robotDistance = Math.hypot(xOffset, yOffset);
         return robotDistance;
     }
-
-    public Rotation2d robotAngleToAprilTagRotation2d() {
-        return Rotation2d.fromDegrees(robotAngleToAprilTag());
-    }
 }
