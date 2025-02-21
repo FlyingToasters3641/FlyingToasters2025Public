@@ -23,7 +23,7 @@ public class ScorerCommands {
     }
 
     public static Command CS_scoreCoral(Scorer m_Scorer) {
-        return Commands.run(() -> m_Scorer.CS_setRoller(-0.75)).until(() -> m_Scorer.CS_getCoral() == false).andThen(Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0)));
+        return Commands.runOnce(() -> m_Scorer.CS_setRoller(-0.75)).until(() -> m_Scorer.CS_getCoral() == false).andThen(Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0)));
     }
 
     public static Command cS_scoreCoralL4(Scorer m_Scorer) {
@@ -64,6 +64,22 @@ public class ScorerCommands {
 
     public static Command CS_shootSimAlgae(Scorer m_Scorer, AbstractDriveTrainSimulation driveSimulation){
         return Commands.runOnce(() -> m_Scorer.CS_shootSimAlgae());
+    }
+
+    public static Command CS_shootL1SimCoral(Scorer m_Scorer){
+        return Commands.runOnce(() -> m_Scorer.CS_shootL1SimCoral());
+    }
+
+    public static Command CS_shootL2SimCoral(Scorer m_Scorer){
+        return Commands.runOnce(() -> m_Scorer.CS_shootL2SimCoral());
+    }
+
+    public static Command CS_shootL3SimCoral(Scorer m_Scorer){
+        return Commands.runOnce(() -> m_Scorer.CS_shootL3SimCoral());
+    }
+
+    public static Command CS_shootL4SimCoral(Scorer m_Scorer){
+        return Commands.runOnce(() -> m_Scorer.CS_shootL4SimCoral());
     }
 
 }

@@ -60,4 +60,20 @@ public class Scorer extends SubsystemBase{
     public void CS_shootSimAlgae(){
         io.CS_shootSimAlgae(driveSimulation);
     }
+
+    public void CS_shootL1SimCoral(){
+        io.CS_shootL1SimCoral(driveSimulation);
+    }
+
+    public void CS_shootL2SimCoral(){
+        io.CS_shootL2SimCoral(driveSimulation);
+    }
+
+    public void CS_shootL3SimCoral(){
+        io.CS_shootL3SimCoral(driveSimulation);
+    }
+
+    public void CS_shootL4SimCoral(){
+        io.CS_shootL4SimCoral(driveSimulation);
+    }
 }

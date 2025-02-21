@@ -28,7 +28,8 @@ public class ScoreCommands {
                     ScorerCommands.CS_goToRest(m_scorer),
                     ElevatorCommands.EL_goToL1(m_elevator),
                     Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_L1_HEIGHT - 2.0),
-                    ScorerCommands.CS_scoreCoral(m_scorer),
+                    //ScorerCommands.CS_scoreCoral(m_scorer),
+                    ScorerCommands.CS_shootL1SimCoral(m_scorer),
                     ElevatorCommands.EL_goToRest(m_elevator))
                 .unless(() -> m_scorer.CS_getCoral() == false)
             );
@@ -42,7 +43,8 @@ public class ScoreCommands {
                     ScorerCommands.CS_goToRest(m_scorer),
                     ElevatorCommands.EL_goToL2(m_elevator),
                     Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_L2_HEIGHT - 2.0),
-                    ScorerCommands.CS_scoreCoral(m_scorer),
+                    //ScorerCommands.CS_scoreCoral(m_scorer),
+                    ScorerCommands.CS_shootL2SimCoral(m_scorer),
                     ElevatorCommands.EL_goToRest(m_elevator))
                 .unless(() -> m_scorer.CS_getCoral() == false)
             );
@@ -56,10 +58,11 @@ public class ScoreCommands {
                     ScorerCommands.CS_goToRest(m_scorer),
                     ElevatorCommands.EL_goToL3(m_elevator),
                     Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_L3_HEIGHT - 2.0),
-                    ScorerCommands.CS_scoreCoral(m_scorer),
+                    //ScorerCommands.CS_scoreCoral(m_scorer),
+                    ScorerCommands.CS_shootL3SimCoral(m_scorer),
                     ElevatorCommands.EL_goToRest(m_elevator))
                 .unless(() -> m_scorer.CS_getCoral() == false)
-            );
+                );
         }  
     }
 
@@ -73,6 +76,7 @@ public class ScoreCommands {
                     ScorerCommands.CS_goToL4(m_scorer),
                     Commands.waitUntil(() -> m_scorer.CS_getAngle().in(Degrees) >= ScorerConstants.CS_L4_ANGLE - 5.0),
                     ScorerCommands.CS_removeAlgae(m_scorer),
+                    ScorerCommands.CS_shootL4SimCoral(m_scorer),
                     ScorerCommands.CS_goToRest(m_scorer),
                     Commands.waitUntil(() -> m_scorer.CS_getAngle().in(Degrees) <= 5.0),
                     ElevatorCommands.EL_goToRest(m_elevator))

@@ -41,4 +41,13 @@ public interface ScorerIO {
 
     public default void CS_shootSimAlgae(AbstractDriveTrainSimulation driveSimulation) {}
 
+    public default void CS_shootL1SimCoral(AbstractDriveTrainSimulation driveTrainSimulation) {}
+
+    public default void CS_shootL2SimCoral(AbstractDriveTrainSimulation driveTrainSimulation) {}
+
+    public default void CS_shootL3SimCoral(AbstractDriveTrainSimulation driveTrainSimulation) {}
+
+    public default void CS_shootL4SimCoral(AbstractDriveTrainSimulation driveTrainSimulation) {}
+
+
 }

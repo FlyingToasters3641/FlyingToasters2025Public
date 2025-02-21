@@ -38,8 +38,8 @@ public class ScorerConstants {
     public static LinearSystem<N2, N1, N2> kArmPlant = LinearSystemId.createSingleJointedArmSystem(kKrakenX60Foc, kArmMomentOfInertia.baseUnitMagnitude(), kArmGearing);
     public static boolean kSimulateGravity = true;
     public static Distance CS_SCORE_NET_DISTANCE = Units.Meter.of(3);
-    public static Angle  CS_SCORE_NET = Units.Degrees.of(160.0);
-    public static LinearVelocity CS_SCORE_NET_VELOCITY = Units.MetersPerSecond.of(9);
+    public static Angle  CS_SCORE_NET = Units.Degrees.of(100.0);
+    public static LinearVelocity CS_SCORE_NET_VELOCITY = Units.MetersPerSecond.of(5);
 
 
     public static class CS_pivotConfig {
