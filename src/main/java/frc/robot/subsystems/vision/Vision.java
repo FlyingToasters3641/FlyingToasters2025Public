@@ -37,11 +37,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 
 public class Vision extends SubsystemBase {
@@ -189,12 +185,12 @@ public class Vision extends SubsystemBase {
 
                 
 
-            Logger.recordOutput("LineUp/CenterXOffset", xRobotCenterOffset());
-            Logger.recordOutput("LineUp/CameraDistanceToRobot", CameraDistanceToAprilTag());
-            Logger.recordOutput("LineUp/YCenterAprilTagDistance", YCenterDistanceAprilTag());
-            Logger.recordOutput("LineUp/CenterAngle", CenterAngleToAprilTag());
-            Logger.recordOutput("LineUp/CentertoAprilTagDistance", CenterRobottoAprilTagDistance());
-            CenterXDistance = xRobotCenterOffset();
+            Logger.recordOutput("LineUp/RobotXOffset", robotXOffsetToAprilTag());
+            Logger.recordOutput("LineUp/CameraDistanceToAprilTag", cameraDistanceToAprilTag());
+            Logger.recordOutput("LineUp/RobotYOffset", robotYOffsetToAprilTag());
+            Logger.recordOutput("LineUp/RobotAngle", robotAngleToAprilTag());
+            Logger.recordOutput("LineUp/RobotDistanceToAprilTag", robotDistanceToAprilTag());
+            CenterXDistance = robotXOffsetToAprilTag();
     }
 
     @FunctionalInterface
@@ -212,55 +208,61 @@ public class Vision extends SubsystemBase {
     //     return Math.atan((xDist * Math.tan(YawAngle) - 0.082) / (xDist + 0.185));
     // }
 
-    public double CameraDistanceToAprilTag() {
-        double PitchAngle = inputs[3].latestTargetObservationDouble.ty();
-        PitchAngle = Units.degreesToRadians(PitchAngle);
-        double distance = .0624 / Math.tan(PitchAngle);
+
+    public double cameraDistanceToAprilTag() {
+        double pitchAngle = inputs[3].latestTargetObservationDouble.ty();
+        pitchAngle = Units.degreesToRadians(pitchAngle);
+
+        double distance = .0624 / Math.tan(pitchAngle);
         return distance;
     }
 
-    public double xRobotCenterOffset() {
-        double distance = CameraDistanceToAprilTag();
-        double YawAngle = inputs[3].latestTargetObservationDouble.tx();
-        Logger.recordOutput("LineUp/RawYawAngle", YawAngle);
-        YawAngle = Units.degreesToRadians(YawAngle + 25);
-        Logger.recordOutput("LineUp/ProcessedYawAngle", YawAngle);
-        double CameraXOffset = distance * Math.sin(YawAngle);
-        Logger.recordOutput("LineUp/CameraXOffsetToAprilTag", CameraXOffset);
-        CameraXOffset -= .082;
-        if (Double.isInfinite(CameraXOffset)) {
+    public double robotXOffsetToAprilTag() {
+        double distance = cameraDistanceToAprilTag();
+        double yawAngle = inputs[3].latestTargetObservationDouble.tx();
+        Logger.recordOutput("LineUp/RawYawAngle", yawAngle);
+
+        yawAngle = Units.degreesToRadians(yawAngle + 25);
+        Logger.recordOutput("LineUp/ProcessedYawAngle", yawAngle);
+
+        double xOffset = distance * Math.sin(yawAngle);
+        Logger.recordOutput("LineUp/CameraXOffset", xOffset);
+
+        if (Double.isInfinite(xOffset)) {
             return 0.0;
         } else {
-        return CameraXOffset;
+        return xOffset - 0.082;
         }
     }
 
-    public double YCenterDistanceAprilTag() {
-        double YawAngle = inputs[3].latestTargetObservationDouble.tx();
-          YawAngle = Units.degreesToRadians(YawAngle + 25);
-        double distance = CameraDistanceToAprilTag();
-        double yOffset = distance * Math.cos(YawAngle);
-        yOffset += .185;
-        return yOffset;
+    public double robotYOffsetToAprilTag() {
+        double yawAngle = inputs[3].latestTargetObservationDouble.tx();
+        yawAngle = Units.degreesToRadians(yawAngle + 25);
+        double distance = cameraDistanceToAprilTag();
+
+        double yOffset = distance * Math.cos(yawAngle);
+        Logger.recordOutput("LineUp/CameraXOffset", yOffset);
+
+        return yOffset + 0.185;
     }
 
-    public double CenterAngleToAprilTag() {
-        double xOffset = xRobotCenterOffset();
-        double yOffset = YCenterDistanceAprilTag();
-        double centerAngle = Math.atan2(xOffset, yOffset);
-        centerAngle = Units.radiansToDegrees(centerAngle);
-        return centerAngle;
+    public double robotAngleToAprilTag() {
+        double xOffset = robotXOffsetToAprilTag();
+        double yOffset = robotYOffsetToAprilTag();
+
+        double robotAngle = Math.atan2(xOffset, yOffset);
+        return Units.radiansToDegrees(robotAngle);
     }
 
-    public double CenterRobottoAprilTagDistance() {
-        double xOffset = xRobotCenterOffset();
-        double yOffset = YCenterDistanceAprilTag();
-        double centerDistance = Math.hypot(xOffset, yOffset);
-        return centerDistance;
+    public double robotDistanceToAprilTag() {
+        double xOffset = robotXOffsetToAprilTag();
+        double yOffset = robotYOffsetToAprilTag();
+
+        double robotDistance = Math.hypot(xOffset, yOffset);
+        return robotDistance;
     }
 
-    public Rotation2d centerAngleToAprilTagRotation2d() {
-        double centerAngle = CenterAngleToAprilTag();
-        return Rotation2d.fromDegrees(centerAngle);
+    public Rotation2d robotAngleToAprilTagRotation2d() {
+        return Rotation2d.fromDegrees(robotAngleToAprilTag());
     }
 }
