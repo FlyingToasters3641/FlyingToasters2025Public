@@ -22,7 +22,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     public static final double EL_RATIO = 0.0;
     public static final double EL_ENCODER_RATIO = 0.0;
 
-    private static final String CANbusName = "idk"; // TODO: Update CANbus Name
+    private static final String CANbusName = "maximo"; // TODO: Update CANbus Name
     public static final TalonFX EL_TalonFXOne = new TalonFX(1, CANbusName);// TODO: Update CANIDs
     public static final TalonFX EL_TalonFXTwo = new TalonFX(2, CANbusName); // TODO: Standardize Names for Motors
     public static final CANcoder EL_CANCoder = new CANcoder(5, CANbusName); // TODO: Clarify CANcoder usage

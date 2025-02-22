@@ -182,7 +182,7 @@ public class Robot extends LoggedRobot {
             autonomousCommand.cancel();
         }
 
-        ClimberCommands.CL_home(RobotContainer.climber).schedule();
+        //ClimberCommands.CL_home(RobotContainer.climber).schedule();
     }
 
     /** This function is called periodically during operator control. */
