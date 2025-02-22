@@ -233,8 +233,8 @@ public class RobotContainer {
         //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
         //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
         controller.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, 
-                () -> vision.xRobotCenterOffset(blackboard), 
-                () -> vision.YCenterDistanceAprilTag(blackboard), 
+                () -> vision.robotXOffsetToAprilTag(blackboard), 
+                () -> vision.robotYOffsetToAprilTag(blackboard), 
                 () -> blackboard.getTargetRotation("target")));
 
         controller.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
