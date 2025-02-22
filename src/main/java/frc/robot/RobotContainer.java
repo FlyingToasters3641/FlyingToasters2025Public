@@ -96,8 +96,8 @@ public class RobotContainer {
     public static Stack stack = new Stack(blackboard);
 
     // Controller
-    private static CommandXboxController controller = new CommandXboxController(0);
-    private static CommandXboxController controller1 = new CommandXboxController(1);
+    private static CommandXboxController operatorController = new CommandXboxController(1);
+    private static CommandXboxController driverController = new CommandXboxController(0);
 
     // Dashboard inputs
     private static LoggedDashboardChooser<Command> autoChooser;
@@ -208,37 +208,37 @@ public class RobotContainer {
         debugger.enableLogging(true); // Enable debugging
         // Default command, normal field-relative drive
         drive.setDefaultCommand(DriveCommands.joystickDrive(
-                drive, () -> -controller1.getLeftY(), () -> -controller1.getLeftX(), () -> -controller1.getRightX()));
+                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), () -> -driverController.getRightX()));
 
         // Switch to X pattern when X button is pressed
-        controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+        operatorController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
         // Reset gyro / odometry
         final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
                 ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
                 : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
-        controller.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
+        operatorController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
         //Gyro reset
-        controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
+        operatorController.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
         //Score coral commands
         
-        controller.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
-        controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
-        controller.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
-        controller.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
+        operatorController.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
+        operatorController.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        operatorController.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
+        operatorController.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
         //Score net
-        controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
+        operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 
         //Intake algae
-        controller.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
+        operatorController.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
 
         //Outake algae
-        controller.leftBumper().onTrue(new RemoveAlgae(scorer, intake));
+        operatorController.leftBumper().onTrue(new RemoveAlgae(scorer, intake));
 
         //Intake coral
-        controller.rightTrigger(0.1).onTrue(new IntakeCoral(scorer, intake));
+        operatorController.rightTrigger(0.1).onTrue(new IntakeCoral(scorer, intake));
 
         //Climber controls
         // controller.povUp().onTrue(new StartClimb(scorer, elevator, intake));
@@ -250,13 +250,13 @@ public class RobotContainer {
          * controller.povDown().onTrue(new EndClimberTest());
          * 
          */
-        controller.axisGreaterThan(5,0.1).onTrue(ClimberCommands.CL_testSpeed(climber, () -> controller.getRightY(), () -> controller.getRightY() > -0.1 && controller.getRightY() < 0.1));
+        operatorController.axisGreaterThan(5,0.1).onTrue(ClimberCommands.CL_testSpeed(climber, () -> operatorController.getRightY(), () -> operatorController.getRightY() > -0.1 && operatorController.getRightY() < 0.1));
         //Engages the small ratchet on the side by setting the position to 0.0
-        controller.povLeft().toggleOnTrue(new ConditionalCommand(ClimberCommands.CL_setServo(climber, 0), ClimberCommands.CL_setServo(climber, 90), () -> climber.CL_getServoDisengaged()));
-        controller.povUp().onTrue(ClimberCommands.CL_home(climber));
+        operatorController.povLeft().toggleOnTrue(new ConditionalCommand(ClimberCommands.CL_setServo(climber, 0), ClimberCommands.CL_setServo(climber, 90), () -> climber.CL_getServoDisengaged()));
+        operatorController.povUp().onTrue(ClimberCommands.CL_home(climber));
 
         //Elevator Manual Calibration
-        controller.axisGreaterThan(1,0.1).onTrue(ElevatorCommands.EL_joystickControl(elevator,() -> controller.getLeftY()));
+        operatorController.axisGreaterThan(1,0.1).onTrue(ElevatorCommands.EL_joystickControl(elevator,() -> operatorController.getLeftY()));
         
         //Scorer Manual Calibration (uncomment when needed)
         //controller.axisGreaterThan(1, 0.1).onTrue(ScorerCommands.CS_joystickControl(scorer, () -> controller.getLeftY()));
