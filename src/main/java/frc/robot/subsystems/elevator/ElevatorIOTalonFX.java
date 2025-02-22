@@ -75,6 +75,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         //TODO: this may be a thing to be debugged but WPILib has had issues with mutable Units randomly being changed. -AU
     }
 
+    @Override
+    public void EL_setSpeed(double speed){
+        EL_TalonFXOne.set(speed);
+
+        Logger.recordOutput("Elevator/Speed", speed);
+    }
+
 
 
     

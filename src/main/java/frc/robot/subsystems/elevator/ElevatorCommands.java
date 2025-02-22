@@ -2,6 +2,8 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -41,6 +43,10 @@ public class ElevatorCommands {
 
     public static Command EL_goToNet (Elevator m_Elevator){
         return Commands.runOnce(() -> m_Elevator.EL_setpoint = Inches.of(ElevatorConstants.EL_NET_HEIGHT));
+    }
+
+    public static Command EL_joystickControl (Elevator m_Elevator, DoubleSupplier axis){
+        return Commands.runOnce(() -> m_Elevator.EL_setSpeed(axis.getAsDouble()));
     }
 
 }

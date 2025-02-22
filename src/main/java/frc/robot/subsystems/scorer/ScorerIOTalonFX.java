@@ -80,5 +80,11 @@ public class ScorerIOTalonFX implements ScorerIO{
         Logger.recordOutput("Scorer/Running", speed);
     }
 
+    @Override
+    public void CS_setSpeed(double speed){
+        CS_pivotTalonFX.set(speed);
+        Logger.recordOutput("Scorer/PivotSpeed", speed);
+    }
+
 
 }

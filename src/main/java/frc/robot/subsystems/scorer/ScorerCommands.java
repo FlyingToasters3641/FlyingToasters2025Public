@@ -2,6 +2,8 @@ package frc.robot.subsystems.scorer;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -58,6 +60,10 @@ public class ScorerCommands {
 
     public static Command CS_goToAlgae(Scorer m_Scorer) {
         return m_Scorer.CS_runSetpoint(Degrees.of(200));
+    }
+
+    public static Command CS_joystickControl(Scorer m_Scorer, DoubleSupplier axis){
+        return Commands.runOnce(() -> m_Scorer.CS_setSpeed(axis.getAsDouble()));
     }
 
 }

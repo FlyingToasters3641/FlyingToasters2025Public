@@ -60,12 +60,14 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorCommands;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.scorer.Scorer;
+import frc.robot.subsystems.scorer.ScorerCommands;
 import frc.robot.subsystems.scorer.ScorerIO;
 import frc.robot.subsystems.scorer.ScorerIOSim;
 import frc.robot.subsystems.vision.Vision;
@@ -253,6 +255,12 @@ public class RobotContainer {
         controller.povLeft().toggleOnTrue(new ConditionalCommand(ClimberCommands.CL_setServo(climber, 0), ClimberCommands.CL_setServo(climber, 90), () -> climber.CL_getServoDisengaged()));
         controller.povUp().onTrue(ClimberCommands.CL_home(climber));
 
+        //Elevator Manual Calibration
+        controller.axisGreaterThan(1,0.1).onTrue(ElevatorCommands.EL_joystickControl(elevator,() -> controller.getLeftY()));
+        
+        //Scorer Manual Calibration (uncomment when needed)
+        //controller.axisGreaterThan(1, 0.1).onTrue(ScorerCommands.CS_joystickControl(scorer, () -> controller.getLeftY()));
+        
 
     }
 
