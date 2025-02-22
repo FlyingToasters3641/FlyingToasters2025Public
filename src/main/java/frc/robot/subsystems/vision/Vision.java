@@ -210,10 +210,15 @@ public class Vision extends SubsystemBase {
 
     public double cameraDistanceToAprilTag(Blackboard blackboard) {
         double pitchAngle;
-        if (blackboard.isTargetLeftBranch("target")) {
-        pitchAngle = inputs[3].latestTargetObservationDouble.ty();
+        if (blackboard.get("target") != Targets.NONE) {
+         if (blackboard.isTargetLeftBranch("target")) {
+            pitchAngle = inputs[3].latestTargetObservationDouble.ty();
+            } else {
+            pitchAngle = inputs[2].latestTargetObservationDouble.ty();
+            }    
         } else {
-        pitchAngle = inputs[2].latestTargetObservationDouble.ty();
+        //TODO: create handling for no target here
+        pitchAngle = 0.0;
         }
         pitchAngle = Units.degreesToRadians(pitchAngle);
 
@@ -228,7 +233,7 @@ public class Vision extends SubsystemBase {
         if (blackboard.getTarget("target") != Targets.NONE) {
         io[2].getTargetID(blackboard);
         io[3].getTargetID(blackboard);
-        }
+        
         if (blackboard.isTargetLeftBranch("target")) {
         yawAngle = inputs[3].latestTargetObservationDouble.tx();
         flipYawAngle = 1.0;
@@ -236,6 +241,11 @@ public class Vision extends SubsystemBase {
         yawAngle = inputs[2].latestTargetObservationDouble.tx();
         flipYawAngle = -1.0;
         }
+    } else {
+    //TODO: create no target handling here
+    flipYawAngle = 0.0;
+    yawAngle = 0.0;
+    }
         yawAngle = Units.degreesToRadians((flipYawAngle * yawAngle) + 25);
         Logger.recordOutput("LineUp/ProcessedYawAngle", yawAngle);
         double xOffset = distance * Math.sin(yawAngle);
@@ -251,6 +261,7 @@ public class Vision extends SubsystemBase {
     public double robotYOffsetToAprilTag(Blackboard blackboard) {
         double yawAngle;
         double flipYawAngle;
+        if (blackboard.getTarget("target") != Targets.NONE) {
         if (blackboard.isTargetLeftBranch("target")) {
         yawAngle = inputs[3].latestTargetObservationDouble.tx();
         flipYawAngle = 1.0;
@@ -258,6 +269,12 @@ public class Vision extends SubsystemBase {
         yawAngle = inputs[2].latestTargetObservationDouble.tx();
         flipYawAngle = -1.0;
         }
+    } else {
+        //TODO: create no target hnadling here
+        flipYawAngle = 0.0;
+        yawAngle = 0.0;
+    }
+
         yawAngle = Units.degreesToRadians((-flipYawAngle * yawAngle) + 25);
         double distance = cameraDistanceToAprilTag(blackboard);
 
