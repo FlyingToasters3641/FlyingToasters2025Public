@@ -15,6 +15,8 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.lib.BehaviorTree.Blackboard;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
@@ -48,4 +50,10 @@ public interface VisionIO {
     record TargetObservationDouble(double tx, double ty) {}
 
     default void updateInputs(VisionIOInputs inputs) {}
+
+    default double getPitchAngle() {return 0.0;}
+
+    default double getYawAngle() {return 0.0;}
+
+    default void getTargetID(Blackboard blackboard) {}
 }

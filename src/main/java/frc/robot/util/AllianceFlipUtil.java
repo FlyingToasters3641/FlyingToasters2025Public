@@ -67,4 +67,35 @@ public class AllianceFlipUtil {
     return DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().get() == Alliance.Red;
   }
+
+  public static int apply(int AprilTagID) {
+    int flippedID; 
+    if (shouldFlip()) {
+      switch (AprilTagID) {
+        case 17:
+        flippedID = 8;
+        break;
+        case 18:
+        flippedID = 7;
+        break;
+        case 19:
+        flippedID = 6;
+        break;
+        case 20:
+        flippedID = 11;
+        break;
+        case 21:
+        flippedID = 10;
+        break;
+        case 22:
+        flippedID = 9;
+        break;
+        default:
+        flippedID = 0;
+        break;
+      }
+      return flippedID;
+    }
+    return AprilTagID;
+  }
 }

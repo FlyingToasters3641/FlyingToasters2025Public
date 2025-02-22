@@ -19,7 +19,12 @@ public class Blackboard {
     }
 
     public Targets getTarget(String key) {
+        if ((Targets)data.get(key) != null) {
         return (Targets) data.get(key);
+        } else {
+        return Targets.NONE;
+        }
+
     }
 
     public boolean containsKey(String key) {
@@ -44,7 +49,12 @@ public class Blackboard {
     }
 
     public boolean isTargetAlgae(String key) {
-        Targets currentTarget = (Targets) data.get(key);
+        Targets currentTarget;
+        if ((Targets)data.get(key) != null) {
+        currentTarget = (Targets)data.get(key);
+        } else {
+        currentTarget = Targets.NONE;
+        }
         boolean Algae;
         if (currentTarget != null) {
         switch (currentTarget) {
@@ -67,7 +77,12 @@ public class Blackboard {
     }
 
     public Pose2d getTargetPose(String key) {
-        Targets currentTarget = (Targets) data.get(key);
+        Targets currentTarget;
+        if ((Targets)data.get(key) != null) {
+        currentTarget = (Targets)data.get(key);
+        } else {
+        currentTarget = Targets.NONE;
+        }
         Pose2d targetPose = new Pose2d();
         if (currentTarget != null) {
             switch (currentTarget) {
@@ -235,7 +250,12 @@ public class Blackboard {
     }
 
     public boolean isTargetLeftBranch(String key) {
-        Targets currentTarget = (Targets)data.get(key);
+        Targets currentTarget;
+        if ((Targets)data.get(key) != null) {
+        currentTarget = (Targets)data.get(key);
+        } else {
+        currentTarget = Targets.NONE;
+        }
         boolean isTargetLeft;
         switch(currentTarget) {
             case A1:
@@ -318,7 +338,12 @@ public class Blackboard {
     }
 
     public Rotation2d getTargetRotation(String key) {
-        Targets currentTarget = (Targets)data.get(key);
+        Targets currentTarget;
+        if ((Targets)data.get(key) != null) {
+        currentTarget = (Targets)data.get(key);
+        } else {
+        currentTarget = Targets.NONE;
+        }
         Rotation2d targetRotation = new Rotation2d();
         switch (currentTarget) {
             case A1:
@@ -468,7 +493,167 @@ public class Blackboard {
             default:
             targetRotation = Rotation2d.fromRadians(0);
         }
-        return targetRotation;
-        
+        return targetRotation; 
+    }
+
+    public int getTargetID(String key) {
+        Targets currentTarget;
+        if ((Targets)data.get(key) != null) {
+        currentTarget = (Targets)data.get(key);
+        } else {
+        currentTarget = Targets.NONE;
+        }
+    int targetID = 0;
+    switch (currentTarget) {
+        case A1:
+        targetID = 18;
+        break;
+        case A2:
+        targetID = 18;
+        break;
+        case A3:
+        targetID = 18;
+        break;
+        case A4:
+        targetID = 18;
+        break;
+        case B1:
+        targetID = 18;
+        break;
+        case B2:
+        targetID = 18;
+        break;
+        case B3:
+        targetID = 18;
+        break;
+        case B4:
+        targetID = 18;
+        break;
+        case C1:
+        targetID = 17;
+        break;
+        case C2:
+        targetID = 17;
+        break;
+        case C3:
+        targetID = 17;
+        break;
+        case C4:
+        targetID = 17;
+        break;
+        case D1:
+        targetID = 17;
+        break;
+        case D2:
+        targetID = 17;
+        break;
+        case D3:
+        targetID = 17;
+        break;
+        case D4:
+        targetID = 17;
+        break;
+        case E1:
+        targetID = 22;
+        break;
+        case E2:
+        targetID = 22;
+        break;
+        case E3:
+        targetID = 22;
+        break;
+        case E4:
+        targetID = 22;
+        break;
+        case F1:
+        targetID = 22;
+        break;
+        case F2:
+        targetID = 22;
+        break;
+        case F3:
+        targetID = 22;
+        break;
+        case F4:
+        targetID = 22;
+        break;
+        case G1:
+        targetID = 21;
+        break;
+        case G2:
+        targetID = 21;
+        break;
+        case G3:
+        targetID = 21;
+        break;
+        case G4:
+        targetID = 21;
+        break;
+        case H1:
+        targetID = 21;
+        break;
+        case H2:
+        targetID = 21;
+        break;
+        case H3:
+        targetID = 21;
+        break;
+        case H4:
+        targetID = 21;
+        break;
+        case I1:
+        targetID = 20;
+        break;
+        case I2:
+        targetID = 20;
+        break;
+        case I3:
+        targetID = 20;
+        break;
+        case I4:
+        targetID = 20;
+        break;
+        case J1:
+        targetID = 20;
+        break;
+        case J2:
+        targetID = 20;
+        break;
+        case J3:
+        targetID = 20;
+        break;
+        case J4:
+        targetID = 20;
+        break;
+        case K1:
+        targetID = 19;
+        break;
+        case K2:
+        targetID = 19;
+        break;
+        case K3:
+        targetID = 19;
+        break;
+        case K4:
+        targetID = 19;
+        break;
+        case L1:
+        targetID = 19;
+        break;
+        case L2:
+        targetID = 19;
+        break;
+        case L3:
+        targetID = 19;
+        break;
+        case L4:
+        targetID = 19;
+        break;
+        default:
+        targetID = 0;
+        break;
+    }
+    return targetID;
+
     }
 }

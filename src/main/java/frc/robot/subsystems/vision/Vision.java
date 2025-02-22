@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.DriveCommands;
 import frc.robot.lib.BehaviorTree.Blackboard;
+import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 
@@ -185,6 +186,8 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput(
                 "Vision/Summary/RobotPosesRejected",
                 allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+        
+        debugxOffset();
 
             
     }
@@ -210,7 +213,7 @@ public class Vision extends SubsystemBase {
         if (blackboard.isTargetLeftBranch("target")) {
         pitchAngle = inputs[3].latestTargetObservationDouble.ty();
         } else {
-        pitchAngle = inputs[3].latestTargetObservationDouble.ty();
+        pitchAngle = inputs[2].latestTargetObservationDouble.ty();
         }
         pitchAngle = Units.degreesToRadians(pitchAngle);
 
@@ -221,35 +224,41 @@ public class Vision extends SubsystemBase {
     public double robotXOffsetToAprilTag(Blackboard blackboard) {
         double distance = cameraDistanceToAprilTag(blackboard);
         double yawAngle;
-        double xCameraOffset;
+        double flipYawAngle;
+        if (blackboard.getTarget("target") != Targets.NONE) {
+        io[2].getTargetID(blackboard);
+        io[3].getTargetID(blackboard);
+        }
         if (blackboard.isTargetLeftBranch("target")) {
         yawAngle = inputs[3].latestTargetObservationDouble.tx();
-        xCameraOffset = -0.82;
+        flipYawAngle = 1.0;
         } else {
         yawAngle = inputs[2].latestTargetObservationDouble.tx();
-        xCameraOffset = 0.82;
+        flipYawAngle = -1.0;
         }
-        Logger.recordOutput("LineUp/RawYawAngle", yawAngle);
-        yawAngle = Units.degreesToRadians(yawAngle + 25);
+        yawAngle = Units.degreesToRadians((flipYawAngle * yawAngle) + 25);
         Logger.recordOutput("LineUp/ProcessedYawAngle", yawAngle);
         double xOffset = distance * Math.sin(yawAngle);
         Logger.recordOutput("LineUp/CameraXOffsetToAprilTag", xOffset);
-        xOffset += xCameraOffset;
+        xOffset -= .082;
         if (Double.isInfinite(xOffset)) {
             return 0.0;
         } else {
-        return xOffset;
+        return (flipYawAngle * xOffset);
         }
     }
 
     public double robotYOffsetToAprilTag(Blackboard blackboard) {
         double yawAngle;
+        double flipYawAngle;
         if (blackboard.isTargetLeftBranch("target")) {
         yawAngle = inputs[3].latestTargetObservationDouble.tx();
+        flipYawAngle = 1.0;
         } else {
         yawAngle = inputs[2].latestTargetObservationDouble.tx();
+        flipYawAngle = -1.0;
         }
-        yawAngle = Units.degreesToRadians(yawAngle + 25);
+        yawAngle = Units.degreesToRadians((-flipYawAngle * yawAngle) + 25);
         double distance = cameraDistanceToAprilTag(blackboard);
 
         double yOffset = distance * Math.cos(yawAngle);
@@ -272,5 +281,16 @@ public class Vision extends SubsystemBase {
 
         double robotDistance = Math.hypot(xOffset, yOffset);
         return robotDistance;
+    }
+
+    //ONLY USE FOR LOGGING
+    public void debugxOffset() {
+        double YawAngle = inputs[2].latestTargetObservationDouble.tx();
+        Logger.recordOutput("LineUp/2RawYawAngle", YawAngle);
+        YawAngle = Units.degreesToRadians(YawAngle);
+    }
+
+    public boolean getLeftBranch(Blackboard blackboard) {
+        return blackboard.isTargetLeftBranch("target");
     }
 }

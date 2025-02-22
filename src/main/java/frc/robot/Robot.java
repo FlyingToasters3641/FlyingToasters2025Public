@@ -102,7 +102,6 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
         // Set up the simulation
-        
 
         FollowPathCommand.warmupCommand().schedule();
         PathfindingCommand.warmupCommand().schedule();
@@ -132,7 +131,7 @@ public class Robot extends LoggedRobot {
             RobotContainer.blackboard.set("isDone", false);
         } else if(RobotContainer.stack.isEmpty()) {
             RobotContainer.blackboard.set("hasTarget", false);
-            RobotContainer.blackboard.set("target", Targets.NONE);
+            //RobotContainer.blackboard.set("target", Targets.NONE);
         }
         
         Logger.recordOutput("BehaviorTree/theSTACK", RobotContainer.stack.getLastElement());

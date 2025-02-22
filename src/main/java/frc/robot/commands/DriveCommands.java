@@ -17,10 +17,12 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.dyn4j.geometry.Rotation;
+import org.dyn4j.world.Island;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.path.GoalEndState;
@@ -188,9 +190,8 @@ public class DriveCommands {
     }
 
     public static Command allAxisAutoAlign(
-        Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, Supplier<Rotation2d> rotationSupplier) {
+        Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, Supplier<Rotation2d> rotationSupplier, BooleanSupplier isLeftReef) {
 
-        
         ProfiledPIDController xlinearController = new ProfiledPIDController(
                 LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
         ProfiledPIDController ylinearController = new ProfiledPIDController(
@@ -201,10 +202,14 @@ public class DriveCommands {
         angleController.enableContinuousInput(-Math.PI, Math.PI);
     return Commands.run(
             () -> {
+
+                Logger.recordOutput("LineUp/CommandXCenterOffset", xOffset);
+                Logger.recordOutput("LineUp/CommandYCenterOffset", yOffset);
                 // Get linear velocity
+
                 double xTranslation = xlinearController.calculate(
                         xOffset.getAsDouble(),
-                        0.0);
+                        drive.isLeftReef(isLeftReef.getAsBoolean()));
 
                 double yTranslation = ylinearController.calculate(
                         yOffset.getAsDouble(),
@@ -244,8 +249,7 @@ public static Command xyAxisAutoAlign(
                     () -> {
                         // Get linear velocity
                         
-                        Logger.recordOutput("LineUp/CommandXCenterOffset", xOffset);
-                        Logger.recordOutput("LineUp/CommandYCenterOffset", yOffset);
+                        
                 
                         double xTranslation = xlinearController.calculate(
                                 xOffset.getAsDouble(),
@@ -303,10 +307,10 @@ public static Command omegaAxisAutoAlign(
             .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
 }
 
-public static SequentialCommandGroup AutoAlign(Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, Supplier<Rotation2d> rotationSupplier) {
+public static SequentialCommandGroup AutoAlign(Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, Supplier<Rotation2d> rotationSupplier, BooleanSupplier isLeftReef) {
         return new SequentialCommandGroup(
                 omegaAxisAutoAlign(drive, rotationSupplier).raceWith(new WaitCommand(0.25)),
-                allAxisAutoAlign(drive, xOffset, yOffset, rotationSupplier)
+                allAxisAutoAlign(drive, xOffset, yOffset, rotationSupplier, isLeftReef)
         );
 }
 

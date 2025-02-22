@@ -34,6 +34,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -69,6 +70,8 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim2D;
+import frc.robot.util.AllianceFlipUtil;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -146,9 +149,9 @@ public class RobotContainer {
                                 VisionConstants.camera0Name, VisionConstants.robotToCamera0, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
                         new VisionIOPhotonVisionSim(
                                 VisionConstants.camera1Name, VisionConstants.robotToCamera1, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
-                        new VisionIOPhotonVisionSim(
+                        new VisionIOPhotonVisionSim2D(
                                 VisionConstants.camera2Name, VisionConstants.robotToCamera2, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
-                        new VisionIOPhotonVisionSim(
+                        new VisionIOPhotonVisionSim2D(
                                 VisionConstants.camera3Name, VisionConstants.robotToCamera3, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true));
                 elevator = new Elevator(new ElevatorIOSim());
                 intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance(), blackboard));
@@ -187,6 +190,7 @@ public class RobotContainer {
         targetChooser.addOption("G1", Targets.G1);
         targetChooser.addOption("L1", Targets.L1);
         targetChooser.addOption("test", Targets.TEST);
+        targetChooser.addOption("B1", Targets.B1);
 
         playerStationChooser = new LoggedDashboardChooser<>("Human Player Station Choice:");
         playerStationChooser.addOption("Left", "left");
@@ -235,7 +239,8 @@ public class RobotContainer {
         controller.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, 
                 () -> vision.robotXOffsetToAprilTag(blackboard), 
                 () -> vision.robotYOffsetToAprilTag(blackboard), 
-                () -> blackboard.getTargetRotation("target")));
+                () -> AllianceFlipUtil.apply(blackboard.getTargetRotation("target")),
+                () -> vision.getLeftBranch(blackboard)));
 
         controller.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
         //Score net
@@ -308,7 +313,7 @@ public class RobotContainer {
     }
 
     public void setTreeTarget() {
-        blackboard.set("target", targetChooser.get());
+    blackboard.set("target", targetChooser.get());
     }
 
     public void resetSimulation() {
