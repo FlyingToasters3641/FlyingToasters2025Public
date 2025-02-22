@@ -41,4 +41,12 @@ public class IntakeCommands {
         return Commands.runOnce(() -> m_Intake.IN_setRoller(0.0));
     }
 
+    public static Command IN_simSetRunning(Intake m_Intake){
+        return Commands.runOnce(() -> m_Intake.IN_setRunning(true));
+    }
+    
+    public static Command IN_simStopRunning(Intake m_Intake){
+        return Commands.runOnce(() -> m_Intake.IN_setRunning(false));
+    }
+
 }

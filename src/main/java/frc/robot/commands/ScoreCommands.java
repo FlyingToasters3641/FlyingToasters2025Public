@@ -7,6 +7,7 @@ import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.subsystems.elevator.Elevator;
@@ -114,6 +115,18 @@ public class ScoreCommands {
                     Commands.parallel(IntakeCommands.IN_rest(m_intake), ScorerCommands.CS_stop(m_scorer))
                     )
             );
+        }
+    }
+
+    public static class IntakeGroundAlgaeV2 extends SequentialCommandGroup {
+        public IntakeGroundAlgaeV2(Scorer m_scorer, Intake m_intake) {
+            addCommands(
+                Commands.sequence(
+                    Commands.parallel(IntakeCommands.IN_intakeAlgae(m_intake), ScorerCommands.CS_intakeAlgae(m_scorer), IntakeCommands.IN_simSetRunning(m_intake)),
+                    new WaitCommand(2),
+                    Commands.parallel(IntakeCommands.IN_rest(m_intake), ScorerCommands.CS_stop(m_scorer), IntakeCommands.IN_simStopRunning(m_intake))
+                    )
+                );
         }
     }
 

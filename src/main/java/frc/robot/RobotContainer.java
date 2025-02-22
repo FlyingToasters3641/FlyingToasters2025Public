@@ -22,6 +22,7 @@ import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
 import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -227,7 +228,7 @@ public class RobotContainer {
         controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake, driveSimulation));
 
         //Intake algae
-        controller.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
+        controller.leftTrigger(0.1).onTrue(new IntakeGroundAlgaeV2(scorer, intake));
 
         //Outake algae
         controller.leftBumper().onTrue(new RemoveAlgae(scorer, intake));
@@ -292,6 +293,7 @@ public class RobotContainer {
 
         driveSimulation.setSimulationWorldPose(startingAutoPose);
         SimulatedArena.getInstance().resetFieldForAuto();
+        
     }
 
     public void displaySimFieldToAdvantageScope() {
