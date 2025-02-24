@@ -48,6 +48,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.vision.Vision;
 import edu.wpi.first.math.controller.PIDController;
 
 public class DriveCommands {
@@ -190,7 +191,7 @@ public class DriveCommands {
     }
 
     public static Command allAxisAutoAlign(
-        Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, Supplier<Rotation2d> rotationSupplier, BooleanSupplier isLeftReef) {
+        Drive drive, Vision vision, DoubleSupplier xOffset, DoubleSupplier yOffset, Supplier<Rotation2d> rotationSupplier, BooleanSupplier isLeftReef) {
 
         ProfiledPIDController xlinearController = new ProfiledPIDController(
                 LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
@@ -307,10 +308,10 @@ public static Command omegaAxisAutoAlign(
             .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
 }
 
-public static SequentialCommandGroup AutoAlign(Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, Supplier<Rotation2d> rotationSupplier, BooleanSupplier isLeftReef) {
+public static SequentialCommandGroup AutoAlign(Drive drive, Vision vision, DoubleSupplier xOffset, DoubleSupplier yOffset, Supplier<Rotation2d> rotationSupplier, BooleanSupplier isLeftReef) {
         return new SequentialCommandGroup(
                 omegaAxisAutoAlign(drive, rotationSupplier).raceWith(new WaitCommand(0.25)),
-                allAxisAutoAlign(drive, xOffset, yOffset, rotationSupplier, isLeftReef)
+                allAxisAutoAlign(drive, vision, xOffset, yOffset, rotationSupplier, isLeftReef)
         );
 }
 

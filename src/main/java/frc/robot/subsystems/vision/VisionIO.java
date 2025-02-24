@@ -28,6 +28,7 @@ public interface VisionIO {
         public PoseObservation[] poseObservations = new PoseObservation[0];
         public int[] tagIds = new int[0];
         public int bestTag = 0;
+        public double bestTagSize = 0.0;
     }
 
     /** Represents the angle to a simple target, not used for pose estimation. */
@@ -59,4 +60,6 @@ public interface VisionIO {
     default void getTargetID(Blackboard blackboard) {}
 
     default int getBiggestTarget(Blackboard blackboard) {return 0;}
+
+    default void setTrackedTarget(int AprilTagID) {}
 }

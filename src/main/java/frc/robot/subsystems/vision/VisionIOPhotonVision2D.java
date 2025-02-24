@@ -43,8 +43,10 @@ public class VisionIOPhotonVision2D implements VisionIO {
                     inputs.latestTargetObservationDouble = new TargetObservationDouble(
                             result.getBestTarget().getYaw(),
                             result.getBestTarget().getPitch());
-                            inputs.bestTag = result.getBestTarget().fiducialId;
                 }
+                
+                inputs.bestTag = result.getBestTarget().fiducialId;
+                inputs.bestTagSize = result.getBestTarget().area;
             } else {
                 inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d(), 0.0, 0.0);
             }
@@ -60,6 +62,11 @@ public class VisionIOPhotonVision2D implements VisionIO {
     @Override
     public void getTargetID(Blackboard blackboard) {
         targetedAprilTag = blackboard.getTargetID("target");
+    }
+
+    @Override
+    public void setTrackedTarget(int AprilTagID) {
+        targetedAprilTag = AprilTagID;
     }
 
 }

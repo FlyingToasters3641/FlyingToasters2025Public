@@ -104,6 +104,9 @@ public class RobotContainer {
 
     //starting Auto Pose for simulation
     private static Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
+    //closest camera for vision
+    private static int closestCamera = 2;
+    private static Rotation2d targetRotation = new Rotation2d(0.0);
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -150,7 +153,7 @@ public class RobotContainer {
                         new VisionIOPhotonVisionSim(
                                 VisionConstants.camera1Name, VisionConstants.robotToCamera1, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
                         new VisionIOPhotonVisionSim2D(
-                                VisionConstants.camera2Name, VisionConstants.robotToCamera2, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
+                                VisionConstants.camera2Name, VisionConstants.robotToCamera2, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true),
                         new VisionIOPhotonVisionSim2D(
                                 VisionConstants.camera3Name, VisionConstants.robotToCamera3, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true));
                 elevator = new Elevator(new ElevatorIOSim());
@@ -236,11 +239,18 @@ public class RobotContainer {
         // Auto Align
         //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
         //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
-        controller.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, 
-                () -> vision.robotXOffsetToAprilTag(blackboard), 
-                () -> vision.robotYOffsetToAprilTag(blackboard), 
-                () -> AllianceFlipUtil.apply(blackboard.getTargetRotation("target")),
-                () -> vision.getLeftBranch(blackboard)));
+        controller.y().onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
+        controller.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
+                () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
+                () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
+                () -> targetRotation,
+                () -> vision.getLeftBranch(blackboard, closestCamera)));
+
+        // DriveCommands.allAxisAutoAlign(drive, vision,
+        // () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
+        // () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
+        // () -> new Rotation2d(),
+        // () -> vision.getLeftBranch(blackboard))
 
         controller.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
         //Score net
