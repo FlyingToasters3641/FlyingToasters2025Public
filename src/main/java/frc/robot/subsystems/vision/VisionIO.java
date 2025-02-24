@@ -56,4 +56,6 @@ public interface VisionIO {
     default double getYawAngle() {return 0.0;}
 
     default void getTargetID(Blackboard blackboard) {}
+
+    default int getBiggestTarget(Blackboard blackboard) {return 0;}
 }
