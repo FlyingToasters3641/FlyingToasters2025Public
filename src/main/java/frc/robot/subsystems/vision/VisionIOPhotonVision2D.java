@@ -43,6 +43,7 @@ public class VisionIOPhotonVision2D implements VisionIO {
                     inputs.latestTargetObservationDouble = new TargetObservationDouble(
                             result.getBestTarget().getYaw(),
                             result.getBestTarget().getPitch());
+                            inputs.bestTag = result.getBestTarget().fiducialId;
                 }
             } else {
                 inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d(), 0.0, 0.0);

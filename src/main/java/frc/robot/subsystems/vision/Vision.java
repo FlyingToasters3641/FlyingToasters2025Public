@@ -39,6 +39,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.lib.BehaviorTree.trees.Targets;
@@ -348,6 +349,56 @@ public class Vision extends SubsystemBase {
         } else {
             return new Rotation2d();
         }
+    }
+
+    public int getBestTag() {
+        return 0;
+    }
+
+    public Rotation2d getTagRotation(int AprilTagID) {
+        Rotation2d targetRotation = new Rotation2d();
+        switch(AprilTagID) {
+            case 6:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchL.getRotation());
+            break;
+            case 7:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchA.getRotation());
+            break;
+            case 8:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchC.getRotation());
+            break;
+            case 9:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchE.getRotation());
+            break;
+            case 10:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchG.getRotation());
+            break;
+            case 11:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchI.getRotation());
+            break;
+            case 17:
+            targetRotation = Constants.reefBranchC.getRotation();
+            break;
+            case 18:
+            targetRotation = Constants.reefBranchA.getRotation();
+            break;
+            case 19:
+            targetRotation = Constants.reefBranchL.getRotation();
+            break;
+            case 20:
+            targetRotation = Constants.reefBranchI.getRotation();
+            break;
+            case 21:
+            targetRotation = Constants.reefBranchG.getRotation();
+            break;
+            case 22:
+            targetRotation = Constants.reefBranchE.getRotation();
+            break;
+            default:
+            targetRotation = new Rotation2d();
+            break;
+        }
+        return targetRotation;
     }
     
 }
