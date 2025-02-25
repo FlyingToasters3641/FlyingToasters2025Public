@@ -20,10 +20,10 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class ScorerIOTalonFX implements ScorerIO{
     DigitalInput coralSensor = new DigitalInput(0);
     DigitalInput algaeSensor = new DigitalInput(1);
-    private static final String CANbusName = "scorer";
-    public static final TalonFX CS_pivotTalonFX = new TalonFX(3, CANbusName);
-    public static final TalonFX CS_rollerTalonFX = new TalonFX(4, CANbusName);
-    public static final CANcoder CS_pivotCANcoder = new CANcoder(5, CANbusName);
+    private static final String CANbusName = "maximo";
+    public static final TalonFX CS_pivotTalonFX = new TalonFX(16, CANbusName);
+    public static final TalonFX CS_rollerTalonFX = new TalonFX(18, CANbusName);
+    public static final CANcoder CS_pivotCANcoder = new CANcoder(21, CANbusName);
     public static final DigitalInput CS_coralSensor = new DigitalInput(0);
     public static final DigitalInput CS_algaeSensor = new DigitalInput(1);
 

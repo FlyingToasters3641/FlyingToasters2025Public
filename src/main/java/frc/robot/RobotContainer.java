@@ -63,6 +63,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorCommands;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
@@ -124,7 +125,7 @@ public class RobotContainer {
                         drive,
                         new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0),
                         new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1));
-                elevator = new Elevator(new ElevatorIO() {});
+                elevator = new Elevator(new ElevatorIOTalonFX() {});
                 intake = new Intake(new IntakeIO() {});
                 scorer = new Scorer(new ScorerIO() {});
                 climber = new Climber(new ClimberIOTalonFX() {});
@@ -220,25 +221,25 @@ public class RobotContainer {
         operatorController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
         //Gyro reset
-        operatorController.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
+        driverController.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
         //Score coral commands
         
-        operatorController.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
-        operatorController.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
-        operatorController.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
-        operatorController.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
+        // operatorController.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
+        // operatorController.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        // operatorController.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
+        // operatorController.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
         //Score net
-        operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
+        // operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 
         //Intake algae
-        operatorController.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
+        // operatorController.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
 
         //Outake algae
-        operatorController.leftBumper().onTrue(new RemoveAlgae(scorer, intake));
+        // operatorController.leftBumper().onTrue(new RemoveAlgae(scorer, intake));
 
-        //Intake coral
-        operatorController.rightTrigger(0.1).onTrue(new IntakeCoral(scorer, intake));
+        // //Intake coral
+        // operatorController.rightTrigger(0.1).onTrue(new IntakeCoral(scorer, intake));
 
         //Climber controls
         // controller.povUp().onTrue(new StartClimb(scorer, elevator, intake));
@@ -250,16 +251,19 @@ public class RobotContainer {
          * controller.povDown().onTrue(new EndClimberTest());
          * 
          */
-        operatorController.axisGreaterThan(5,0.1).onTrue(ClimberCommands.CL_testSpeed(climber, () -> operatorController.getRightY(), () -> operatorController.getRightY() > -0.1 && operatorController.getRightY() < 0.1));
+        operatorController.axisGreaterThan(5,0.1).onTrue(ClimberCommands.CL_testSpeed(climber, () -> operatorController.getRightY()));
         //Engages the small ratchet on the side by setting the position to 0.0
         operatorController.povLeft().toggleOnTrue(new ConditionalCommand(ClimberCommands.CL_setServo(climber, 0), ClimberCommands.CL_setServo(climber, 90), () -> climber.CL_getServoDisengaged()));
         operatorController.povUp().onTrue(ClimberCommands.CL_home(climber));
 
         //Elevator Manual Calibration
         operatorController.axisGreaterThan(1,0.1).onTrue(ElevatorCommands.EL_joystickControl(elevator,() -> operatorController.getLeftY()));
+        operatorController.y().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(10)));
+        operatorController.a().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(1)));
         
         //Scorer Manual Calibration (uncomment when needed)
         //controller.axisGreaterThan(1, 0.1).onTrue(ScorerCommands.CS_joystickControl(scorer, () -> controller.getLeftY()));
+        //operatorController.axisGreaterThan(2, 0.1).onTrue(ScorerCommands.CS_setRunning(scorer, operatorController.leftTrigger()));
         
 
     }

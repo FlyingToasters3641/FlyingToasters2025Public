@@ -14,7 +14,7 @@ public class ElevatorCommands {
     //A few quick commands for general usage. Consider merging this file with Elevator.java later
 
     public static Command EL_setPosition (Elevator m_Elevator, Distance m_position){
-        return Commands.runOnce(() -> m_Elevator.EL_setpoint = m_position);
+        return Commands.runOnce(() -> m_Elevator.setELPosition(m_position.in(Inches)));
     }
 
     public static Command EL_stop (Elevator m_Elevator){
@@ -46,7 +46,7 @@ public class ElevatorCommands {
     }
 
     public static Command EL_joystickControl (Elevator m_Elevator, DoubleSupplier axis){
-        return Commands.runOnce(() -> m_Elevator.EL_setSpeed(axis.getAsDouble()));
+        return Commands.run(() -> m_Elevator.EL_setSpeed(axis.getAsDouble()));
     }
 
 }
