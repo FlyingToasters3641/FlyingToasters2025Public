@@ -45,6 +45,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         // TODO: Edit Elevator Config Settings
         EL_TalonConfig.Slot0.kP = 35.0;
         EL_TalonConfig.Slot0.kD = 1.0;
+
+        EL_TalonConfig.Slot1.kP = 3.0;
+        EL_TalonConfig.Slot1.kD = 1.0;
         EL_TalonConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         // Measuring Feedback
