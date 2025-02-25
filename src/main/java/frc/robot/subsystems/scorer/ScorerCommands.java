@@ -24,7 +24,7 @@ public class ScorerCommands {
         return Commands.run(() -> m_Scorer.CS_setRoller(-0.75)).until(() -> m_Scorer.CS_getCoral() == false).andThen(Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0)));
     }
 
-    public static Command cS_scoreCoralL4(Scorer m_Scorer) {
+    public static Command CS_scoreCoralL4(Scorer m_Scorer) {
         return Commands.runOnce(() -> m_Scorer.CS_setRoller(0.75)).until(() -> m_Scorer.CS_getCoral() == false).andThen(new WaitCommand(0.5)).andThen(Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0)));
     }
 

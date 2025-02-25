@@ -4,6 +4,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Constants;
+import frc.robot.lib.BehaviorTree.trees.IntakePivots;
+import frc.robot.lib.BehaviorTree.trees.IntakeRollers;
+import frc.robot.lib.BehaviorTree.trees.ScorerRollers;
 import frc.robot.lib.BehaviorTree.trees.Targets;
 
 public class Blackboard {
@@ -228,4 +231,80 @@ public class Blackboard {
 
         return targetPose;
     }
+    //these are the poses for the intake pivot
+    public double getTargetIntakeAngle(String key) {
+        IntakePivots currentTarget = (IntakePivots) data.get(key);
+        double targetAngle = 0;
+        if (currentTarget != null) {
+            switch (currentTarget) {
+                case IN_Algae:
+                    targetAngle = Constants.INTAKE_ALGAE_ANGLE;
+                case IN_Coral:
+                    targetAngle = Constants.INTAKE_CORAL_ANGLE;
+                    break;
+                case IN_Rest:
+                    targetAngle = Constants.INTAKE_REST_ANGLE;
+                    break;
+                case IN_ClearElevator:
+                    targetAngle = Constants.INTAKE_CLEAR_ELEVATOR_ANGLE;
+            }
+        } else {
+            targetAngle = 0;
+        }
+
+        return targetAngle;
+    }
+
+    public double getTargetIntakeSpeed(String key) {
+        IntakeRollers currentTarget = (IntakeRollers) data.get(key);
+        double targetSpeed = 0;
+        if (currentTarget != null) {
+            switch (currentTarget) {
+                case IN_Algae:
+                    targetSpeed = Constants.INTAKE_ALGAE_ANGLE;
+                case IN_Coral:
+                    targetSpeed = Constants.INTAKE_CORAL_SPEED;
+                    break;
+                case IN_OutakeCoral:
+                    targetSpeed = Constants.OUTTAKE_ALGAE_SPEED;
+                    break;
+                case IN_Stop:
+                    targetSpeed = Constants.INTAKE_REST_SPEED;
+            }
+        } else {
+            targetSpeed = 0;
+        }
+
+        return targetSpeed;
+    }  
+
+     public double getTargetScoerSpeed(String key) {
+        ScorerRollers currentTarget = (ScorerRollers) data.get(key);
+        double targetSpeed = 0;
+        if (currentTarget != null) {
+            switch (currentTarget) {
+                case CS_SCORE_CORAL:
+                    targetSpeed = Constants.SCORER_CORAL_SPEED;
+                case CS_SCORE_CORAL_L4:
+                    targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                    break;
+                case CS_REMOVE_ALGAE:
+                    targetSpeed = Constants.SCORER_REMOVE_ALGAE;
+                    break;
+                case CS_INTAKE_ALGAE:
+                    targetSpeed = Constants.SCORER_INTAKE_ALGAE;
+                    break;
+                
+                case CS_INTAKE_CORAL:
+                    targetSpeed = Constants.SCORER_INTAKE_CORAL;
+                    break;
+                case CS_STOP:
+                    targetSpeed = Constants.INTAKE_REST_SPEED;
+            }
+        } else {
+            targetSpeed = 0;
+        }
+
+        return targetSpeed;
+    }  
 }

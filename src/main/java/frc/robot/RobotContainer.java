@@ -74,7 +74,12 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
-/**
+/** //TODO: delete this before release to public
++---------------------------------+
+|                                 |
+|   🚏   Cursor Parking Zone  🚏   |
+|                                 |
++---------------------------------+
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
  * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
  * Instead, the structure of the robot (including subsystems, commands, and button mappings) should be declared here.
@@ -219,8 +224,8 @@ public class RobotContainer {
 
         //Gyro reset
         controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
-        //Score coral commands
         
+        //Score coral commands 
         controller.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
         controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
         controller.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
