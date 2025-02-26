@@ -4,10 +4,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Constants;
+import frc.robot.lib.BehaviorTree.nodes.ScorerPivot;
+import frc.robot.lib.BehaviorTree.trees.ElevatorPoses;
 import frc.robot.lib.BehaviorTree.trees.IntakePivots;
 import frc.robot.lib.BehaviorTree.trees.IntakeRollers;
+import frc.robot.lib.BehaviorTree.trees.ScorerPivots;
 import frc.robot.lib.BehaviorTree.trees.ScorerRollers;
 import frc.robot.lib.BehaviorTree.trees.Targets;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 
 public class Blackboard {
     private final ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<>();
@@ -278,7 +282,7 @@ public class Blackboard {
         return targetSpeed;
     }  
 
-     public double getTargetScoerSpeed(String key) {
+     public double getTargetScorerSpeed(String key) {
         ScorerRollers currentTarget = (ScorerRollers) data.get(key);
         double targetSpeed = 0;
         if (currentTarget != null) {
@@ -306,5 +310,63 @@ public class Blackboard {
         }
 
         return targetSpeed;
+    }  
+
+    public double getTargetScorerAngle(String key) {
+        ScorerPivots currentTarget = (ScorerPivots) data.get(key);
+        double targetSpeed = 0;
+        if (currentTarget != null) {
+            switch (currentTarget) {
+                case CS_GoToAlgae:
+                    targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                    break;
+                case CS_GoToL4:
+                    targetSpeed = Constants.SCORER_REMOVE_ALGAE;
+                    break;
+                case CS_Net:
+                    targetSpeed = Constants.SCORER_INTAKE_ALGAE;
+                    break;           
+                case CS_Rest:
+                    targetSpeed = Constants.SCORER_INTAKE_CORAL;
+                    break;
+            }
+        } else {
+            targetSpeed = 0;
+        }
+
+        return targetSpeed;
+    }  
+
+
+ public double getTargetElevatorPosition(String key) {
+        ElevatorPoses currentTarget = (ElevatorPoses) data.get(key);
+        double targetPosition = 0;
+        if (currentTarget != null) {
+            switch (currentTarget) {
+                case EL_GoToRest:
+                    targetPosition = ElevatorConstants.EL_REST_HEIGHT;
+                    break;
+                case EL_GoToL1:
+                    targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                    break;
+                case EL_GoToL2:
+                    targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                    break;           
+                case EL_GoToL3:
+                    targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                    break;
+                case EL_GoToL4:
+                    targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                    break;
+                case EL_GoToNet:
+                    targetPosition = ElevatorConstants.EL_NET_HEIGHT;
+                    break;
+
+            }
+        } else {
+            targetPosition = 0;
+        }
+
+        return targetPosition;
     }  
 }

@@ -5,8 +5,14 @@ import java.util.function.Predicate;
 import frc.robot.lib.BehaviorTree.BehaviorTreeCommand;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.lib.BehaviorTree.nodes.BehaviorTreeNode;
+import frc.robot.lib.BehaviorTree.nodes.DriveToIntake;
+import frc.robot.lib.BehaviorTree.nodes.ElevatorPose;
 import frc.robot.lib.BehaviorTree.nodes.EmptyNode;
 import frc.robot.lib.BehaviorTree.nodes.InfiniteLoopNode;
+import frc.robot.lib.BehaviorTree.nodes.IntakePivot;
+import frc.robot.lib.BehaviorTree.nodes.IntakeRoller;
+import frc.robot.lib.BehaviorTree.nodes.ScorerPivot;
+import frc.robot.lib.BehaviorTree.nodes.ScorerRoller;
 import frc.robot.lib.BehaviorTree.nodes.SelectorNode;
 import frc.robot.lib.BehaviorTree.nodes.SequenceNode;
 import frc.robot.lib.BehaviorTree.nodes.Subtree;
@@ -14,12 +20,12 @@ import frc.robot.lib.BehaviorTree.nodes.Subtree;
 
 public class MechanismTree {
     Blackboard blackboard;
-    SequenceNode tree;
+    InfiniteLoopNode tree;
     //SequenceNode tree;
     BehaviorTreeCommand command;
     Predicate<Blackboard> stopCondition;
     //scoring tree
-    Subtree scoringTree;
+    Subtree subsystemTree;
     //check for target: child nodes - selectornode(check for gamepiece) // Empty leaf node
     SelectorNode findTarget;
     //check for gamepiece: child nodes - sequence node to score // intake subtree
@@ -44,36 +50,29 @@ public class MechanismTree {
 
     public MechanismTree(Blackboard blackboard) {
         this.blackboard = blackboard;
-        this.scoringTree = new Subtree(blackboard);
-        this.findTarget = new SelectorNode(blackboard);
-        this.findPiece = new SelectorNode(blackboard);
-        this.hasCoral = new SelectorNode(blackboard);
-        this.hasAlgae = new SelectorNode(blackboard);
+        this.subsystemTree = new Subtree(blackboard);
+
+        
         this.scoringNodes = new SequenceNode(blackboard);
-        this.intakeCoral = new SequenceNode(blackboard);
-        this.intakeAlgae = new SequenceNode(blackboard);
-        this.hasTargetSequence = new SequenceNode(blackboard);
+
 
         blackboard.set("treeOn", true);
 
-        // ((SelectorNode)findTarget).addChild(findPiece, (Blackboard bb) -> bb.getBoolean("hasTarget"));
-        // ((SelectorNode)findTarget).addChild(new EmptyNode(blackboard), (Blackboard bb) -> !bb.getBoolean("hasTarget"));
+         ((Subtree)subsystemTree).addChild(findTarget);
+         
+        
+         this.tree = new InfiniteLoopNode(blackboard, subsystemTree, (Blackboard bb) -> !bb.getBoolean("treeOn"));
+         this.subsystemTree.addChild(new ScorerPivot(blackboard));
+         this.subsystemTree.addChild(new ScorerRoller(blackboard));
+         this.subsystemTree.addChild(new IntakeRoller(blackboard));
+         this.subsystemTree.addChild(new IntakePivot(blackboard));
+         this.subsystemTree.addChild(new ElevatorPose(blackboard));
 
-        // ((SelectorNode)findPiece).addChild(hasAlgae, (Blackboard bb) -> bb.isTargetAlgae("target"));
-        // ((SelectorNode)findPiece).addChild(hasCoral, (Blackboard bb) -> !bb.isTargetAlgae("target"));
+ 
 
-        // ((SelectorNode)hasCoral).addChild(intakeCoral, (Blackboard bb) -> !bb.getBoolean("hasCoral"));
+         this.command = new BehaviorTreeCommand(tree);
 
-        // ((SelectorNode)hasAlgae).addChild(intakeAlgae, (Blackboard bb) -> !bb.getBoolean("hasAlgae"));
 
-        // ((Subtree)scoringTree).addChild(findTarget);
-
-        // this.tree = new InfiniteLoopNode(blackboard, scoringTree, (Blackboard bb) -> !bb.getBoolean("treeOn"));
-        // this.tree = new SequenceNode(blackboard);
-        // ((SequenceNode)tree).addChild(scoringTree);
-    
-
-        // this.command = new BehaviorTreeCommand(tree);
     }
 
     public BehaviorTreeCommand execute() {

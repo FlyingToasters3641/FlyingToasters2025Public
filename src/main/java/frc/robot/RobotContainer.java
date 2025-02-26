@@ -75,11 +75,6 @@ import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
 /** //TODO: delete this before release to public
-+---------------------------------+
-|                                 |
-|   🚏   Cursor Parking Zone  🚏   |
-|                                 |
-+---------------------------------+
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
  * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
  * Instead, the structure of the robot (including subsystems, commands, and button mappings) should be declared here.
@@ -111,7 +106,7 @@ public class RobotContainer {
     private static Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
 
 
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    /** The container for the robot. Contains subsystems, IO devices, and commands. */
     public RobotContainer() {
 
         switch (Constants.currentMode) {
@@ -287,8 +282,10 @@ public class RobotContainer {
                 blackboard.set("hasAlgae", false);
         Logger.recordOutput("BehaviorTree/hasCoral", blackboard.getBoolean("hasCoral"));
         }
+
         }
 
+//TODO: Consider adding more getter methods for each of the 5 enums that we made, for the future ;)
     public void getTreeTarget() {
         Targets targetValue = targetChooser.get();
         if (targetValue != null) {
