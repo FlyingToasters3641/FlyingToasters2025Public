@@ -38,4 +38,6 @@ public interface ScorerIO {
 
     public default void CS_reverseScorer(boolean reverse) {}
 
+    public default void CS_setSpeed(double speed) {};
+
 }

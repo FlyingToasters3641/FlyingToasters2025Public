@@ -51,5 +51,9 @@ public class Scorer extends SubsystemBase{
     public boolean CS_getCoral() {
         return(this.inputs.CS_coral);
     }
+
+    public void CS_setSpeed(double speed){
+        io.CS_setSpeed(speed);
+    }
    
 }

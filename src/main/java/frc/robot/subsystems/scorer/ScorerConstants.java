@@ -44,12 +44,13 @@ public class ScorerConstants {
         public record ProfileConstraints(double crusieVelocityRadPerSec, double accelerationRadPerSec2) {};
         public static final double MM_CRUISE_VELOCITY = 2 * Math.PI;
         public static final double MM_ACCELERATION = (1 * Math.PI);
-        public static final double PIVOT_MAGNET_OFFSET = 0; //FIXME: Update with correct value
+        public static final double PIVOT_MAGNET_OFFSET = 0.108154;
         public static ProfileConstraints MM_PROFILE_CONSTRAINTS = new ProfileConstraints(MM_CRUISE_VELOCITY, MM_ACCELERATION);
-        public static double kG = 0;
-        public static double kP = 0.00000001;
+        public static double kG = 0.19;
+        public static double kP = 2800.0;
         public static double kI = 0;
-        public static double kD = 0;
+        public static double kD = 200.0;
+        public static double kV = 3.28;
 
     }
     

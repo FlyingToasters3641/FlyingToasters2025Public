@@ -61,6 +61,14 @@ public class Elevator extends SubsystemBase{
     public void ELStop(){
         io.ELStop();
     }
+
+    public void EL_runVolts(double volts){
+        io.EL_runVolts(Volts.of(volts));
+    }
+
+    public void EL_setSpeed(double speed){
+        io.EL_setSpeed(speed);
+    }
     
 
 }
