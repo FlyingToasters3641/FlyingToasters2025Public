@@ -373,4 +373,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         boolean pathFollow = false;
         return pathFollow;
     }
+
+    public double isLeftReef(boolean isLeftReef) {
+        if (isLeftReef) {
+            return 0.13;
+        } else {
+            return -0.13;
+        }
+    }
 }

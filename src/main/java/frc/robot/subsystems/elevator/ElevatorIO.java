@@ -39,5 +39,7 @@ public interface ElevatorIO {
 
     default void EL_setPID(double p, double i, double d) {}
 
+    default void EL_setSpeed(double speed) {}
+
     
 }

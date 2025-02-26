@@ -15,19 +15,24 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.lib.BehaviorTree.Blackboard;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
     @AutoLog
     class VisionIOInputs {
         public boolean connected = false;
-        public TargetObservation latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d());
+        public TargetObservation latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d(), 0.0, 0.0);
+        public TargetObservationDouble latestTargetObservationDouble = new TargetObservationDouble(0.0, 0.0);
         public PoseObservation[] poseObservations = new PoseObservation[0];
         public int[] tagIds = new int[0];
+        public int bestTag = 0;
+        public double bestTagSize = 0.0;
     }
 
     /** Represents the angle to a simple target, not used for pose estimation. */
-    record TargetObservation(Rotation2d tx, Rotation2d ty) {}
+    record TargetObservation(Rotation2d tx, Rotation2d ty, double skew, double area) {}
 
     /** Represents a robot pose sample used for pose estimation. */
     record PoseObservation(
@@ -44,5 +49,17 @@ public interface VisionIO {
         PHOTONVISION
     }
 
+    record TargetObservationDouble(double tx, double ty) {}
+
     default void updateInputs(VisionIOInputs inputs) {}
+
+    default double getPitchAngle() {return 0.0;}
+
+    default double getYawAngle() {return 0.0;}
+
+    default void getTargetID(Blackboard blackboard) {}
+
+    default int getBiggestTarget(Blackboard blackboard) {return 0;}
+
+    default void setTrackedTarget(int AprilTagID) {}
 }

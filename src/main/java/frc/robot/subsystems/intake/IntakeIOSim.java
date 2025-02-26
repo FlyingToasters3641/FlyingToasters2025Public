@@ -47,11 +47,11 @@ public class IntakeIOSim implements IntakeIO {
     public IntakeIOSim(AbstractDriveTrainSimulation driveTrainSimulation, SimulatedArena simulatedArena, Blackboard blackboard){
         this.intakeSimulation = IntakeSimulation.OverTheBumperIntake(
                 "Algae",
-                driveTrainSimulation,
+                 driveTrainSimulation,
                 Inches.of(19.0),
                 Inches.of(19.0),
-                IntakeSimulation.IntakeSide.BACK,
-                1);
+                IntakeSimulation.IntakeSide.LEFT,
+                5);
         this.simulatedArena = simulatedArena;
         this.blackboard = blackboard;
     }
@@ -62,6 +62,11 @@ public class IntakeIOSim implements IntakeIO {
             inputs.IN_angle.mut_replace(IN_ARM_sim.getAngleRads(), Radians);
             inputs.IN_voltage.mut_replace(IN_appliedVolts);
             inputs.IN_setpointAngle.mut_replace(IN_PID_Controller.getGoal().position, Degrees);      
+            if(intakeSimulation.getGamePiecesAmount() >= 0){
+                inputs.IN_hasAlgae = true;
+            } else {
+                inputs.IN_hasAlgae = false;
+            }
             Logger.recordOutput("Intake/GamepieceCount", intakeSimulation.getGamePiecesAmount());
         }
      
@@ -99,5 +104,6 @@ public class IntakeIOSim implements IntakeIO {
                 intakesimIO.IN_setRoller(speed);
             }
         }
+        
       
 }

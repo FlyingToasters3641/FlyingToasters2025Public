@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
@@ -22,6 +23,8 @@ import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -31,9 +34,12 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -41,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ScoreCommands.*;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ScoreCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BehaviorTree.BehaviorTreeDebugger;
 import frc.robot.lib.BehaviorTree.Blackboard;
@@ -60,19 +67,25 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorCommands;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.scorer.Scorer;
+import frc.robot.subsystems.scorer.ScorerCommands;
 import frc.robot.subsystems.scorer.ScorerIO;
 import frc.robot.subsystems.scorer.ScorerIOSim;
+import frc.robot.subsystems.scorer.ScorerIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim2D;
+import frc.robot.util.AllianceFlipUtil;
 
 /** //TODO: delete this before release to public
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -94,16 +107,21 @@ public class RobotContainer {
     public static Stack stack = new Stack(blackboard);
 
     // Controller
-    private static CommandXboxController controller = new CommandXboxController(0);
-    private static CommandXboxController controller1 = new CommandXboxController(1);
+    private static CommandXboxController operatorController = new CommandXboxController(1);
+    private static CommandXboxController driverController = new CommandXboxController(0);
 
     // Dashboard inputs
     private static LoggedDashboardChooser<Command> autoChooser;
     //Choose a target through dhasboard
     private static LoggedDashboardChooser<Targets> targetChooser;
+    //Choose a player station through dashboard
+    private final LoggedDashboardChooser<String> playerStationChooser;
 
     //starting Auto Pose for simulation
     private static Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
+    //closest camera for vision
+    private static int closestCamera = 2;
+    private static Rotation2d targetRotation = new Rotation2d(0.0);
 
 
     /** The container for the robot. Contains subsystems, IO devices, and commands. */
@@ -122,9 +140,9 @@ public class RobotContainer {
                         drive,
                         new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0),
                         new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1));
-                elevator = new Elevator(new ElevatorIO() {});
+                elevator = new Elevator(new ElevatorIOTalonFX() {});
                 intake = new Intake(new IntakeIO() {});
-                scorer = new Scorer(new ScorerIO() {});
+                scorer = new Scorer(new ScorerIOTalonFX() {});
                 climber = new Climber(new ClimberIOTalonFX() {});
                 break;
                        
@@ -146,16 +164,16 @@ public class RobotContainer {
                 vision = new Vision(
                         drive,
                         new VisionIOPhotonVisionSim(
-                                VisionConstants.camera0Name, VisionConstants.robotToCamera0, driveSimulation::getSimulatedDriveTrainPose),
+                                VisionConstants.camera0Name, VisionConstants.robotToCamera0, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
                         new VisionIOPhotonVisionSim(
-                                VisionConstants.camera1Name, VisionConstants.robotToCamera1, driveSimulation::getSimulatedDriveTrainPose),
-                        new VisionIOPhotonVisionSim(
-                                VisionConstants.camera2Name, VisionConstants.robotToCamera2, driveSimulation::getSimulatedDriveTrainPose),
-                        new VisionIOPhotonVisionSim(
-                                VisionConstants.camera3Name, VisionConstants.robotToCamera3, driveSimulation::getSimulatedDriveTrainPose));
+                                VisionConstants.camera1Name, VisionConstants.robotToCamera1, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
+                        new VisionIOPhotonVisionSim2D(
+                                VisionConstants.camera2Name, VisionConstants.robotToCamera2, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true),
+                        new VisionIOPhotonVisionSim2D(
+                                VisionConstants.camera3Name, VisionConstants.robotToCamera3, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true));
                 elevator = new Elevator(new ElevatorIOSim());
                 intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance(), blackboard));
-                scorer = new Scorer(new ScorerIOSim());
+                scorer = new Scorer(new ScorerIOSim(), driveSimulation);
                 climber = new Climber(new ClimberIO() {});
                 break;
             default:
@@ -165,7 +183,7 @@ public class RobotContainer {
                 vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
                 elevator = new Elevator(new ElevatorIO() {});
                 intake = new Intake(new IntakeIO() {});
-                scorer = new Scorer(new ScorerIO() {});
+                scorer = new Scorer(new ScorerIO() {}, driveSimulation);
                 climber = new Climber(new ClimberIO() {});
                 break;
         }
@@ -190,6 +208,13 @@ public class RobotContainer {
         targetChooser.addOption("G1", Targets.G1);
         targetChooser.addOption("L1", Targets.L1);
         targetChooser.addOption("test", Targets.TEST);
+        targetChooser.addOption("B1", Targets.B1);
+
+        playerStationChooser = new LoggedDashboardChooser<>("Human Player Station Choice:");
+        playerStationChooser.addOption("Left", "left");
+        playerStationChooser.addOption("Right", "right");
+
+
 
 
         // Configure the button bindings
@@ -206,37 +231,55 @@ public class RobotContainer {
         debugger.enableLogging(true); // Enable debugging
         // Default command, normal field-relative drive
         drive.setDefaultCommand(DriveCommands.joystickDrive(
-                drive, () -> -controller1.getLeftY(), () -> -controller1.getLeftX(), () -> -controller1.getRightX()));
+                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), () -> -driverController.getRightX()));
 
         // Switch to X pattern when X button is pressed
-        controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+        //operatorController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
         // Reset gyro / odometry
         final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
                 ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
                 : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
-        controller.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
+        operatorController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
         //Gyro reset
-        controller.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
+        driverController.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
+        //Score coral commands
         
-        //Score coral commands 
-        controller.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
-        controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
-        controller.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
-        controller.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
+        driverController.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
+        //controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        driverController.a().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        driverController.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
+        driverController.povRight().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
+        // Auto Align
+        //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
+        //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
+        driverController.y().onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
+        driverController.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
+                () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
+                () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
+                () -> targetRotation,
+                () -> vision.getLeftBranch(blackboard, closestCamera)));
+
+        // DriveCommands.allAxisAutoAlign(drive, vision,
+        // () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
+        // () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
+        // () -> new Rotation2d(),
+        // () -> vision.getLeftBranch(blackboard))
+
+        driverController.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
         //Score net
-        controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
+        operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 
         //Intake algae
-        controller.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
+        // operatorController.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
 
         //Outake algae
-        controller.leftBumper().onTrue(new RemoveAlgae(scorer, intake));
+        // operatorController.leftBumper().onTrue(new RemoveAlgae(scorer, intake));
 
-        //Intake coral
-        controller.rightTrigger(0.1).onTrue(new IntakeCoral(scorer, intake));
+        // //Intake coral
+        // operatorController.rightTrigger(0.1).onTrue(new IntakeCoral(scorer, intake));
 
         //Climber controls
         // controller.povUp().onTrue(new StartClimb(scorer, elevator, intake));
@@ -248,11 +291,27 @@ public class RobotContainer {
          * controller.povDown().onTrue(new EndClimberTest());
          * 
          */
-        controller.axisGreaterThan(5,0.1).onTrue(ClimberCommands.CL_testSpeed(climber, () -> controller.getRightY(), () -> controller.getRightY() > -0.1 && controller.getRightY() < 0.1));
+        //operatorController.axisGreaterThan(5,0.1).onTrue(ClimberCommands.CL_testSpeed(climber, () -> operatorController.getRightY()));
         //Engages the small ratchet on the side by setting the position to 0.0
-        controller.povLeft().toggleOnTrue(new ConditionalCommand(ClimberCommands.CL_setServo(climber, 0), ClimberCommands.CL_setServo(climber, 90), () -> climber.CL_getServoDisengaged()));
-        controller.povUp().onTrue(ClimberCommands.CL_home(climber));
+        //operatorController.povLeft().toggleOnTrue(new ConditionalCommand(ClimberCommands.CL_setServo(climber, 0), ClimberCommands.CL_setServo(climber, 90), () -> climber.CL_getServoDisengaged()));
+        //operatorController.povUp().onTrue(ClimberCommands.CL_home(climber));
 
+        //Elevator Manual Calibration
+        //operatorController.axisGreaterThan(1,0.1).onTrue(ElevatorCommands.EL_joystickControl(elevator,() -> operatorController.getLeftY()));
+        operatorController.y().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(52)));
+        operatorController.a().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(2)));
+        operatorController.rightBumper().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30)));
+
+        //operatorController.leftBumper().onTrue(new NetTest(scorer, elevator));
+        
+        //Scorer Manual Calibration (uncomment when needed)
+        //operatorController.axisGreaterThan(1, 0.1).onTrue(ScorerCommands.CS_joystickControl(scorer, () -> operatorController.getLeftY()));
+        
+        operatorController.x().onTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30)));
+        operatorController.b().onTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(170)));
+        operatorController.axisGreaterThan(2, 0.1).onTrue(ScorerCommands.CS_setRunning(scorer, () -> 0.5)).onFalse(ScorerCommands.CS_setRunning(scorer, () -> 0.4));
+        operatorController.axisGreaterThan(3, 0.1).onTrue(ScorerCommands.CS_setRunning(scorer, () -> -0.5)).onFalse(ScorerCommands.CS_setRunning(scorer, () -> 0.0));
+        
 
     }
 
@@ -285,6 +344,7 @@ public class RobotContainer {
 
         }
 
+
 //TODO: Consider adding more getter methods for each of the 5 enums that we made, for the future ;)
     public void getTreeTarget() {
         Targets targetValue = targetChooser.get();
@@ -294,13 +354,19 @@ public class RobotContainer {
                 blackboard.set("hasCoral", false);
                 blackboard.set("hasAlgae", false);
         }
-        Logger.recordOutput("hasCoral", blackboard.getBoolean("hasCoral"));
-    }
     
     //Adds item for the stack - testing for the control tree
     public void addToStack() {
         Targets targetValue = targetChooser.get();
         stack.add(targetValue);
+        blackboard.set("playerStation", playerStationChooser.get());
+    }
+
+    public Targets getTreeTarget() {
+    }
+
+    public void setTreeTarget() {
+    blackboard.set("target", targetChooser.get());
     }
 
     public void resetSimulation() {
@@ -308,6 +374,7 @@ public class RobotContainer {
 
         driveSimulation.setSimulationWorldPose(startingAutoPose);
         SimulatedArena.getInstance().resetFieldForAuto();
+        
     }
 
     public void displaySimFieldToAdvantageScope() {

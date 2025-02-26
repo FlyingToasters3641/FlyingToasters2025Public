@@ -3,8 +3,11 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
+
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.subsystems.elevator.Elevator;
@@ -26,7 +29,8 @@ public class ScoreCommands {
                     ScorerCommands.CS_goToRest(m_scorer),
                     ElevatorCommands.EL_goToL1(m_elevator),
                     Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_L1_HEIGHT - 2.0),
-                    ScorerCommands.CS_scoreCoral(m_scorer),
+                    //ScorerCommands.CS_scoreCoral(m_scorer),
+                    ScorerCommands.CS_shootL1SimCoral(m_scorer),
                     ElevatorCommands.EL_goToRest(m_elevator))
                 .unless(() -> m_scorer.CS_getCoral() == false)
             );
@@ -40,7 +44,8 @@ public class ScoreCommands {
                     ScorerCommands.CS_goToRest(m_scorer),
                     ElevatorCommands.EL_goToL2(m_elevator),
                     Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_L2_HEIGHT - 2.0),
-                    ScorerCommands.CS_scoreCoral(m_scorer),
+                    //ScorerCommands.CS_scoreCoral(m_scorer),
+                    ScorerCommands.CS_shootL2SimCoral(m_scorer),
                     ElevatorCommands.EL_goToRest(m_elevator))
                 .unless(() -> m_scorer.CS_getCoral() == false)
             );
@@ -54,10 +59,11 @@ public class ScoreCommands {
                     ScorerCommands.CS_goToRest(m_scorer),
                     ElevatorCommands.EL_goToL3(m_elevator),
                     Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_L3_HEIGHT - 2.0),
-                    ScorerCommands.CS_scoreCoral(m_scorer),
+                    //ScorerCommands.CS_scoreCoral(m_scorer),
+                    ScorerCommands.CS_shootL3SimCoral(m_scorer),
                     ElevatorCommands.EL_goToRest(m_elevator))
                 .unless(() -> m_scorer.CS_getCoral() == false)
-            );
+                );
         }  
     }
 
@@ -71,6 +77,7 @@ public class ScoreCommands {
                     ScorerCommands.CS_goToL4(m_scorer),
                     Commands.waitUntil(() -> m_scorer.CS_getAngle().in(Degrees) >= ScorerConstants.CS_L4_ANGLE - 5.0),
                     ScorerCommands.CS_removeAlgae(m_scorer),
+                    ScorerCommands.CS_shootL4SimCoral(m_scorer),
                     ScorerCommands.CS_goToRest(m_scorer),
                     Commands.waitUntil(() -> m_scorer.CS_getAngle().in(Degrees) <= 5.0),
                     ElevatorCommands.EL_goToRest(m_elevator))
@@ -80,6 +87,25 @@ public class ScoreCommands {
     }
 
     public static class ScoreNet extends SequentialCommandGroup{
+        //SIMULATION VERSION
+        public ScoreNet(Scorer m_scorer, Elevator m_elevator, Intake m_intake, AbstractDriveTrainSimulation driveSimulation){
+            addCommands(
+                Commands.sequence(
+                    IntakeCommands.IN_clearElevator(m_intake),
+                    Commands.waitUntil(() -> m_intake.IN_getAngle().in(Degrees) <= -15.0),
+                    ElevatorCommands.EL_goToNet(m_elevator),
+                    Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_NET_HEIGHT - 2.0),
+                    IntakeCommands.IN_rest(m_intake),
+                    ScorerCommands.CS_net(m_scorer),
+                    ScorerCommands.CS_shootSimAlgae(m_scorer,driveSimulation),
+                    ScorerCommands.CS_removeAlgae(m_scorer),
+                    ScorerCommands.CS_goToRest(m_scorer),
+                    Commands.waitUntil(() -> m_scorer.CS_getAngle().in(Degrees) <= 5.0),
+                    ElevatorCommands.EL_goToRest(m_elevator))
+                .unless(() -> m_scorer.CS_getAlgae() == false) //Don't run if we don't have algae
+            );
+        }
+        //NON-SIMULATION VERSION
         public ScoreNet(Scorer m_scorer, Elevator m_elevator, Intake m_intake){
             addCommands(
                 Commands.sequence(
@@ -110,6 +136,19 @@ public class ScoreCommands {
         }
     }
 
+    public static class IntakeGroundAlgaeV2 extends SequentialCommandGroup {
+        public IntakeGroundAlgaeV2(Scorer m_scorer, Intake m_intake) {
+            addCommands(
+                Commands.sequence(
+                    Commands.parallel(IntakeCommands.IN_intakeAlgae(m_intake), ScorerCommands.CS_intakeAlgae(m_scorer), IntakeCommands.IN_simSetRunning(m_intake)),
+                    new WaitCommand(2),
+                    Commands.parallel(IntakeCommands.IN_rest(m_intake), ScorerCommands.CS_stop(m_scorer), IntakeCommands.IN_simStopRunning(m_intake))
+                    )
+                );
+        }
+    }
+
+    
     public static class IntakeCoral extends SequentialCommandGroup {
         public IntakeCoral(Scorer m_scorer, Intake m_intake) {
             addCommands(
@@ -237,6 +276,25 @@ public class ScoreCommands {
                     ElevatorCommands.EL_goToRest(m_elevator)),
                     Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) <= ElevatorConstants.EL_REST_HEIGHT + 2.0),
                     IntakeCommands.IN_rest(m_intake)
+            );
+        }
+    }
+
+    public static class NetTest extends SequentialCommandGroup {
+        public NetTest(Scorer m_scorer, Elevator m_elevator) {
+            addCommands(
+                Commands.sequence(
+                    ElevatorCommands.EL_goToNet(m_elevator),
+                    Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_NET_HEIGHT - 2.0),
+                    ScorerCommands.CS_net(m_scorer),
+                    ScorerCommands.CS_removeAlgae(m_scorer),
+                    ScorerCommands.CS_goToRest(m_scorer),
+                    Commands.waitUntil(() -> m_scorer.CS_getAngle().in(Degrees) <= 10.0),
+                    ElevatorCommands.EL_goToRest(m_elevator)
+
+
+
+                )
             );
         }
     }

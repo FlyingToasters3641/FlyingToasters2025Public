@@ -39,8 +39,8 @@ public class ClimberCommands {
         .andThen(() -> m_Climber.CL_setPosition(ClimberConstants.RETRACTED_POSITION));
     }
 
-    public static Command CL_testSpeed(Climber m_Climber, DoubleSupplier xSupplier, BooleanSupplier endCondition){
-        return Commands.run(() -> m_Climber.CL_setSpeed(xSupplier.getAsDouble())).until(endCondition);
+    public static Command CL_testSpeed(Climber m_Climber, DoubleSupplier xSupplier){
+        return Commands.run(() -> m_Climber.CL_setSpeed(xSupplier.getAsDouble()));
     }
 
     public static Command CL_setServo(Climber m_Climber, double Angle) {

@@ -189,3 +189,5 @@ compile_commands.json
 # Ignore build constants file
 /src/main/java/frc/robot/BuildConstants.java
 src/main/java/frc/robot/BuildConstants.java
+simgui-ds.json
+src/main/java/frc/robot/BuildConstants.java
