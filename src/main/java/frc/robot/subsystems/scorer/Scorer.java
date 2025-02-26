@@ -16,7 +16,17 @@ public class Scorer extends SubsystemBase{
     private Angle setpoint = Degrees.of(0.0);
     private AbstractDriveTrainSimulation driveSimulation;
 
+    // Constructor for SIM Scorer
     public Scorer(ScorerIO io, AbstractDriveTrainSimulation driveSimulation) {
+        this.io = io;
+        this.io.CS_setPID(0.5, 0.0, 0.0);
+        this.CS_measuredVisualizer = new ScorerVisualizer("Measured", Color.kBlack);
+
+        this.driveSimulation = driveSimulation;      
+    }
+    
+    // Constructor for REAL Scorer
+    public Scorer(ScorerIO io) {
         this.io = io;
         this.io.CS_setPID(0.5, 0.0, 0.0);
         this.CS_measuredVisualizer = new ScorerVisualizer("Measured", Color.kBlack);

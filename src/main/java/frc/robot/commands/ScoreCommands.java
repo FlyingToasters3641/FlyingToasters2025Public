@@ -87,6 +87,7 @@ public class ScoreCommands {
     }
 
     public static class ScoreNet extends SequentialCommandGroup{
+        //SIMULATION VERSION
         public ScoreNet(Scorer m_scorer, Elevator m_elevator, Intake m_intake, AbstractDriveTrainSimulation driveSimulation){
             addCommands(
                 Commands.sequence(
@@ -97,6 +98,23 @@ public class ScoreCommands {
                     IntakeCommands.IN_rest(m_intake),
                     ScorerCommands.CS_net(m_scorer),
                     ScorerCommands.CS_shootSimAlgae(m_scorer,driveSimulation),
+                    ScorerCommands.CS_removeAlgae(m_scorer),
+                    ScorerCommands.CS_goToRest(m_scorer),
+                    Commands.waitUntil(() -> m_scorer.CS_getAngle().in(Degrees) <= 5.0),
+                    ElevatorCommands.EL_goToRest(m_elevator))
+                .unless(() -> m_scorer.CS_getAlgae() == false) //Don't run if we don't have algae
+            );
+        }
+        //NON-SIMULATION VERSION
+        public ScoreNet(Scorer m_scorer, Elevator m_elevator, Intake m_intake){
+            addCommands(
+                Commands.sequence(
+                    IntakeCommands.IN_clearElevator(m_intake),
+                    Commands.waitUntil(() -> m_intake.IN_getAngle().in(Degrees) <= -15.0),
+                    ElevatorCommands.EL_goToNet(m_elevator),
+                    Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_NET_HEIGHT - 2.0),
+                    IntakeCommands.IN_rest(m_intake),
+                    ScorerCommands.CS_net(m_scorer),
                     ScorerCommands.CS_removeAlgae(m_scorer),
                     ScorerCommands.CS_goToRest(m_scorer),
                     Commands.waitUntil(() -> m_scorer.CS_getAngle().in(Degrees) <= 5.0),

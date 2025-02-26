@@ -246,17 +246,17 @@ public class RobotContainer {
         driverController.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
         //Score coral commands
         
-        controller.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
+        driverController.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
         //controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
-        controller.a().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
-        controller.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
-        controller.povRight().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
+        driverController.a().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        driverController.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
+        driverController.povRight().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
         // Auto Align
         //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
         //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
-        controller.y().onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
-        controller.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
+        driverController.y().onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
+        driverController.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
                 () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
                 () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
                 () -> targetRotation,
@@ -268,7 +268,7 @@ public class RobotContainer {
         // () -> new Rotation2d(),
         // () -> vision.getLeftBranch(blackboard))
 
-        controller.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
+        driverController.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
         //Score net
         operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 
