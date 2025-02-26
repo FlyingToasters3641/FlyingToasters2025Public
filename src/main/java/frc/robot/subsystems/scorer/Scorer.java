@@ -5,6 +5,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.littletonrobotics.junction.Logger;
 
 public class Scorer extends SubsystemBase{
@@ -12,11 +14,14 @@ public class Scorer extends SubsystemBase{
     private final ScorerIOInputsAutoLogged inputs = new ScorerIOInputsAutoLogged();
     private final ScorerVisualizer CS_measuredVisualizer;
     private Angle setpoint = Degrees.of(0.0);
+    private AbstractDriveTrainSimulation driveSimulation;
 
-    public Scorer(ScorerIO io) {
+    public Scorer(ScorerIO io, AbstractDriveTrainSimulation driveSimulation) {
         this.io = io;
         this.io.CS_setPID(0.5, 0.0, 0.0);
-        this.CS_measuredVisualizer = new ScorerVisualizer("Measured", Color.kBlack);      
+        this.CS_measuredVisualizer = new ScorerVisualizer("Measured", Color.kBlack);
+
+        this.driveSimulation = driveSimulation;      
     }
 
     @Override
@@ -56,4 +61,23 @@ public class Scorer extends SubsystemBase{
         io.CS_setSpeed(speed);
     }
    
+    public void CS_shootSimAlgae(){
+        io.CS_shootSimAlgae(driveSimulation);
+    }
+
+    public void CS_shootL1SimCoral(){
+        io.CS_shootL1SimCoral(driveSimulation);
+    }
+
+    public void CS_shootL2SimCoral(){
+        io.CS_shootL2SimCoral(driveSimulation);
+    }
+
+    public void CS_shootL3SimCoral(){
+        io.CS_shootL3SimCoral(driveSimulation);
+    }
+
+    public void CS_shootL4SimCoral(){
+        io.CS_shootL4SimCoral(driveSimulation);
+    }
 }

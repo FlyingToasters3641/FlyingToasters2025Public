@@ -23,6 +23,8 @@ import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeCoralAlgaeStack;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -33,6 +35,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -170,7 +173,7 @@ public class RobotContainer {
                                 VisionConstants.camera3Name, VisionConstants.robotToCamera3, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true));
                 elevator = new Elevator(new ElevatorIOSim());
                 intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance(), blackboard));
-                scorer = new Scorer(new ScorerIOSim());
+                scorer = new Scorer(new ScorerIOSim(), driveSimulation);
                 climber = new Climber(new ClimberIO() {});
                 break;
             default:
@@ -180,7 +183,7 @@ public class RobotContainer {
                 vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
                 elevator = new Elevator(new ElevatorIO() {});
                 intake = new Intake(new IntakeIO() {});
-                scorer = new Scorer(new ScorerIO() {});
+                scorer = new Scorer(new ScorerIO() {}, driveSimulation);
                 climber = new Climber(new ClimberIO() {});
                 break;
         }
@@ -245,8 +248,9 @@ public class RobotContainer {
         
         controller.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
         //controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        controller.a().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
         controller.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
-        controller.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
+        controller.povRight().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
         // Auto Align
         //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
@@ -370,6 +374,7 @@ public class RobotContainer {
 
         driveSimulation.setSimulationWorldPose(startingAutoPose);
         SimulatedArena.getInstance().resetFieldForAuto();
+        
     }
 
     public void displaySimFieldToAdvantageScope() {

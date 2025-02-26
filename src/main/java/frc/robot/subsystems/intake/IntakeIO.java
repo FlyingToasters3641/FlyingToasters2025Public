@@ -20,6 +20,8 @@ public interface IntakeIO {
         public MutAngle IN_angle = Radians.mutable(0);
         public MutVoltage IN_voltage = Volts.mutable(0);
         public MutAngle IN_setpointAngle = Radians.mutable(0);
+
+        public boolean IN_hasAlgae = false;
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {};
@@ -39,6 +41,8 @@ public interface IntakeIO {
     public default void IN_setPID(double p, double i, double d) {}
 
     public default void IN_reverseIntake(boolean reverse, double speed) {}
+
+    public default void IN_simIntakeAlgae(boolean runIntake) {}   
   
     
 

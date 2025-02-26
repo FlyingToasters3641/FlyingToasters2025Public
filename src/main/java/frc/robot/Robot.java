@@ -14,6 +14,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -24,6 +25,7 @@ import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.util.LocalADStarAK;
 
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -201,7 +203,10 @@ public class Robot extends LoggedRobot {
 
     /** This function is called once when the robot is first started up. */
     @Override
-    public void simulationInit() {}
+    public void simulationInit() {
+        
+        SimulatedArena.getInstance().addGamePiece(new ReefscapeAlgaeOnField(new Translation2d(5.3,4.16))); //X: 5.7
+    }
 
     /** This function is called periodically whilst in simulation. */
     @Override

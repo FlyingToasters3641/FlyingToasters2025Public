@@ -3,6 +3,7 @@ package frc.robot.subsystems.scorer;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Volts;
 
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.units.measure.Angle;
@@ -39,5 +40,16 @@ public interface ScorerIO {
     public default void CS_reverseScorer(boolean reverse) {}
 
     public default void CS_setSpeed(double speed) {};
+    
+    public default void CS_shootSimAlgae(AbstractDriveTrainSimulation driveSimulation) {}
+
+    public default void CS_shootL1SimCoral(AbstractDriveTrainSimulation driveTrainSimulation) {}
+
+    public default void CS_shootL2SimCoral(AbstractDriveTrainSimulation driveTrainSimulation) {}
+
+    public default void CS_shootL3SimCoral(AbstractDriveTrainSimulation driveTrainSimulation) {}
+
+    public default void CS_shootL4SimCoral(AbstractDriveTrainSimulation driveTrainSimulation) {}
+
 
 }
