@@ -21,7 +21,7 @@ import edu.wpi.first.units.measure.MutDistance;
 public class ElevatorIOTalonFX implements ElevatorIO {
 
     public static final double EL_RATIO = 5.0;
-    public static final double EL_ENCODER_RATIO = (1/(2.89*Math.PI));
+    public static final double EL_ENCODER_RATIO = (1/(3.10752688*Math.PI));
     public static final double absoluteEncoderOffset = 0.326660;
 
     private static final String CANbusName = "maximo";
@@ -32,23 +32,20 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     public static final CANcoder EL_CANCoderLeft = new CANcoder(20, CANbusName); 
     public static final CANcoder EL_CANCoderRight = new CANcoder(19, CANbusName); 
 
-    private static TalonFXConfiguration EL_TalonConfig = new TalonFXConfiguration();
-    private static TalonFXConfiguration EL_TalonConfigSlow = new TalonFXConfiguration();
-
     MutDistance setpoint = Inches.mutable(0);
 
     public ElevatorIOTalonFX() {
+
+        TalonFXConfiguration EL_TalonConfig = new TalonFXConfiguration();
         EL_Right.setControl(new Follower(EL_Left.getDeviceID(), true));
 
         //TWO PID SLOT LOOPS
-        EL_TalonConfig.Slot0.kP = 35.0;
+        EL_TalonConfig.Slot0.kP = 40.0;
         EL_TalonConfig.Slot0.kD = 1.0;
-        EL_TalonConfigSlow.Slot0.kP = 3.0;
-        EL_TalonConfigSlow.Slot0.kD = 1.0;
-
+        EL_TalonConfig.Slot1.kP = 40.0;
+        EL_TalonConfig.Slot1.kD = 3.0;
         //Set Motors Inverted 
         EL_TalonConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        EL_TalonConfigSlow.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         // Measuring Feedback
         EL_TalonConfig.Feedback.FeedbackRemoteSensorID = EL_CANCoderLeft.getDeviceID();
@@ -56,17 +53,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         EL_TalonConfig.Feedback.SensorToMechanismRatio = EL_ENCODER_RATIO;
         EL_TalonConfig.Feedback.RotorToSensorRatio = EL_RATIO;
 
-        EL_TalonConfigSlow.Feedback.FeedbackRemoteSensorID = EL_CANCoderLeft.getDeviceID();
-        EL_TalonConfigSlow.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        EL_TalonConfigSlow.Feedback.SensorToMechanismRatio = EL_ENCODER_RATIO;
-        EL_TalonConfigSlow.Feedback.RotorToSensorRatio = EL_RATIO;
-
         // Motion Magic
         EL_TalonConfig.MotionMagic = new MotionMagicConfigs().withMotionMagicAcceleration(1000)
                 .withMotionMagicCruiseVelocity(200);
-        EL_TalonConfigSlow.MotionMagic = new MotionMagicConfigs().withMotionMagicAcceleration(200)
-                .withMotionMagicCruiseVelocity(50);
-
         CANcoderConfiguration magConfig = new CANcoderConfiguration();
         magConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
         magConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
@@ -94,14 +83,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         setpoint.mut_replace(position, Inches);
 
         //Run logic to estimate whether the elevator is moving up or down
-        if (position < EL_CANCoderLeft.getPosition().getValueAsDouble()){
-            EL_Left.getConfigurator().apply(EL_TalonConfigSlow);
-        } else {
-            EL_Left.getConfigurator().apply(EL_TalonConfig);
-        }
 
         Logger.recordOutput("Elevator/SetpointPositionCall", position);
+        if (position < EL_Left.getPosition().getValueAsDouble()) {
+        EL_Left.setControl(new MotionMagicTorqueCurrentFOC(position).withSlot(1));
+        } else {
         EL_Left.setControl(new MotionMagicTorqueCurrentFOC(position).withSlot(0));
+        }
 
     }
 

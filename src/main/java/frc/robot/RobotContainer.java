@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
@@ -31,6 +32,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -41,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ScoreCommands.*;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ScoreCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BehaviorTree.BehaviorTreeDebugger;
 import frc.robot.lib.BehaviorTree.Blackboard;
@@ -71,6 +74,7 @@ import frc.robot.subsystems.scorer.Scorer;
 import frc.robot.subsystems.scorer.ScorerCommands;
 import frc.robot.subsystems.scorer.ScorerIO;
 import frc.robot.subsystems.scorer.ScorerIOSim;
+import frc.robot.subsystems.scorer.ScorerIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
@@ -127,7 +131,7 @@ public class RobotContainer {
                         new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1));
                 elevator = new Elevator(new ElevatorIOTalonFX() {});
                 intake = new Intake(new IntakeIO() {});
-                scorer = new Scorer(new ScorerIO() {});
+                scorer = new Scorer(new ScorerIOTalonFX() {});
                 climber = new Climber(new ClimberIOTalonFX() {});
                 break;
                        
@@ -212,7 +216,7 @@ public class RobotContainer {
                 drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), () -> -driverController.getRightX()));
 
         // Switch to X pattern when X button is pressed
-        operatorController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+        //operatorController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
         // Reset gyro / odometry
         final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
@@ -230,7 +234,7 @@ public class RobotContainer {
         // operatorController.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
         //Score net
-        // operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
+        operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 
         //Intake algae
         // operatorController.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
@@ -251,19 +255,26 @@ public class RobotContainer {
          * controller.povDown().onTrue(new EndClimberTest());
          * 
          */
-        operatorController.axisGreaterThan(5,0.1).onTrue(ClimberCommands.CL_testSpeed(climber, () -> operatorController.getRightY()));
+        //operatorController.axisGreaterThan(5,0.1).onTrue(ClimberCommands.CL_testSpeed(climber, () -> operatorController.getRightY()));
         //Engages the small ratchet on the side by setting the position to 0.0
-        operatorController.povLeft().toggleOnTrue(new ConditionalCommand(ClimberCommands.CL_setServo(climber, 0), ClimberCommands.CL_setServo(climber, 90), () -> climber.CL_getServoDisengaged()));
-        operatorController.povUp().onTrue(ClimberCommands.CL_home(climber));
+        //operatorController.povLeft().toggleOnTrue(new ConditionalCommand(ClimberCommands.CL_setServo(climber, 0), ClimberCommands.CL_setServo(climber, 90), () -> climber.CL_getServoDisengaged()));
+        //operatorController.povUp().onTrue(ClimberCommands.CL_home(climber));
 
         //Elevator Manual Calibration
-        operatorController.axisGreaterThan(1,0.1).onTrue(ElevatorCommands.EL_joystickControl(elevator,() -> operatorController.getLeftY()));
-        operatorController.y().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(10)));
-        operatorController.a().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(1)));
+        //operatorController.axisGreaterThan(1,0.1).onTrue(ElevatorCommands.EL_joystickControl(elevator,() -> operatorController.getLeftY()));
+        operatorController.y().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(52)));
+        operatorController.a().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(2)));
+        operatorController.rightBumper().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30)));
+
+        //operatorController.leftBumper().onTrue(new NetTest(scorer, elevator));
         
         //Scorer Manual Calibration (uncomment when needed)
-        //controller.axisGreaterThan(1, 0.1).onTrue(ScorerCommands.CS_joystickControl(scorer, () -> controller.getLeftY()));
-        //operatorController.axisGreaterThan(2, 0.1).onTrue(ScorerCommands.CS_setRunning(scorer, operatorController.leftTrigger()));
+        //operatorController.axisGreaterThan(1, 0.1).onTrue(ScorerCommands.CS_joystickControl(scorer, () -> operatorController.getLeftY()));
+        
+        operatorController.x().onTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30)));
+        operatorController.b().onTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(170)));
+        operatorController.axisGreaterThan(2, 0.1).onTrue(ScorerCommands.CS_setRunning(scorer, () -> 0.5)).onFalse(ScorerCommands.CS_setRunning(scorer, () -> 0.4));
+        operatorController.axisGreaterThan(3, 0.1).onTrue(ScorerCommands.CS_setRunning(scorer, () -> -0.5)).onFalse(ScorerCommands.CS_setRunning(scorer, () -> 0.0));
         
 
     }

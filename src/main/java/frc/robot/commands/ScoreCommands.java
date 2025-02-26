@@ -240,4 +240,23 @@ public class ScoreCommands {
             );
         }
     }
+
+    public static class NetTest extends SequentialCommandGroup {
+        public NetTest(Scorer m_scorer, Elevator m_elevator) {
+            addCommands(
+                Commands.sequence(
+                    ElevatorCommands.EL_goToNet(m_elevator),
+                    Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= ElevatorConstants.EL_NET_HEIGHT - 2.0),
+                    ScorerCommands.CS_net(m_scorer),
+                    ScorerCommands.CS_removeAlgae(m_scorer),
+                    ScorerCommands.CS_goToRest(m_scorer),
+                    Commands.waitUntil(() -> m_scorer.CS_getAngle().in(Degrees) <= 10.0),
+                    ElevatorCommands.EL_goToRest(m_elevator)
+
+
+
+                )
+            );
+        }
+    }
 }
