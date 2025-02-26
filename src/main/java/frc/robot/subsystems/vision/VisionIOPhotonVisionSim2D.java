@@ -27,7 +27,7 @@ import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 /** IO implementation for physics sim using PhotonVision simulator. */
-public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
+public class VisionIOPhotonVisionSim2D extends VisionIOPhotonVision2D {
     private static VisionSystemSim visionSim;
 
     private final Supplier<Pose2d> poseSupplier;
@@ -45,7 +45,7 @@ public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
      * @param name The name of the camera.
      * @param poseSupplier Supplier for the robot pose to use in simulation.
      */
-    public VisionIOPhotonVisionSim(String name, Transform3d robotToCamera, Supplier<Pose2d> poseSupplier,  Supplier<Rotation2d> rotationSupplier, boolean wireframe) {
+    public VisionIOPhotonVisionSim2D(String name, Transform3d robotToCamera, Supplier<Pose2d> poseSupplier,  Supplier<Rotation2d> rotationSupplier, boolean wireframe) {
         super(name, robotToCamera);
         this.poseSupplier = poseSupplier;
         this.rotationSupplier = rotationSupplier;

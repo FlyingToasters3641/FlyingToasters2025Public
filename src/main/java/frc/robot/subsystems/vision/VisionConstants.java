@@ -15,7 +15,6 @@ package frc.robot.subsystems.vision;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -24,7 +23,7 @@ import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
     // AprilTag layout
-    public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+    public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
     // Camera names, must match names configured on coprocessor
     public static String camera0Name = "OV2311FrontRightCamera";
@@ -36,9 +35,12 @@ public class VisionConstants {
     // (Not used by Limelight, configure in web UI instead)
     public static Transform3d robotToCamera0 = new Transform3d(0.34, -0.279, 0.187, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(-39.4157768)));
     public static Transform3d robotToCamera1 = new Transform3d(0.34, 0.279, 0.187, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(39.4157768)));
-
     public static Transform3d robotToCamera2 = new Transform3d(0.185,-0.082, 0.242, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(0), Units.degreesToRadians(25)));
     public static Transform3d robotToCamera3 = new Transform3d(0.185, 0.082, 0.242, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(0), Units.degreesToRadians(-25)));
+
+    // Maximo stuff :)
+    public static double UpperLeftCameraPerfectXOffset = 0.2490851;
+
     // Basic filtering thresholds
     public static double maxAmbiguity = 0.3;
     public static double maxZError = 0.75;

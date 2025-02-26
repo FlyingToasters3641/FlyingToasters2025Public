@@ -34,6 +34,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -73,6 +74,8 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim2D;
+import frc.robot.util.AllianceFlipUtil;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -101,9 +104,14 @@ public class RobotContainer {
     private static LoggedDashboardChooser<Command> autoChooser;
     //Choose a target through dhasboard
     private static LoggedDashboardChooser<Targets> targetChooser;
+    //Choose a player station through dashboard
+    private final LoggedDashboardChooser<String> playerStationChooser;
 
     //starting Auto Pose for simulation
     private static Pose2d startingAutoPose = new Pose2d(7.628, 6.554, new Rotation2d(3.1415926535897932384));
+    //closest camera for vision
+    private static int closestCamera = 2;
+    private static Rotation2d targetRotation = new Rotation2d(0.0);
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -146,13 +154,13 @@ public class RobotContainer {
                 vision = new Vision(
                         drive,
                         new VisionIOPhotonVisionSim(
-                                VisionConstants.camera0Name, VisionConstants.robotToCamera0, driveSimulation::getSimulatedDriveTrainPose),
+                                VisionConstants.camera0Name, VisionConstants.robotToCamera0, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
                         new VisionIOPhotonVisionSim(
-                                VisionConstants.camera1Name, VisionConstants.robotToCamera1, driveSimulation::getSimulatedDriveTrainPose),
-                        new VisionIOPhotonVisionSim(
-                                VisionConstants.camera2Name, VisionConstants.robotToCamera2, driveSimulation::getSimulatedDriveTrainPose),
-                        new VisionIOPhotonVisionSim(
-                                VisionConstants.camera3Name, VisionConstants.robotToCamera3, driveSimulation::getSimulatedDriveTrainPose));
+                                VisionConstants.camera1Name, VisionConstants.robotToCamera1, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
+                        new VisionIOPhotonVisionSim2D(
+                                VisionConstants.camera2Name, VisionConstants.robotToCamera2, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true),
+                        new VisionIOPhotonVisionSim2D(
+                                VisionConstants.camera3Name, VisionConstants.robotToCamera3, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true));
                 elevator = new Elevator(new ElevatorIOSim());
                 intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance(), blackboard));
                 scorer = new Scorer(new ScorerIOSim());
@@ -190,6 +198,13 @@ public class RobotContainer {
         targetChooser.addOption("G1", Targets.G1);
         targetChooser.addOption("L1", Targets.L1);
         targetChooser.addOption("test", Targets.TEST);
+        targetChooser.addOption("B1", Targets.B1);
+
+        playerStationChooser = new LoggedDashboardChooser<>("Human Player Station Choice:");
+        playerStationChooser.addOption("Left", "left");
+        playerStationChooser.addOption("Right", "right");
+
+
 
 
         // Configure the button bindings
@@ -222,12 +237,29 @@ public class RobotContainer {
         //Score coral commands
         
         controller.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
-        controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        //controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
         controller.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
         controller.a().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
+        // Auto Align
+        //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
+        //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
+        controller.y().onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
+        controller.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
+                () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
+                () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
+                () -> targetRotation,
+                () -> vision.getLeftBranch(blackboard, closestCamera)));
+
+        // DriveCommands.allAxisAutoAlign(drive, vision,
+        // () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
+        // () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
+        // () -> new Rotation2d(),
+        // () -> vision.getLeftBranch(blackboard))
+
+        controller.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
         //Score net
-        controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
+        //controller.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 
         //Intake algae
         controller.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
@@ -284,21 +316,30 @@ public class RobotContainer {
         }
         }
 
-    public void getTreeTarget() {
-        Targets targetValue = targetChooser.get();
-        if (targetValue != null) {
-        blackboard.set("target", targetValue);
-        } else {
-                blackboard.set("hasCoral", false);
-                blackboard.set("hasAlgae", false);
-        }
-        Logger.recordOutput("hasCoral", blackboard.getBoolean("hasCoral"));
-    }
+//     public void getTreeTarget() {
+//         Targets targetValue = targetChooser.get();
+//         if (targetValue != null) {
+//         blackboard.set("target", targetValue);
+//         } else {
+//                 blackboard.set("hasCoral", false);
+//                 blackboard.set("hasAlgae", false);
+//         }
+//         Logger.recordOutput("hasCoral", blackboard.getBoolean("hasCoral"));
+//     }
     
     //Adds item for the stack - testing for the control tree
     public void addToStack() {
         Targets targetValue = targetChooser.get();
         stack.add(targetValue);
+        blackboard.set("playerStation", playerStationChooser.get());
+    }
+
+    public Targets getTreeTarget() {
+        return targetChooser.get();
+    }
+
+    public void setTreeTarget() {
+    blackboard.set("target", targetChooser.get());
     }
 
     public void resetSimulation() {
