@@ -354,7 +354,7 @@ public class RobotContainer {
                 blackboard.set("hasCoral", false);
                 blackboard.set("hasAlgae", false);
         }
-    
+
     //Adds item for the stack - testing for the control tree
     public void addToStack() {
         Targets targetValue = targetChooser.get();
@@ -362,8 +362,7 @@ public class RobotContainer {
         blackboard.set("playerStation", playerStationChooser.get());
     }
 
-    public Targets getTreeTarget() {
-    }
+   
 
     public void setTreeTarget() {
     blackboard.set("target", targetChooser.get());

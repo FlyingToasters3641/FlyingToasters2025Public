@@ -6,11 +6,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.lib.BehaviorTree.nodes.ScorerPivot;
-import frc.robot.lib.BehaviorTree.trees.ElevatorPoses;
-import frc.robot.lib.BehaviorTree.trees.IntakePivots;
-import frc.robot.lib.BehaviorTree.trees.IntakeRollers;
-import frc.robot.lib.BehaviorTree.trees.ScorerPivots;
-import frc.robot.lib.BehaviorTree.trees.ScorerRollers;
 import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 
@@ -257,20 +252,168 @@ public class Blackboard {
     }
     //these are the poses for the intake pivot
     public double getTargetIntakeAngle(String key) {
-        IntakePivots currentTarget = (IntakePivots) data.get(key);
+        Targets currentTarget = (Targets) data.get(key);
         double targetAngle = 0;
         if (currentTarget != null) {
             switch (currentTarget) {
-                case IN_Algae:
-                    targetAngle = Constants.INTAKE_ALGAE_ANGLE;
-                case IN_Coral:
-                    targetAngle = Constants.INTAKE_CORAL_ANGLE;
-                    break;
-                case IN_Rest:
-                    targetAngle = Constants.INTAKE_REST_ANGLE;
-                    break;
-                case IN_ClearElevator:
-                    targetAngle = Constants.INTAKE_CLEAR_ELEVATOR_ANGLE;
+                case PROCESSOR:
+                targetAngle = Constants.INTAKE_REST_SPEED;
+                break;
+            case NET:
+            targetAngle = Constants.INTAKE_CLEAR_ELEVATOR_ANGLE;
+                break;
+            case A1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case A2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case A3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case A4:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case B1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case B2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case B3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case B4:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case C1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case C2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case C3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case C4:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case D1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case D2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case D3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case D4:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case E1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case E2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case E3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case E4:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case F1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case F2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case F3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case F4:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case G1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case G2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case G3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case G4:
+                targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case H1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case H2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case H3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case H4:
+                targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case I1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case I2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case I3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case I4:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case J1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case J2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case J3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case J4:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case K1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case K2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case K3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case K4:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case L1:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case L2:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case L3:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case L4:
+            targetAngle = Constants.INTAKE_REST_ANGLE;
+                break;
+            case INTAKE_ALGAE:
+            targetAngle = Constants.INTAKE_ALGAE_ANGLE;
+                break;
+            case INTAKE_CORAL:
+            targetAngle = Constants.INTAKE_CORAL_ANGLE;
+            default:
+            targetAngle = 0;
+                break;
             }
         } else {
             targetAngle = 0;
@@ -280,50 +423,338 @@ public class Blackboard {
     }
 
     public double getTargetIntakeSpeed(String key) {
-        IntakeRollers currentTarget = (IntakeRollers) data.get(key);
+        Targets currentTarget = (Targets) data.get(key);
         double targetSpeed = 0;
         if (currentTarget != null) {
             switch (currentTarget) {
-                case IN_Algae:
-                    targetSpeed = Constants.INTAKE_ALGAE_ANGLE;
-                case IN_Coral:
+            case PROCESSOR:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case NET:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+                case INTAKE_ALGAE:
+                    targetSpeed = Constants.INTAKE_ALGAE_SPEED;
+                case INTAKE_CORAL:
                     targetSpeed = Constants.INTAKE_CORAL_SPEED;
                     break;
-                case IN_OutakeCoral:
-                    targetSpeed = Constants.OUTTAKE_ALGAE_SPEED;
-                    break;
-                case IN_Stop:
+                case A1:
                     targetSpeed = Constants.INTAKE_REST_SPEED;
+                    break;
+                case A2:
+                    targetSpeed = Constants.INTAKE_REST_SPEED;
+                case A3: 
+                    targetSpeed = Constants.INTAKE_REST_SPEED;
+                case A4:
+                    targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+                 case B1:
+                    targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case B2:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case B3:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case B4:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case C1:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case C2:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case C3:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case C4:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case D1:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case D2:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case D3:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case D4:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case E1:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case E2:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case E3:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case E4:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case F1:
+            targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case F2:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case F3:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case F4:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case G1:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case G2:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case G3:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case G4:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case H1:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case H2:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case H3:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case H4:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case I1:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case I2:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case I3:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case I4:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case J1:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case J2:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case J3:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case J4:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case K1:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case K2:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case K3:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case K4:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case L1:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case L2:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case L3:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            case L4:
+                targetSpeed = Constants.INTAKE_REST_SPEED;
+                break;
+            default:
+                targetSpeed = 0;
+                break;
             }
         } else {
             targetSpeed = 0;
         }
 
         return targetSpeed;
-    }  
+    } 
 
+    
      public double getTargetScorerSpeed(String key) {
-        ScorerRollers currentTarget = (ScorerRollers) data.get(key);
+        Targets currentTarget = (Targets) data.get(key);
         double targetSpeed = 0;
         if (currentTarget != null) {
             switch (currentTarget) {
-                case CS_SCORE_CORAL:
+            case PROCESSOR:
+                targetSpeed = Constants.SCORER_REMOVE_ALGAE;
+                break;
+            case NET:
+            targetSpeed = Constants.SCORER_STOP;
+                break;
+                case INTAKE_ALGAE:
                     targetSpeed = Constants.SCORER_CORAL_SPEED;
-                case CS_SCORE_CORAL_L4:
-                    targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
-                    break;
-                case CS_REMOVE_ALGAE:
-                    targetSpeed = Constants.SCORER_REMOVE_ALGAE;
-                    break;
-                case CS_INTAKE_ALGAE:
-                    targetSpeed = Constants.SCORER_INTAKE_ALGAE;
-                    break;
-                
-                case CS_INTAKE_CORAL:
+                case INTAKE_CORAL:
                     targetSpeed = Constants.SCORER_INTAKE_CORAL;
                     break;
-                case CS_STOP:
-                    targetSpeed = Constants.INTAKE_REST_SPEED;
+                case A1:
+                    targetSpeed = Constants.SCORER_CORAL_SPEED;
+                    break;
+                case A2:
+                    targetSpeed = Constants.SCORER_CORAL_SPEED;
+                    break;
+                case A3: 
+                    targetSpeed = Constants.SCORER_CORAL_SPEED;
+                    break;
+                case A4:
+                targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+                 case B1:
+                 targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case B2:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case B3:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case B4:
+            targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+            case C1:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case C2:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case C3:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case C4:
+            targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+            case D1:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case D2:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case D3:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case D4:
+            targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+            case E1:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case E2:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case E3:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case E4:
+            targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+            case F1:
+            targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case F2:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case F3:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case F4:
+                targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+            case G1:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case G2:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case G3:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case G4:
+                targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+            case H1:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case H2:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case H3:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case H4:
+                targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+            case I1:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case I2:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case I3:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case I4:
+                targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+            case J1:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case J2:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case J3:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case J4:
+                targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+            case K1:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case K2:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case K3:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case K4:
+                targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+            case L1:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case L2:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case L3:
+                targetSpeed = Constants.SCORER_CORAL_SPEED;
+                break;
+            case L4:
+                targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
+                break;
+            default:
+                targetSpeed = 0;
+                break;
             }
         } else {
             targetSpeed = 0;
@@ -333,59 +764,344 @@ public class Blackboard {
     }  
 
     public double getTargetScorerAngle(String key) {
-        ScorerPivots currentTarget = (ScorerPivots) data.get(key);
-        double targetSpeed = 0;
+        Targets currentTarget = (Targets) data.get(key);
+        double targetAngle = 0;
         if (currentTarget != null) {
             switch (currentTarget) {
-                case CS_GoToAlgae:
-                    targetSpeed = Constants.SCORER_CORAL_L4_SPEED;
-                    break;
-                case CS_GoToL4:
-                    targetSpeed = Constants.SCORER_REMOVE_ALGAE;
-                    break;
-                case CS_Net:
-                    targetSpeed = Constants.SCORER_INTAKE_ALGAE;
-                    break;           
-                case CS_Rest:
-                    targetSpeed = Constants.SCORER_INTAKE_CORAL;
-                    break;
+                case PROCESSOR:
+                targetAngle = Constants.SCORER_REST_ANGLE;
+                break;
+            case NET:
+            targetAngle = Constants.SCORER_REST_NET;
+                break;
+            case A1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case A2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case A3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case A4:
+            targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case B1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case B2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case B3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case B4:
+            targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case C1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case C2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case C3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case C4:
+            targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case D1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case D2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case D3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case D4:
+            targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case E1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case E2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case E3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case E4:
+            targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case F1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case F2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case F3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case F4:
+            targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case G1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case G2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case G3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case G4:
+                targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case H1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case H2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case H3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case H4:
+                targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case I1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case I2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case I3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case I4:
+            targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case J1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case J2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case J3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case J4:
+            targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case K1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case K2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case K3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case K4:
+            targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case L1:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case L2:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case L3:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case L4:
+            targetAngle = Constants.SCORER_GO_TO_L4_ANGLE;
+                break;
+            case CS_SCORE_CORAL:
+            targetAngle = Constants.SCORER_GO_TO_CORAL_ANGLE;
+                break;
+            case CS_REMOVE_ALGAE:
+            targetAngle = Constants.SCORER_GO_TO_ALGAE_ANGLE;
+            default:
+            targetAngle = 0;
+                break;
             }
         } else {
-            targetSpeed = 0;
+            targetAngle = 0;
         }
 
-        return targetSpeed;
-    }  
-
+        return targetAngle;
+    }
 
  public double getTargetElevatorPosition(String key) {
-        ElevatorPoses currentTarget = (ElevatorPoses) data.get(key);
+        Targets currentTarget = (Targets) data.get(key);
         double targetPosition = 0;
         if (currentTarget != null) {
             switch (currentTarget) {
-                case EL_GoToRest:
+            case PROCESSOR:
+                targetPosition = ElevatorConstants.EL_REST_HEIGHT;
+                break;
+            case NET:
+            targetPosition = ElevatorConstants.EL_NET_HEIGHT;
+                break;
+                case INTAKE_ALGAE:
                     targetPosition = ElevatorConstants.EL_REST_HEIGHT;
+                case INTAKE_CORAL:
+                targetPosition = ElevatorConstants.EL_REST_HEIGHT;
                     break;
-                case EL_GoToL1:
-                    targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                case A1:
+                targetPosition = ElevatorConstants.EL_L1_HEIGHT;
                     break;
-                case EL_GoToL2:
-                    targetPosition = ElevatorConstants.EL_L2_HEIGHT;
-                    break;           
-                case EL_GoToL3:
-                    targetPosition = ElevatorConstants.EL_L3_HEIGHT;
-                    break;
-                case EL_GoToL4:
-                    targetPosition = ElevatorConstants.EL_L4_HEIGHT;
-                    break;
-                case EL_GoToNet:
-                    targetPosition = ElevatorConstants.EL_NET_HEIGHT;
-                    break;
-
+                case A2:
+                targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+                case A3: 
+                targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+                case A4:
+                targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+                 case B1:
+                 targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                break;
+            case B2:
+            targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+            case B3:
+            targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+            case B4:
+            targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+            case C1:
+            targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                break;
+            case C2:
+            targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+            case C3:
+            targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+            case C4:
+            targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+            case D1:
+            targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                break;
+            case D2:
+            targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+            case D3:
+            targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+            case D4:
+            targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+            case E1:
+            targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                break;
+            case E2:
+            targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+            case E3:
+            targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+            case E4:
+            targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+            case F1:
+            targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                break;
+            case F2:
+            targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+            case F3:
+            targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+            case F4:
+                targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+            case G1:
+            targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                break;
+            case G2:
+            targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+            case G3:
+            targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+            case G4:
+            targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+            case H1:
+            targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                break;
+            case H2:
+            targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+            case H3:
+            targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+            case H4:
+            targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+            case I1:
+            targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                break;
+            case I2:
+            targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+            case I3:
+            targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+            case I4:
+            targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+            case J1:
+            targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                break;
+            case J2:
+            targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+            case J3:
+            targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+            case J4:
+            targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+            case K1:
+            targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                break;
+            case K2:
+            targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+            case K3:
+            targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+            case K4:
+            targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+            case L1:
+            targetPosition = ElevatorConstants.EL_L1_HEIGHT;
+                break;
+            case L2:
+            targetPosition = ElevatorConstants.EL_L2_HEIGHT;
+                break;
+            case L3:
+            targetPosition = ElevatorConstants.EL_L3_HEIGHT;
+                break;
+            case L4:
+            targetPosition = ElevatorConstants.EL_L4_HEIGHT;
+                break;
+            default:
+            targetPosition = ElevatorConstants.EL_REST_HEIGHT;
+                break;
             }
         } else {
             targetPosition = 0;
         }
+
 
         return targetPosition;
     }  

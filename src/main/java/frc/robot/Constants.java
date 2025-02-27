@@ -125,6 +125,7 @@ public final class Constants {
     public static final double SCORER_GO_TO_L4_ANGLE = 200;
     public static final double SCORER_REST_ANGLE = 0;
     public static final double SCORER_REST_NET = 160;
+    public static final double SCORER_GO_TO_CORAL_ANGLE = -55;
 
 
 
