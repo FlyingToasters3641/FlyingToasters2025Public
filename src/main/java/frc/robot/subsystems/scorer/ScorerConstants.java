@@ -41,6 +41,10 @@ public class ScorerConstants {
     public static Angle  CS_SCORE_NET = Units.Degrees.of(100.0);
     public static LinearVelocity CS_SCORE_NET_VELOCITY = Units.MetersPerSecond.of(5);
 
+    public static Angle CS_INTAKE_ALGAE = Units.Degrees.of(200);
+    public static Angle CS_SCORE_L4 = Units.Degrees.of(20);
+    public static Angle CS_HOLD_Algae = Units.Degrees.of(120);
+
 
     public static class CS_pivotConfig {
         public static final double SENSOR_TO_MECHANISM_RATIO = 1;
@@ -55,6 +59,12 @@ public class ScorerConstants {
         public static double kI = 0;
         public static double kD = 200.0;
         public static double kV = 3.28;
+        public static double AkG = 0.19;
+        public static double AkP = 2800.0;
+        public static double AkI = 0;
+        public static double AkD = 200.0;
+        public static double AkV = 3.28;
+
 
     }
     

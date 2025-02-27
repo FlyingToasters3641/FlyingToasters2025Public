@@ -8,11 +8,16 @@ import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class ScorerCommands {
     public static Command CS_setRunning(Scorer m_Scorer, DoubleSupplier speed) {
         return Commands.runOnce(() -> m_Scorer.CS_setRoller(speed.getAsDouble()));
+    }
+
+    public static Command CS_setConstantRunning(Scorer m_Scorer, DoubleSupplier speed) {
+        return Commands.run(() -> m_Scorer.CS_setRoller(speed.getAsDouble()));
     }
 
     public static Command CS_reverseScorer(Scorer m_Scorer, boolean reverse) {
@@ -21,6 +26,10 @@ public class ScorerCommands {
 
     public static Command CS_runSetpoint(Scorer m_Scorer, Angle angle) {
         return m_Scorer.CS_runSetpoint(angle);
+    }
+
+    public static Command CS_runAlgaePosition(Scorer m_Scorer) {
+        return m_Scorer.CS_runSetpoint(ScorerConstants.CS_INTAKE_ALGAE);
     }
 
     public static Command CS_scoreCoral(Scorer m_Scorer) {
@@ -40,7 +49,7 @@ public class ScorerCommands {
     }
 
     public static Command CS_removeAlgae(Scorer m_Scorer) {
-        return Commands.runOnce(() -> m_Scorer.CS_setRoller(-1.0)).andThen(new WaitCommand(0.5)).andThen(Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0)));
+        return Commands.runOnce(() -> m_Scorer.CS_setRoller(-0.6)).andThen(new WaitCommand(1.0)).andThen(Commands.runOnce(() -> m_Scorer.CS_setRoller(0.0)));
     }
 
     public static Command CS_goToL4(Scorer m_Scorer) {    
@@ -48,11 +57,16 @@ public class ScorerCommands {
     }
 
     public static Command CS_intakeAlgae(Scorer m_Scorer) {
-        return CS_setRunning(m_Scorer, () -> -1.0);
+        return CS_setRunning(m_Scorer, () -> 0.6);
     }
 
     public static Command CS_intakeCoral(Scorer m_Scorer) {
-        return CS_setRunning(m_Scorer, () -> 1.0);
+        return CS_setConstantRunning(m_Scorer, () -> -0.6).until(() -> !m_Scorer.CS_getCoral()).andThen(
+            new SequentialCommandGroup(
+                CS_setRunning(m_Scorer, () -> 0.1),
+                new WaitCommand(0.2),
+                CS_setRunning(m_Scorer, () -> 0.0)
+            ));
     }
 
     public static Command CS_stop(Scorer m_Scorer) {

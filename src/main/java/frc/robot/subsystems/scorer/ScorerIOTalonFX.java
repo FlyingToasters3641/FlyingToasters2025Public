@@ -27,7 +27,7 @@ public class ScorerIOTalonFX implements ScorerIO{
     public static final TalonFX CS_rollerTalonFX = new TalonFX(18, CANbusName);
     public static final CANcoder CS_pivotCANcoder = new CANcoder(21, CANbusName);
     public static final DigitalInput CS_coralSensor = new DigitalInput(0);
-    public static final DigitalInput CS_algaeSensor = new DigitalInput(1);
+    public static final DigitalInput CS_algaeSensor = new DigitalInput(2);
 
     public ScorerIOTalonFX(){
 
@@ -48,6 +48,11 @@ public class ScorerIOTalonFX implements ScorerIO{
         CS_pivotConfig.Slot0.kI = ScorerConstants.CS_pivotConfig.kI;
         CS_pivotConfig.Slot0.kD = ScorerConstants.CS_pivotConfig.kD;
         CS_pivotConfig.Slot0.kV = ScorerConstants.CS_pivotConfig.kV;
+        CS_pivotConfig.Slot1.kG = ScorerConstants.CS_pivotConfig.AkG;
+        CS_pivotConfig.Slot1.kP = ScorerConstants.CS_pivotConfig.AkP;
+        CS_pivotConfig.Slot1.kI = ScorerConstants.CS_pivotConfig.AkI;
+        CS_pivotConfig.Slot1.kD = ScorerConstants.CS_pivotConfig.AkD;
+        CS_pivotConfig.Slot1.kV = ScorerConstants.CS_pivotConfig.AkV;
         CS_pivotTalonFX.setNeutralMode(NeutralModeValue.Brake);
 
         CS_pivotConfig.MotionMagic = new MotionMagicConfigs().withMotionMagicCruiseVelocity(
@@ -75,6 +80,7 @@ public class ScorerIOTalonFX implements ScorerIO{
 
         Logger.recordOutput("Scorer/MotorPosition", Units.rotationsToDegrees(CS_pivotTalonFX.getPosition().getValueAsDouble()));
         Logger.recordOutput("Scorer/CanCoderPosition", Units.rotationsToDegrees(CS_pivotCANcoder.getPosition().getValueAsDouble()));
+        Logger.recordOutput("Scorer/AlgaeSensor", CS_algaeSensor.get());
     }
 
     @Override
@@ -94,6 +100,17 @@ public class ScorerIOTalonFX implements ScorerIO{
         CS_pivotTalonFX.set(speed);
         Logger.recordOutput("Scorer/PivotSpeed", speed);
     }
+
+    @Override
+    public boolean CS_getAlgaeSensor() {
+        return CS_algaeSensor.get();
+    }
+
+    @Override
+    public boolean CS_getCoralSensor() {
+        return CS_coralSensor.get();
+    }
+
 
 
 }

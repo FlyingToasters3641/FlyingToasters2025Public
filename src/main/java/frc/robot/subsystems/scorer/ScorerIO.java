@@ -51,5 +51,9 @@ public interface ScorerIO {
 
     public default void CS_shootL4SimCoral(AbstractDriveTrainSimulation driveTrainSimulation) {}
 
+    public default boolean CS_getCoralSensor() {return false;}
+
+    public default boolean CS_getAlgaeSensor() {return false;}
+
 
 }

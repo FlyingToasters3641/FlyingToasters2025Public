@@ -22,7 +22,7 @@ public class ElevatorCommands {
     }
 
     public static Command EL_goToRest (Elevator m_Elevator){
-        return Commands.runOnce(() -> m_Elevator.EL_setpoint = Inches.of(ElevatorConstants.EL_REST_HEIGHT));
+        return Commands.runOnce(() -> m_Elevator.setELPosition(2));
     }
 
     public static Command EL_goToL1 (Elevator m_Elevator){
@@ -42,11 +42,15 @@ public class ElevatorCommands {
     }
 
     public static Command EL_goToNet (Elevator m_Elevator){
-        return Commands.runOnce(() -> m_Elevator.EL_setpoint = Inches.of(ElevatorConstants.EL_NET_HEIGHT));
+        return Commands.runOnce(() -> m_Elevator.setELPosition(50));
     }
 
     public static Command EL_joystickControl (Elevator m_Elevator, DoubleSupplier axis){
         return Commands.run(() -> m_Elevator.EL_setSpeed(axis.getAsDouble()));
+    }
+
+    public static Command EL_goToMidpoint (Elevator m_Elevator){
+        return Commands.runOnce(() -> m_Elevator.setELPosition(20));
     }
 
 }

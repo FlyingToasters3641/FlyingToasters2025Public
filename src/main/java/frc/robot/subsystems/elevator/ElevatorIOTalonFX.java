@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutDistance;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
@@ -67,8 +68,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs){;
-        inputs.EL_position.mut_replace(Inches.of(EL_CANCoderLeft.getPosition().getValueAsDouble()));
+        inputs.EL_position.mut_replace(Inches.of(EL_Left.getPosition().getValueAsDouble()));
         inputs.EL_voltage.mut_replace(Volt.of(EL_Left.getMotorVoltage().getValueAsDouble()));
+
 
         //Logs from TalonFX simulation.
         Logger.recordOutput("Elevator/motorOneVoltage", EL_Left.getMotorVoltage().getValueAsDouble());
@@ -100,9 +102,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         Logger.recordOutput("Elevator/Speed", speed);
     }
 
-
-
-    
-    
+    @Override
+    public Distance EL_getPosition(){
+        return Inches.of(EL_Left.getPosition().getValueAsDouble());
+    }    
 
 }

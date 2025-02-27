@@ -105,8 +105,8 @@ public class DriveCommands {
 
                     //add an if statement here and change the chassis speeds to move towards the pose2d when the button is being pressed
                     ChassisSpeeds speeds = new ChassisSpeeds(
-                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * 0.25,
-                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * 0.25,
+                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                             omega * drive.getMaxAngularSpeedRadPerSec());
                     boolean isFlipped = DriverStation.getAlliance().isPresent()
                             && DriverStation.getAlliance().get() == Alliance.Red;

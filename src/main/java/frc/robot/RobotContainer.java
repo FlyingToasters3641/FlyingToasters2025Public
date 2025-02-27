@@ -240,7 +240,7 @@ public class RobotContainer {
         final Runnable resetOdometry = Constants.currentMode == Constants.Mode.SIM
                 ? () -> drive.resetOdometry(driveSimulation.getSimulatedDriveTrainPose())
                 : () -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()));
-        operatorController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
+        //operatorController.start().onTrue(Commands.runOnce(resetOdometry).ignoringDisable(true));
 
         //Gyro reset
         driverController.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
@@ -255,12 +255,12 @@ public class RobotContainer {
         // Auto Align
         //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
         //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
-        driverController.y().onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
-        driverController.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
-                () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
-                () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
-                () -> targetRotation,
-                () -> vision.getLeftBranch(blackboard, closestCamera)));
+        // driverController.y().onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
+        // driverController.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
+        //         () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
+        //         () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
+        //         () -> targetRotation,
+        //         () -> vision.getLeftBranch(blackboard, closestCamera)));
 
         // DriveCommands.allAxisAutoAlign(drive, vision,
         // () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
@@ -270,7 +270,7 @@ public class RobotContainer {
 
         driverController.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
         //Score net
-        operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
+        //operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 
         //Intake algae
         // operatorController.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
@@ -298,19 +298,28 @@ public class RobotContainer {
 
         //Elevator Manual Calibration
         //operatorController.axisGreaterThan(1,0.1).onTrue(ElevatorCommands.EL_joystickControl(elevator,() -> operatorController.getLeftY()));
-        operatorController.y().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(52)));
-        operatorController.a().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(2)));
-        operatorController.rightBumper().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(30)));
+        //LEVEL 4 SCORING
+        operatorController.povUp().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(52)));
+        operatorController.povDown().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(2)));
+        //LEVEL 2 SCORING
+        operatorController.povRight().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(7)));
+        //LEVEL 3 SCORING
+        operatorController.povLeft().onTrue(ElevatorCommands.EL_setPosition(elevator, Inches.of(22)));
 
-        //operatorController.leftBumper().onTrue(new NetTest(scorer, elevator));
+        operatorController.leftBumper().onTrue(ScoreCommands.NetTest(scorer, elevator));
+        operatorController.rightBumper().onTrue(ScoreCommands.L2AlgaeSequence(scorer, elevator));
         
         //Scorer Manual Calibration (uncomment when needed)
         //operatorController.axisGreaterThan(1, 0.1).onTrue(ScorerCommands.CS_joystickControl(scorer, () -> operatorController.getLeftY()));
         
-        operatorController.x().onTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(30)));
-        operatorController.b().onTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(170)));
+        operatorController.a().onTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(0)));
+        operatorController.x().onTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(20)));
+        operatorController.b().onTrue(ScorerCommands.CS_runSetpoint(scorer, Degrees.of(210)));
         operatorController.axisGreaterThan(2, 0.1).onTrue(ScorerCommands.CS_setRunning(scorer, () -> 0.5)).onFalse(ScorerCommands.CS_setRunning(scorer, () -> 0.4));
-        operatorController.axisGreaterThan(3, 0.1).onTrue(ScorerCommands.CS_setRunning(scorer, () -> -0.5)).onFalse(ScorerCommands.CS_setRunning(scorer, () -> 0.0));
+        operatorController.axisGreaterThan(3, 0.1).onTrue(ScorerCommands.CS_setRunning(scorer, () -> -0.3
+        )).onFalse(ScorerCommands.CS_setRunning(scorer, () -> 0.0));
+
+        operatorController.y().onTrue(ScorerCommands.CS_intakeCoral(scorer));
         
 
     }

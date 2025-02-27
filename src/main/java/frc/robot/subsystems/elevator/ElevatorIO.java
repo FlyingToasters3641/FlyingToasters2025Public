@@ -31,6 +31,9 @@ public interface ElevatorIO {
 
     public default void setELPosition(double position) {};
 
+    public default Distance EL_getPosition() {
+            return Inches.of(0);}
+
     public default void ELStop() {};
 
     default void EL_runSetpoint(Distance position) {}
