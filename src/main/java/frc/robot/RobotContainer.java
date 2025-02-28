@@ -231,7 +231,7 @@ public class RobotContainer {
         debugger.enableLogging(true); // Enable debugging
         // Default command, normal field-relative drive
         drive.setDefaultCommand(DriveCommands.joystickDrive(
-                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), () -> -driverController.getRightX()));
+                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), () -> -driverController.getRawAxis(2)));
 
         // Switch to X pattern when X button is pressed
         //operatorController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -255,12 +255,14 @@ public class RobotContainer {
         // Auto Align
         //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
         //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
-        // driverController.y().onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
-        // driverController.y().whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
-        //         () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
-        //         () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
-        //         () -> targetRotation,
-        //         () -> vision.getLeftBranch(blackboard, closestCamera)));
+        driverController.button(1).onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
+        driverController.button(1).whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
+                () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
+                () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
+                () -> targetRotation,
+                () -> vision.getLeftBranch(blackboard, closestCamera)));
+
+        driverController.button(2).onTrue(Commands.runOnce(() -> setTreeTarget()));
 
         // DriveCommands.allAxisAutoAlign(drive, vision,
         // () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
@@ -268,7 +270,7 @@ public class RobotContainer {
         // () -> new Rotation2d(),
         // () -> vision.getLeftBranch(blackboard))
 
-        driverController.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
+        //driverController.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
         //Score net
         //operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 

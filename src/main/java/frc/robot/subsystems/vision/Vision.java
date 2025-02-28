@@ -53,6 +53,8 @@ public class Vision extends SubsystemBase {
     private final VisionIOInputsAutoLogged[] inputs;
     private final Alert[] disconnectedAlerts;
     public static double CenterXDistance;
+    private final int leftLineUpCamera = 3;
+    private final int rightLineUpCamera = 2;
 
     public Vision(VisionConsumer consumer, VisionIO... io) {
         this.consumer = consumer;
@@ -199,93 +201,92 @@ public class Vision extends SubsystemBase {
     }
 
     // public double CenterAngleToAprilTag() {
-    // double PitchAngle = inputs[3].latestTargetObservationDouble.ty();
-    // double YawAngle = inputs[3].latestTargetObservationDouble.tx();
-
+    // double PitchAngle = inputs[leftLineUpCamera].latestTargetObservationDouble.ty();
+    // double YawAngle = inputs[leftLineUpCamera].latestTargetObservationDouble.tx();
     // double xDist = 0.0624 * Math.cos(YawAngle) / Math.tan(PitchAngle);
     // return Math.atan((xDist * Math.tan(YawAngle) - 0.082) / (xDist + 0.185));
     // }
 
-    // public double cameraDistanceToAprilTag(Blackboard blackboard, int closestCamera) {
-    //     double pitchAngle;
-    //     if (blackboard.get("target") != Targets.NONE) {
-    //         if (blackboard.isTargetLeftBranch("target")) {
-    //             pitchAngle = inputs[3].latestTargetObservationDouble.ty();
-    //         } else {
-    //             pitchAngle = inputs[2].latestTargetObservationDouble.ty();
-    //         }
-    //     } else {
-    //         pitchAngle = inputs[closestCamera].latestTargetObservationDouble.ty();
-    //     }
-    //     pitchAngle = Units.degreesToRadians(pitchAngle);
+    public double cameraDistanceToAprilTag(Blackboard blackboard, int closestCamera) {
+        double pitchAngle;
+        if (blackboard.getTarget("target") != Targets.NONE) {
+            if (blackboard.isTargetLeftBranch("target")) {
+                pitchAngle = inputs[leftLineUpCamera].latestTargetObservationDouble.ty();
+            } else {
+                pitchAngle = inputs[rightLineUpCamera].latestTargetObservationDouble.ty();
+            }
+        } else {
+            pitchAngle = inputs[closestCamera].latestTargetObservationDouble.ty();
+        }
+        pitchAngle = Units.degreesToRadians(pitchAngle);
 
-    //     double distance = .0624 / Math.tan(pitchAngle);
-    //     return distance;
-    // }
+        double distance = .0624 / Math.tan(pitchAngle);
+        return distance;
+    }
 
-    // public double robotXOffsetToAprilTag(Blackboard blackboard, int closestCamera) {
-    //     double distance = cameraDistanceToAprilTag(blackboard, closestCamera);
-    //     double yawAngle;
-    //     double flipYawAngle;
-    //     if (blackboard.getTarget("target") != Targets.NONE) {
-    //         io[2].getTargetID(blackboard);
-    //         io[3].getTargetID(blackboard);
+    public double robotXOffsetToAprilTag(Blackboard blackboard, int closestCamera) {
+        double distance = cameraDistanceToAprilTag(blackboard, closestCamera);
+        double yawAngle;
+        double flipYawAngle;
+        if (blackboard.getTarget("target") != Targets.NONE) {
+            io[rightLineUpCamera].getTargetID(blackboard);
+            io[leftLineUpCamera].getTargetID(blackboard);
 
-    //         if (blackboard.isTargetLeftBranch("target")) {
-    //             //yawAngle = inputs[3].latestTargetObservationDouble.tx();
-    //             flipYawAngle = 1.0;
-    //         } else {
-    //             //yawAngle = inputs[2].latestTargetObservationDouble.tx();
-    //             flipYawAngle = -1.0;
-    //         }
-    //     } else {
-    //         yawAngle = inputs[closestCamera].latestTargetObservationDouble.tx();
-    //         if (closestCamera == 3) {
-    //             flipYawAngle = 1.0;
-    //         } else {
-    //             flipYawAngle = -1.0;
-    //         }
-    //     }
-    //     yawAngle = Units.degreesToRadians((flipYawAngle * yawAngle) + 25);
-    //     Logger.recordOutput("LineUp/ProcessedYawAngle", yawAngle);
-    //     double xOffset = distance * Math.sin(yawAngle);
-    //     Logger.recordOutput("LineUp/CameraXOffsetToAprilTag", xOffset);
-    //     xOffset -= .082;
-    //     if (Double.isInfinite(xOffset)) {
-    //         return 0.0;
-    //     } else {
-    //         return (flipYawAngle * xOffset);
-    //     }
-    // }
+            if (blackboard.isTargetLeftBranch("target")) {
+                yawAngle = inputs[rightLineUpCamera].latestTargetObservationDouble.tx();
+                flipYawAngle = 1.0;
+            } else {
+                yawAngle = inputs[leftLineUpCamera].latestTargetObservationDouble.tx();
+                flipYawAngle = -1.0;
+            }
+        } else {
+            yawAngle = inputs[closestCamera].latestTargetObservationDouble.tx();
+            if (closestCamera == leftLineUpCamera) {
+                flipYawAngle = 1.0;
+            } else {
+                flipYawAngle = -1.0;
+            }
+        }
+        yawAngle = Units.degreesToRadians((flipYawAngle * yawAngle) + 25);
+        Logger.recordOutput("LineUp/ProcessedYawAngle", yawAngle);
+        double xOffset = distance * Math.sin(yawAngle);
+        Logger.recordOutput("LineUp/CameraXOffsetToAprilTag", xOffset);
+        xOffset -= .082;
+        if (Double.isInfinite(xOffset)) {
+            return 0.0;
+        } else {
+            return (flipYawAngle * xOffset);
+        }
+    }
 
-    // public double robotYOffsetToAprilTag(Blackboard blackboard, int closestCamera) {
-    //     double yawAngle;
-    //     double flipYawAngle;
-    //     if (blackboard.getTarget("target") != Targets.NONE) {
-    //         if (blackboard.isTargetLeftBranch("target")) {
-    //             //yawAngle = inputs[3].latestTargetObservationDouble.tx();
-    //             flipYawAngle = 1.0;
-    //         } else {
-    //             //yawAngle = inputs[2].latestTargetObservationDouble.tx();
-    //             flipYawAngle = -1.0;
-    //         }
-    //     } else {
-    //         yawAngle = inputs[closestCamera].latestTargetObservationDouble.tx();
-    //         if (closestCamera == 3) {
-    //             flipYawAngle = 1.0;
-    //         } else {
-    //             flipYawAngle = -1.0;
-    //         }
-    //     }
+    public double robotYOffsetToAprilTag(Blackboard blackboard, int closestCamera) {
+        double yawAngle;
+        double flipYawAngle;
+        if (blackboard.getTarget("target") != Targets.NONE) {
+            if (blackboard.isTargetLeftBranch("target")) {
+                yawAngle = inputs[leftLineUpCamera].latestTargetObservationDouble.tx();
+                flipYawAngle = 1.0;
+            } else {
+                yawAngle = inputs[rightLineUpCamera].latestTargetObservationDouble.tx();
+                flipYawAngle = -1.0;
+            }
+        } else {
+            yawAngle = inputs[closestCamera].latestTargetObservationDouble.tx();
+            if (closestCamera == 3) {
+                flipYawAngle = 1.0;
+            } else {
+                flipYawAngle = -1.0;
+            }
+        }
 
-    //     yawAngle = Units.degreesToRadians((flipYawAngle * yawAngle) + 25);
-    //     double distance = cameraDistanceToAprilTag(blackboard, closestCamera);
+        yawAngle = Units.degreesToRadians((flipYawAngle * yawAngle) + 25);
+        double distance = cameraDistanceToAprilTag(blackboard, closestCamera);
 
-    //     double yOffset = distance * Math.cos(yawAngle);
-    //     Logger.recordOutput("LineUp/CameraXOffset", yOffset);
+        double yOffset = distance * Math.cos(yawAngle);
+        Logger.recordOutput("LineUp/CameraXOffset", yOffset);
 
-    //     return yOffset + 0.185;
-    // }
+        return yOffset + 0.185;
+    }
 
     // public double robotAngleToAprilTag(Blackboard blackboard) {
     //     double xOffset = robotXOffsetToAprilTag(blackboard);
@@ -310,100 +311,100 @@ public class Vision extends SubsystemBase {
     //     YawAngle = Units.degreesToRadians(YawAngle);
     // }
 
-    // public boolean getLeftBranch(Blackboard blackboard, int closestCamera) {
-    //     if (blackboard.getTarget("target") != Targets.NONE) {
-    //         return blackboard.isTargetLeftBranch("target");
-    //     } else {
+    public boolean getLeftBranch(Blackboard blackboard, int closestCamera) {
+        if (blackboard.getTarget("target") != Targets.NONE) {
+            return blackboard.isTargetLeftBranch("target");
+        } else {
             
-    //         Logger.recordOutput("LineUp/ClosestCamera", closestCamera);
-    //         return findClosestBranch(blackboard, closestCamera);
-    //     }
+            Logger.recordOutput("LineUp/ClosestCamera", closestCamera);
+            return findClosestBranch(blackboard, closestCamera);
+        }
        
-    // }
+    }
 
-    // public int findClosestCamera(Blackboard blackboard) {
-    //     if (inputs[2].bestTagSize > inputs[3].bestTagSize) {
-    //         io[2].setTrackedTarget(inputs[2].bestTag);
-    //         Logger.recordOutput("LineUp/bestTag", inputs[2].bestTag);
-    //         return 2;
-    //     } else {
-    //         io[3].setTrackedTarget(inputs[3].bestTag);
-    //         Logger.recordOutput("LineUp/bestTag", inputs[3].bestTag);
-    //         return 3;
-    //     }
-    // }
+    public int findClosestCamera(Blackboard blackboard) {
+        if (inputs[rightLineUpCamera].bestTagSize > inputs[leftLineUpCamera].bestTagSize) {
+            io[rightLineUpCamera].setTrackedTarget(inputs[rightLineUpCamera].bestTag);
+            Logger.recordOutput("LineUp/bestTag", inputs[rightLineUpCamera].bestTag);
+            return 2;
+        } else {
+            io[leftLineUpCamera].setTrackedTarget(inputs[leftLineUpCamera].bestTag);
+            Logger.recordOutput("LineUp/bestTag", inputs[rightLineUpCamera].bestTag);
+            return 3;
+        }
+    }
 
-    // public boolean findClosestBranch(Blackboard blackboard, int closestCamera) {
-    //     if (closestCamera == 3) {
-    //         //For left branch
-    //         return true;
-    //     } else {
-    //         //For right branch
-    //         return false;
-    //     }
-    // }
+    public boolean findClosestBranch(Blackboard blackboard, int closestCamera) {
+        if (closestCamera == leftLineUpCamera) {
+            //For left branch
+            return true;
+        } else {
+            //For right branch
+            return false;
+        }
+    }
 
-    // public Rotation2d getTargetRotation(Blackboard blackboard, int closestCamera) {
-    //     if (blackboard.getTarget("target") != Targets.NONE) {
-    //         return AllianceFlipUtil.apply(blackboard.getTargetRotation("target"));
-    //     } else {
-    //         return getTagRotation(getBestTag(closestCamera));
-    //     }
-    // }
+    public Rotation2d getTargetRotation(Blackboard blackboard, int closestCamera) {
+        if (blackboard.getTarget("target") != Targets.NONE) {
+            return AllianceFlipUtil.apply(blackboard.getTargetRotation("target"));
+        } else {
+            return getTagRotation(getBestTag(closestCamera));
+        }
+    }
 
-    // public int getBestTag(int closestCamera) {
-    //     if (closestCamera == 3) {
-    //         return inputs[3].bestTag;
-    //     } else {
-    //         return inputs[2].bestTag;
-    //     }
-    // }
+    public int getBestTag(int closestCamera) {
+        if (closestCamera == leftLineUpCamera) {
+            return inputs[leftLineUpCamera].bestTag;
+        } else {
+            return inputs[rightLineUpCamera].bestTag;
+        }
+    }
 
-    // public Rotation2d getTagRotation(int AprilTagID) {
-    //     Rotation2d targetRotation = new Rotation2d();
-    //     Logger.recordOutput("LineUp/BESTTAGFORROTATION", AprilTagID);
-    //     switch(AprilTagID) {
-    //         case 6:
-    //         targetRotation = AllianceFlipUtil.apply(Constants.reefBranchL.getRotation());
-    //         break;
-    //         case 7:
-    //         targetRotation = AllianceFlipUtil.apply(Constants.reefBranchA.getRotation());
-    //         break;
-    //         case 8:
-    //         targetRotation = AllianceFlipUtil.apply(Constants.reefBranchC.getRotation());
-    //         break;
-    //         case 9:
-    //         targetRotation = AllianceFlipUtil.apply(Constants.reefBranchE.getRotation());
-    //         break;
-    //         case 10:
-    //         targetRotation = AllianceFlipUtil.apply(Constants.reefBranchG.getRotation());
-    //         break;
-    //         case 11:
-    //         targetRotation = AllianceFlipUtil.apply(Constants.reefBranchI.getRotation());
-    //         break;
-    //         case 17:
-    //         targetRotation = Constants.reefBranchC.getRotation();
-    //         break;
-    //         case 18:
-    //         targetRotation = Constants.reefBranchA.getRotation();
-    //         break;
-    //         case 19:
-    //         targetRotation = Constants.reefBranchL.getRotation();
-    //         break;
-    //         case 20:
-    //         targetRotation = Constants.reefBranchI.getRotation();
-    //         break;
-    //         case 21:
-    //         targetRotation = Constants.reefBranchG.getRotation();
-    //         break;
-    //         case 22:
-    //         targetRotation = Constants.reefBranchE.getRotation();
-    //         break;
-    //         default:
-    //         targetRotation = new Rotation2d();
-    //         break;
-    //     }
-    //     return targetRotation;
-    // }
+    public Rotation2d getTagRotation(int AprilTagID) {
+        Rotation2d targetRotation = new Rotation2d();
+        Logger.recordOutput("LineUp/BESTTAGFORROTATION", AprilTagID);
+        switch(AprilTagID) {
+            case 6:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchL.getRotation());
+            break;
+            case 7:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchA.getRotation());
+            break;
+            case 8:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchC.getRotation());
+            break;
+            case 9:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchE.getRotation());
+            break;
+            case 10:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchG.getRotation());
+            break;
+            case 11:
+            targetRotation = AllianceFlipUtil.apply(Constants.reefBranchI.getRotation());
+            break;
+            case 17:
+            targetRotation = Constants.reefBranchC.getRotation();
+            break;
+            case 18:
+            targetRotation = Constants.reefBranchA.getRotation();
+            break;
+            case 19:
+            targetRotation = Constants.reefBranchL.getRotation();
+            break;
+            case 20:
+            targetRotation = Constants.reefBranchI.getRotation();
+            break;
+            case 21:
+            targetRotation = Constants.reefBranchG.getRotation();
+            break;
+            case 22:
+            targetRotation = Constants.reefBranchE.getRotation();
+            break;
+            default:
+            targetRotation = new Rotation2d();
+            break;
+        }
+        return targetRotation;
+    }
     
 }
