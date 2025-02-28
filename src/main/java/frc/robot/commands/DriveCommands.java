@@ -295,8 +295,7 @@ public static Command xAxisAutoAlign(
                 
                         double xTranslation = xlinearController.calculate(
                                 xOffset.getAsDouble(),
-                                0.0);
-
+                                0.143);
                         // Calculate angular speed
 
                         // Convert to field relative speeds & send command

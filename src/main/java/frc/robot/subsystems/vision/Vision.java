@@ -193,6 +193,8 @@ public class Vision extends SubsystemBase {
                 "Vision/Summary/RobotPosesRejected",
                 allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
+        Logger.recordOutput("LineUp/PeriodicXOffset", robotXOffsetToAprilTag());
+
     }
 
     @FunctionalInterface
@@ -433,5 +435,5 @@ public class Vision extends SubsystemBase {
         return distance;
     }
 
-    
+
 }
