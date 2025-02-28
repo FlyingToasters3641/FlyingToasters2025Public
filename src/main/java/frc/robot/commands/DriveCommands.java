@@ -225,7 +225,7 @@ public class DriveCommands {
 
                 //add an if statement here and change the chassis speeds to move towards the pose2d when the button is being pressed
                 ChassisSpeeds speeds = new ChassisSpeeds(
-                        -yTranslation,
+                        0.0,
                         xTranslation,
                         omega);
                 drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -276,6 +276,44 @@ public static Command xyAxisAutoAlign(
             
 }
 
+public static Command xAxisAutoAlign(
+        Drive drive, DoubleSupplier xOffset) {
+
+    // Create PID controller
+
+    ProfiledPIDController xlinearController = new ProfiledPIDController(
+        LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+
+        ProfiledPIDController ylinearController = new ProfiledPIDController(
+                LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+    // Construct command
+    return Commands.run(
+                    () -> {
+                        // Get linear velocity
+                        
+                        
+                
+                        double xTranslation = xlinearController.calculate(
+                                xOffset.getAsDouble(),
+                                0.0);
+
+                        // Calculate angular speed
+
+                        // Convert to field relative speeds & send command
+                        ChassisSpeeds speeds = new ChassisSpeeds(
+                                0.0,
+                                xTranslation,
+                                0.0);
+                        drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                                speeds,
+                                new Rotation2d()));
+                    },
+                    drive);
+
+            
+}
+
+
 public static Command omegaAxisAutoAlign(
         Drive drive, Supplier<Rotation2d> rotationSupplier) {
 
@@ -314,6 +352,7 @@ public static SequentialCommandGroup AutoAlign(Drive drive, Vision vision, Doubl
                 allAxisAutoAlign(drive, vision, xOffset, yOffset, rotationSupplier, isLeftReef)
         );
 }
+
 
 
 

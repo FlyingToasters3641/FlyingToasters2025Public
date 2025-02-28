@@ -255,15 +255,16 @@ public class RobotContainer {
         // Auto Align
         //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
         //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
-        driverController.button(1).onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
-        driverController.button(1).whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
-                () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
-                () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
-                () -> targetRotation,
-                () -> vision.getLeftBranch(blackboard, closestCamera)));
+        // driverController.button(1).onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
+        // driverController.button(1).whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
+        //         () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
+        //         () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
+        //         () -> targetRotation,
+        //         () -> vision.getLeftBranch(blackboard, closestCamera)));
 
-        driverController.button(2).onTrue(Commands.runOnce(() -> setTreeTarget()));
+        // driverController.button(2).onTrue(Commands.runOnce(() -> setTreeTarget()));
 
+        driverController.button(1).whileTrue(DriveCommands.xAxisAutoAlign(drive, () -> vision.robotXOffsetToAprilTag()));
         // DriveCommands.allAxisAutoAlign(drive, vision,
         // () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
         // () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
