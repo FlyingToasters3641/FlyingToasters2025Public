@@ -46,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ScoreCommands.*;
+import frc.robot.commands.ScoreCommands.NetTest.ScoreTarget;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ScoreCommands;
 import frc.robot.generated.TunerConstants;
@@ -77,6 +78,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.scorer.Scorer;
 import frc.robot.subsystems.scorer.ScorerCommands;
+import frc.robot.subsystems.scorer.ScorerConstants;
 import frc.robot.subsystems.scorer.ScorerIO;
 import frc.robot.subsystems.scorer.ScorerIOSim;
 import frc.robot.subsystems.scorer.ScorerIOTalonFX;
@@ -210,6 +212,8 @@ public class RobotContainer {
         targetChooser.addOption("L1", Targets.L1);
         targetChooser.addOption("test", Targets.TEST);
         targetChooser.addOption("B1", Targets.B1);
+        targetChooser.addOption("B3", Targets.B3);
+        targetChooser.addOption("B4", Targets.B4);
 
         playerStationChooser = new LoggedDashboardChooser<>("Human Player Station Choice:");
         playerStationChooser.addOption("Left", "left");
@@ -274,9 +278,9 @@ public class RobotContainer {
         operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 
         //Controls using blackboard values
-        driverController.b().onTrue(ElevatorCommands.EL_setPositionToBlackboard(elevator, blackboard));
+        driverController.b().onTrue(ElevatorCommands.EL_setPositionToBlackboard(elevator, blackboard)).onFalse(ElevatorCommands.EL_goToRest(elevator));
         //driverController.a().onTrue(Commands.sequence(IntakeCommands.IN_setPivotToBlackboard(intake, blackboard),IntakeCommands.IN_setSpeedToBlackboard(intake, blackboard)));
-        driverController.x().onTrue(Commands.sequence(ScorerCommands.CS_setPivotToBlackboard(scorer, blackboard),ScorerCommands.CS_setSpeedToBlackboard(scorer, blackboard)));
+        driverController.x().onTrue(new ScoreTarget(scorer,elevator,blackboard));
         driverController.y().onTrue(Commands.runOnce(() -> setTreeTarget()));
 
         //Intake algae

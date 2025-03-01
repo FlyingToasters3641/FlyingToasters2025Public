@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
+import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorCommands;
@@ -291,11 +292,24 @@ public class ScoreCommands {
                     ScorerCommands.CS_goToRest(m_scorer),
                     Commands.waitUntil(() -> m_scorer.CS_getAngle().in(Degrees) <= 10.0),
                     ElevatorCommands.EL_goToRest(m_elevator)
-
-
-
                 )
             );
         }
+
+    public static class ScoreTarget extends SequentialCommandGroup{
+        public ScoreTarget(Scorer m_Scorer, Elevator m_elevator, Blackboard blackboard){
+            addCommands(
+                Commands.sequence(
+                    ElevatorCommands.EL_setPositionToBlackboard(m_elevator, blackboard),
+                    Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= blackboard.getTargetElevatorPosition("target") - 2.0),
+                    ScorerCommands.CS_setPivotToBlackboard(m_Scorer, blackboard),
+                    ScorerCommands.CS_setSpeedToBlackboard(m_Scorer, blackboard),
+                    ScorerCommands.CS_goToRest(m_Scorer),
+                    ElevatorCommands.EL_goToRest(m_elevator)
+                )
+            );
+        }
+    }
+   
     }
 }

@@ -97,12 +97,6 @@ public final class Constants {
     public static final Mode simMode = Mode.SIM;
     public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
-    //Intake Pivot Angle Blackboard Constants
-    public static final double INTAKE_ALGAE_ANGLE = -45;
-    public static final double INTAKE_CORAL_ANGLE = 160;
-    public static final double INTAKE_REST_ANGLE = 0;
-    public static final double INTAKE_CLEAR_ELEVATOR_ANGLE = -20; 
-
    
 
 
