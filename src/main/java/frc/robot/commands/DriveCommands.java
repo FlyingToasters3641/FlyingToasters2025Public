@@ -32,6 +32,7 @@ import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -61,9 +62,15 @@ public class DriveCommands {
     private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
     private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
     private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
-    private static final double LINEAR_KP = 7.0;
-    private static final double LINEAR_KD = 0.5;
+    private static final double LINEAR_KP = 0.1;
+    private static final double LINEAR_KD = 0.01;
     private static final double LINEAR_MAX_ACCELERATION = 26.62;
+    private static final double LINEAR_xKP = 0.05;
+    private static final double LINEAR_xKD = 0.005;
+    private static final double LINEAR_yKP = 0.5;
+    private static final double LINEAR_yKD = 0.05;
+
+    private static final LinearFilter filter = LinearFilter.singlePoleIIR(0.01, 0.02);
 
     private final Pose2d lineUpPose = new Pose2d(5.8, 4, new Rotation2d(3.1415926589793));
 
@@ -235,46 +242,6 @@ public class DriveCommands {
             drive);
 }
 
-public static Command xyAxisAutoAlign(
-        Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset) {
-
-    // Create PID controller
-
-    ProfiledPIDController xlinearController = new ProfiledPIDController(
-        LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
-
-        ProfiledPIDController ylinearController = new ProfiledPIDController(
-                LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
-    // Construct command
-    return Commands.run(
-                    () -> {
-                        // Get linear velocity
-                        
-                        
-                
-                        double xTranslation = xlinearController.calculate(
-                                xOffset.getAsDouble(),
-                                0.0);
-
-                        double yTranslation = ylinearController.calculate(
-                                yOffset.getAsDouble(), 
-                        0.45);
-
-                        // Calculate angular speed
-
-                        // Convert to field relative speeds & send command
-                        ChassisSpeeds speeds = new ChassisSpeeds(
-                                -yTranslation,
-                                xTranslation,
-                                0.0);
-                        drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-                                speeds,
-                                new Rotation2d()));
-                    },
-                    drive);
-
-            
-}
 
 public static Command xAxisAutoAlign(
         Drive drive, DoubleSupplier xOffset, BooleanSupplier isLeftReef) {
@@ -294,11 +261,11 @@ public static Command xAxisAutoAlign(
                         if (isLeftReef.getAsBoolean()) {                                                                                        
                             xTranslation = xlinearController.calculate(
                                     xOffset.getAsDouble(),
-                                    0.143);
+                                    0.30);
                         } else {
                             xTranslation = xlinearController.calculate(
                                     xOffset.getAsDouble(),
-                                    -0.143);
+                                    -0.12);
                         }
                         // Calculate angular speed
 
@@ -316,6 +283,113 @@ public static Command xAxisAutoAlign(
 
             
 }
+
+public static Command xyAxisAutoAlign(
+        Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, BooleanSupplier isLeftReef) {
+
+    // Create PID controller
+
+    ProfiledPIDController xlinearController = new ProfiledPIDController(
+        LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+
+    ProfiledPIDController ylinearController = new ProfiledPIDController(
+        LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+    // Construct command
+    return Commands.run(
+                    () -> {
+                        
+                        double xTranslation;
+                        if (isLeftReef.getAsBoolean()) {                                                                                        
+                            xTranslation = xlinearController.calculate(
+                                    xOffset.getAsDouble(),
+                                    0.30);
+                        } else {
+                            xTranslation = xlinearController.calculate(
+                                    xOffset.getAsDouble(),
+                                    -0.12);
+                        }
+
+                        double yTranslation = ylinearController.calculate(
+                                yOffset.getAsDouble(),
+                                0.65
+                        );
+
+                        filter.calculate(xTranslation);
+                        filter.calculate(yTranslation);
+                        xTranslation = MathUtil.applyDeadband(xTranslation, 0.15);
+                        yTranslation = MathUtil.applyDeadband(xTranslation, 0.15);
+                        Logger.recordOutput("LineUp/xMetersPerSecond", xTranslation);
+                        Logger.recordOutput("LineUp/yMetersPerSecond", -yTranslation);
+
+                        
+                                                // Convert to field relative speeds & send command
+                                                ChassisSpeeds speeds = new ChassisSpeeds(
+                                                        -yTranslation,
+                                                        xTranslation,
+                                0.0);
+                        drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                                speeds,
+                                new Rotation2d()));
+                    },
+                    drive);
+
+            
+}       public static Command xyAlign(
+        Drive drive, DoubleSupplier tagSize, DoubleSupplier pitchAngle, BooleanSupplier isLeftReef) {
+
+    // Create PID controller
+
+    ProfiledPIDController xlinearController = new ProfiledPIDController(
+        LINEAR_xKP, 0.0, LINEAR_xKD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+
+    ProfiledPIDController ylinearController = new ProfiledPIDController(
+        LINEAR_yKP, 0.0, LINEAR_yKD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+    // Construct command
+    return Commands.run(
+                    () -> {
+
+                        double xTranslation;
+                        double yTranslation;
+
+                                      
+                        if (isLeftReef.getAsBoolean()) {
+                        xTranslation = xlinearController.calculate(
+                                    pitchAngle.getAsDouble(),
+                                    8);
+                        yTranslation = ylinearController.calculate(
+                                        tagSize.getAsDouble(),
+                                        6);
+                        } else {
+                        xTranslation = xlinearController.calculate(
+                                pitchAngle.getAsDouble(),
+                                -13);
+                        yTranslation = ylinearController.calculate(tagSize.getAsDouble(), 7);
+                        
+                        }
+
+                        xTranslation = MathUtil.applyDeadband(xTranslation, 0.75);
+                        yTranslation = MathUtil.applyDeadband(yTranslation, 0.75);
+
+
+                        Logger.recordOutput("LineUp/xMetersPerSecond", xTranslation);
+                        Logger.recordOutput("LineUp/yMetersPerSecond", yTranslation);
+
+                        
+                                                // Convert to field relative speeds & send command
+                                                ChassisSpeeds speeds = new ChassisSpeeds(
+                                                        yTranslation,
+                                                        xTranslation,
+                                0.0);
+                        drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                                speeds,
+                                new Rotation2d()));
+                    },
+                    drive);
+
+            
+}
+
+
 
 
 public static Command omegaAxisAutoAlign(

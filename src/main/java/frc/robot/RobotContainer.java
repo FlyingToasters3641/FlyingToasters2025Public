@@ -83,6 +83,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVision2D;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim2D;
 import frc.robot.util.AllianceFlipUtil;
@@ -139,7 +140,12 @@ public class RobotContainer {
                 vision = new Vision(
                         drive,
                         new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0),
-                        new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+                        new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1),
+                        new VisionIOPhotonVision(VisionConstants.camera2Name, VisionConstants.robotToCamera2),
+                        new VisionIOPhotonVision(VisionConstants.camera3Name, VisionConstants.robotToCamera3),
+                        new VisionIOPhotonVision2D(VisionConstants.camera4Name, VisionConstants.robotToCamera4),
+                        new VisionIOPhotonVision2D(VisionConstants.camera5Name, VisionConstants.robotToCamera5));
+
                 elevator = new Elevator(new ElevatorIOTalonFX() {});
                 intake = new Intake(new IntakeIO() {});
                 scorer = new Scorer(new ScorerIOTalonFX() {});
@@ -167,10 +173,14 @@ public class RobotContainer {
                                 VisionConstants.camera0Name, VisionConstants.robotToCamera0, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
                         new VisionIOPhotonVisionSim(
                                 VisionConstants.camera1Name, VisionConstants.robotToCamera1, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
+                        new VisionIOPhotonVisionSim(
+                                VisionConstants.camera2Name, VisionConstants.robotToCamera2, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
+                        new VisionIOPhotonVisionSim(
+                                VisionConstants.camera3Name, VisionConstants.robotToCamera3, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, false),
                         new VisionIOPhotonVisionSim2D(
-                                VisionConstants.camera2Name, VisionConstants.robotToCamera2, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true),
+                                VisionConstants.camera4Name, VisionConstants.robotToCamera4, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true),
                         new VisionIOPhotonVisionSim2D(
-                                VisionConstants.camera3Name, VisionConstants.robotToCamera3, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true));
+                                VisionConstants.camera5Name, VisionConstants.robotToCamera5, driveSimulation::getSimulatedDriveTrainPose, drive::getRotation, true));
                 elevator = new Elevator(new ElevatorIOSim());
                 intake = new Intake(new IntakeIOSim(driveSimulation, SimulatedArena.getInstance(), blackboard));
                 scorer = new Scorer(new ScorerIOSim(), driveSimulation);
@@ -231,7 +241,8 @@ public class RobotContainer {
         debugger.enableLogging(true); // Enable debugging
         // Default command, normal field-relative drive
         drive.setDefaultCommand(DriveCommands.joystickDrive(
-                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), () -> -driverController.getRightTriggerAxis()));
+                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), () -> -driverController.getRightX()
+                ));
 
         // Switch to X pattern when X button is pressed
         //operatorController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -253,24 +264,12 @@ public class RobotContainer {
         driverController.povRight().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
         // Auto Align
-        //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
-        //controller.y().whileTrue(DriveCommands.omegaAxisAutoAlign(drive, () -> Constants.reefBranchK.getRotation()));
-        // driverController.button(1).onTrue(Commands.runOnce(() -> closestCamera = vision.findClosestCamera(blackboard)).andThen(Commands.runOnce(() -> targetRotation = vision.getTargetRotation(blackboard, closestCamera))));
-        // driverController.button(1).whileTrue(DriveCommands.allAxisAutoAlign(drive, vision,
-        //         () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
-        //         () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
-        //         () -> targetRotation,
-        //         () -> vision.getLeftBranch(blackboard, closestCamera)));
+        // driverController.leftBumper().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.robotLeftXOffsetToAprilTag(), () -> vision.robotLeftYOffsetToAprilTag(),() -> true));
+        // driverController.rightBumper().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.robotRightXOffsetToAprilTag(), () -> vision.robotRightYOffsetToAprilTag(),() -> false));
+        driverController.leftBumper().whileTrue(DriveCommands.xyAlign(drive, () -> vision.getRobotLeftAprilTagSize(), () -> vision.getRobotLeftPitchAngle(), () -> true));
+        driverController.rightBumper().whileTrue(DriveCommands.xyAlign(drive, () -> vision.getRobotRightAprilTagSize(), () -> vision.getRobotRightPitchAngle(), () -> false));
 
-        // driverController.button(2).onTrue(Commands.runOnce(() -> setTreeTarget()));
 
-        driverController.leftBumper().whileTrue(DriveCommands.xAxisAutoAlign(drive, () -> vision.robotLeftXOffsetToAprilTag(), () -> true));
-        driverController.rightBumper().whileTrue(DriveCommands.xAxisAutoAlign(drive, () -> vision.robotRightXOffsetToAprilTag(), () -> false));
-        // DriveCommands.allAxisAutoAlign(drive, vision,
-        // () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
-        // () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 
-        // () -> new Rotation2d(),
-        // () -> vision.getLeftBranch(blackboard))
 
         //driverController.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
         //Score net

@@ -27,16 +27,20 @@ public class VisionConstants {
 
     // Camera names, must match names configured on coprocessor
     public static String camera0Name = "OV2311FrontRightCamera";
-    public static String camera1Name = "OV2311FrontLeftCamera";
-    public static String camera2Name = "OV2311UpperRightCamera";
-    public static String camera3Name = "OV2311UpperLeftCamera";
+    public static String camera1Name = "OV2331FrontLeftCamera";
+    public static String camera2Name = "OV2311BackRightCamera";
+    public static String camera3Name = "OV2311BackLeftCamera";
+    public static String camera4Name = "OV2311UpperRightCamera";
+    public static String camera5Name = "OV2311UpperLeftCamera";
 
     // Robot to camera transforms
     // (Not used by Limelight, configure in web UI instead)
     public static Transform3d robotToCamera0 = new Transform3d(0.34, -0.279, 0.187, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(-39.4157768)));
     public static Transform3d robotToCamera1 = new Transform3d(0.34, 0.279, 0.187, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(39.4157768)));
-    public static Transform3d robotToCamera2 = new Transform3d(0.185,-0.082, 0.242, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(0), Units.degreesToRadians(25)));
-    public static Transform3d robotToCamera3 = new Transform3d(0.185, 0.082, 0.242, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(0), Units.degreesToRadians(-25)));
+    public static Transform3d robotToCamera2 = new Transform3d(-0.34, -0.279, 0.187, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(-140.5842232)));
+    public static Transform3d robotToCamera3 = new Transform3d(-0.34, 0.279, 0.187, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(20), Units.degreesToRadians(140.5842232)));
+    public static Transform3d robotToCamera4 = new Transform3d(0.185, -0.082, 0.242, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(0), Units.degreesToRadians(25)));
+    public static Transform3d robotToCamera5 = new Transform3d(0.185, 0.082, 0.242, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(0), Units.degreesToRadians(-25)));
 
     // Maximo stuff :)
     public static double UpperLeftCameraPerfectXOffset = 0.2490851;
