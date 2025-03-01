@@ -1,5 +1,7 @@
 package frc.robot.lib.BehaviorTree.nodes;
 
+import java.util.function.DoubleSupplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,7 +26,7 @@ public class ScorerRoller extends BehaviorTreeNode {
     @Override
     public void initialize(){
        m_Scorer = RobotContainer.scorer;
-        ScorerRollersSpeed = blackboard.getTargetScorerSpeed("target");
+        DoubleSupplier ScorerRollersSpeed = () -> blackboard.getTargetScorerSpeed("target");
 
         runScorerRollers = ScorerCommands.CS_setRunning(m_Scorer, ScorerRollersSpeed);
     }

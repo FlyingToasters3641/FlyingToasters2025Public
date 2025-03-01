@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.lib.BehaviorTree.Blackboard;
 
 
 public class IntakeCommands {
@@ -47,6 +48,14 @@ public class IntakeCommands {
     
     public static Command IN_simStopRunning(Intake m_Intake){
         return Commands.runOnce(() -> m_Intake.IN_setRunning(false));
+    }
+
+    public static Command IN_setPivotToBlackboard(Intake m_Intake, Blackboard blackboard){
+        return Commands.runOnce(() -> m_Intake.IN_runSetpoint(Degrees.of(blackboard.getTargetIntakeAngle("target"))));
+    }
+
+    public static Command IN_setSpeedToBlackboard(Intake m_Intake, Blackboard blackboard){
+        return Commands.runOnce(() -> IN_setRunning(m_Intake, blackboard.getTargetIntakeSpeed("target")));
     }
 
 }

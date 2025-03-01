@@ -9,6 +9,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.lib.BehaviorTree.Blackboard;
 
 public class ScorerCommands {
     public static Command CS_setRunning(Scorer m_Scorer, DoubleSupplier speed) {
@@ -85,6 +86,14 @@ public class ScorerCommands {
 
     public static Command CS_shootL4SimCoral(Scorer m_Scorer){
         return Commands.runOnce(() -> m_Scorer.CS_shootL4SimCoral());
+    }
+
+    public static Command CS_setPivotToBlackboard(Scorer m_Scorer, Blackboard blackboard){
+        return Commands.runOnce(() -> m_Scorer.CS_runSetpoint(Degrees.of(blackboard.getTargetScorerAngle("target"))));
+    }
+
+    public static Command CS_setSpeedToBlackboard(Scorer m_Scorer, Blackboard blackboard){
+        return Commands.runOnce(() -> m_Scorer.CS_setRoller(blackboard.getTargetScorerSpeed("target")));
     }
 
 }

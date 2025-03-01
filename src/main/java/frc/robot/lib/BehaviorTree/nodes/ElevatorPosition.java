@@ -11,11 +11,11 @@ import frc.robot.lib.BehaviorTree.ExecutionStatus;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 
-public class ElevatorPose extends BehaviorTreeNode {
+public class ElevatorPosition extends BehaviorTreeNode {
     double ElevatorPosition; 
     Elevator m_Elevator;
    Command runElevator;
-       public ElevatorPose(Blackboard blackboard) {
+       public ElevatorPosition(Blackboard blackboard) {
        super(blackboard);
        }
    

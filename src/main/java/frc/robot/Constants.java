@@ -103,29 +103,10 @@ public final class Constants {
     public static final double INTAKE_REST_ANGLE = 0;
     public static final double INTAKE_CLEAR_ELEVATOR_ANGLE = -20; 
 
-    //Intake Roller Speed Blackboard Constants
-    public static final double INTAKE_ALGAE_SPEED = 1.0;
-    public static final double INTAKE_CORAL_SPEED = 0.75;
-    public static final double INTAKE_REST_SPEED = 0;
-    public static final double OUTTAKE_ALGAE_SPEED = -1.0;
+   
 
 
-
-
-    //Scorer Roller Speed Blackboard Constants
-    public static final double SCORER_CORAL_SPEED = -0.75;
-    public static final double SCORER_CORAL_L4_SPEED = 0.75;
-    public static final double SCORER_REMOVE_ALGAE = -1;
-    public static final double SCORER_INTAKE_ALGAE = -1;
-    public static final double SCORER_INTAKE_CORAL = 1;
-    public static final double SCORER_STOP = 0;
-
-    //Scorer Pivot Angle Blackboard Constants
-    public static final double SCORER_GO_TO_ALGAE_ANGLE = 200;
-    public static final double SCORER_GO_TO_L4_ANGLE = 200;
-    public static final double SCORER_REST_ANGLE = 0;
-    public static final double SCORER_REST_NET = 160;
-    public static final double SCORER_GO_TO_CORAL_ANGLE = -55;
+    
 
 
 

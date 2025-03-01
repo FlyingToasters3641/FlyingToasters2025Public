@@ -48,5 +48,17 @@ public class IntakeConstants {
         public static double kD = 0;
     
     }
+
+    //Intake Pivot Angle Blackboard Constants
+    public static final double INTAKE_ALGAE_ANGLE = -45;
+    public static final double INTAKE_CORAL_ANGLE = 160;
+    public static final double INTAKE_REST_ANGLE = 0;
+    public static final double INTAKE_CLEAR_ELEVATOR_ANGLE = -20; 
+
+    //Intake Roller Speed Blackboard Constants
+    public static final double INTAKE_ALGAE_SPEED = 1.0;
+    public static final double INTAKE_CORAL_SPEED = 0.75;
+    public static final double INTAKE_REST_SPEED = 0;
+    public static final double OUTTAKE_ALGAE_SPEED = -1.0;
 }
 

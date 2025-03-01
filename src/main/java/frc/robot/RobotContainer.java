@@ -72,6 +72,7 @@ import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.scorer.Scorer;
@@ -246,11 +247,11 @@ public class RobotContainer {
         driverController.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
         //Score coral commands
         
-        driverController.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
-        //controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
-        driverController.a().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
-        driverController.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
-        driverController.povRight().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
+        // driverController.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
+        // controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        // driverController.a().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        // driverController.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
+        // driverController.povRight().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
         // Auto Align
         //controller.y().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.xRobotCenterOffset(), () -> vision.YCenterDistanceAprilTag()));
@@ -271,6 +272,12 @@ public class RobotContainer {
         driverController.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
         //Score net
         operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
+
+        //Controls using blackboard values
+        driverController.b().onTrue(ElevatorCommands.EL_setPositionToBlackboard(elevator, blackboard));
+        //driverController.a().onTrue(Commands.sequence(IntakeCommands.IN_setPivotToBlackboard(intake, blackboard),IntakeCommands.IN_setSpeedToBlackboard(intake, blackboard)));
+        driverController.x().onTrue(Commands.sequence(ScorerCommands.CS_setPivotToBlackboard(scorer, blackboard),ScorerCommands.CS_setSpeedToBlackboard(scorer, blackboard)));
+        driverController.y().onTrue(Commands.runOnce(() -> setTreeTarget()));
 
         //Intake algae
         // operatorController.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
@@ -353,6 +360,7 @@ public class RobotContainer {
         } else {
                 blackboard.set("hasCoral", false);
                 blackboard.set("hasAlgae", false);
+        }
         }
 
     //Adds item for the stack - testing for the control tree
