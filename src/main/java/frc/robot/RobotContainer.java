@@ -231,7 +231,7 @@ public class RobotContainer {
         debugger.enableLogging(true); // Enable debugging
         // Default command, normal field-relative drive
         drive.setDefaultCommand(DriveCommands.joystickDrive(
-                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), () -> -driverController.getRawAxis(2)));
+                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), () -> -driverController.getRightTriggerAxis()));
 
         // Switch to X pattern when X button is pressed
         //operatorController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -264,7 +264,8 @@ public class RobotContainer {
 
         // driverController.button(2).onTrue(Commands.runOnce(() -> setTreeTarget()));
 
-        driverController.button(1).whileTrue(DriveCommands.xAxisAutoAlign(drive, () -> vision.robotXOffsetToAprilTag()));
+        driverController.leftBumper().whileTrue(DriveCommands.xAxisAutoAlign(drive, () -> vision.robotLeftXOffsetToAprilTag(), () -> true));
+        driverController.rightBumper().whileTrue(DriveCommands.xAxisAutoAlign(drive, () -> vision.robotRightXOffsetToAprilTag(), () -> false));
         // DriveCommands.allAxisAutoAlign(drive, vision,
         // () -> vision.robotXOffsetToAprilTag(blackboard, closestCamera), 
         // () -> vision.robotYOffsetToAprilTag(blackboard, closestCamera), 

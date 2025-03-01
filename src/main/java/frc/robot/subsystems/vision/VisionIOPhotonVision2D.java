@@ -12,7 +12,7 @@ import frc.robot.lib.BehaviorTree.Blackboard;
 public class VisionIOPhotonVision2D implements VisionIO {
     protected final PhotonCamera camera;
     protected final Transform3d robotToCamera;
-    private int targetedAprilTag = 19;
+    private int targetedAprilTag = 0;
 
     public VisionIOPhotonVision2D(String name, Transform3d robotToCamera) {
         camera = new PhotonCamera(name);

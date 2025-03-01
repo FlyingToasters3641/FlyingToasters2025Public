@@ -277,7 +277,7 @@ public static Command xyAxisAutoAlign(
 }
 
 public static Command xAxisAutoAlign(
-        Drive drive, DoubleSupplier xOffset) {
+        Drive drive, DoubleSupplier xOffset, BooleanSupplier isLeftReef) {
 
     // Create PID controller
 
@@ -289,19 +289,24 @@ public static Command xAxisAutoAlign(
     // Construct command
     return Commands.run(
                     () -> {
-                        // Get linear velocity
                         
-                        
-                
-                        double xTranslation = xlinearController.calculate(
-                                xOffset.getAsDouble(),
-                                0.143);
+                        double xTranslation;
+                        if (isLeftReef.getAsBoolean()) {                                                                                        
+                            xTranslation = xlinearController.calculate(
+                                    xOffset.getAsDouble(),
+                                    0.143);
+                        } else {
+                            xTranslation = xlinearController.calculate(
+                                    xOffset.getAsDouble(),
+                                    -0.143);
+                        }
                         // Calculate angular speed
 
-                        // Convert to field relative speeds & send command
-                        ChassisSpeeds speeds = new ChassisSpeeds(
-                                0.0,
-                                xTranslation,
+                        
+                                                // Convert to field relative speeds & send command
+                                                ChassisSpeeds speeds = new ChassisSpeeds(
+                                                        0.0,
+                                                        xTranslation,
                                 0.0);
                         drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
                                 speeds,
