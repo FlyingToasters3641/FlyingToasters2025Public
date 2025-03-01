@@ -77,6 +77,8 @@ public class ControlTree {
         ((SequenceNode)intakeAlgae).addChild(new DriveToIntake(blackboard));
 
         this.tree = new InfiniteLoopNode(blackboard, scoringTree, (Blackboard bb) -> !bb.getBoolean("treeOn"));
+
+        
         //this.tree = new SequenceNode(blackboard);
         //((SequenceNode)tree).addChild(scoringTree);
     

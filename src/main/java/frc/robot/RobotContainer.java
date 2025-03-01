@@ -46,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.ScoreCommands.*;
+import frc.robot.commands.ScoreCommands.NetTest.ScoreTarget;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ScoreCommands;
 import frc.robot.generated.TunerConstants;
@@ -72,10 +73,12 @@ import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.scorer.Scorer;
 import frc.robot.subsystems.scorer.ScorerCommands;
+import frc.robot.subsystems.scorer.ScorerConstants;
 import frc.robot.subsystems.scorer.ScorerIO;
 import frc.robot.subsystems.scorer.ScorerIOSim;
 import frc.robot.subsystems.scorer.ScorerIOTalonFX;
@@ -88,7 +91,7 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim2D;
 import frc.robot.util.AllianceFlipUtil;
 
-/**
+/** //TODO: delete this before release to public
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
  * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
  * Instead, the structure of the robot (including subsystems, commands, and button mappings) should be declared here.
@@ -125,7 +128,7 @@ public class RobotContainer {
     private static Rotation2d targetRotation = new Rotation2d(0.0);
 
 
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    /** The container for the robot. Contains subsystems, IO devices, and commands. */
     public RobotContainer() {
 
         switch (Constants.currentMode) {
@@ -219,6 +222,8 @@ public class RobotContainer {
         targetChooser.addOption("L1", Targets.L1);
         targetChooser.addOption("test", Targets.TEST);
         targetChooser.addOption("B1", Targets.B1);
+        targetChooser.addOption("B3", Targets.B3);
+        targetChooser.addOption("B4", Targets.B4);
 
         playerStationChooser = new LoggedDashboardChooser<>("Human Player Station Choice:");
         playerStationChooser.addOption("Left", "left");
@@ -257,11 +262,11 @@ public class RobotContainer {
         driverController.start().onTrue(Commands.runOnce(() -> drive.resetOdometry(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true));
         //Score coral commands
         
-        driverController.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
-        //controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
-        driverController.a().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
-        driverController.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
-        driverController.povRight().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
+        // driverController.b().or(dashboard.L4()).onTrue(new ScoreL4(scorer, elevator));
+        // controller.y().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        // driverController.a().or(dashboard.L3()).onTrue(new ScoreL3(scorer, elevator));
+        // driverController.x().or(dashboard.L2()).onTrue(new ScoreL2(scorer, elevator));
+        // driverController.povRight().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
         // Auto Align
         // driverController.leftBumper().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.robotLeftXOffsetToAprilTag(), () -> vision.robotLeftYOffsetToAprilTag(),() -> true));
@@ -274,6 +279,12 @@ public class RobotContainer {
         //driverController.rightBumper().onTrue(Commands.runOnce(() -> setTreeTarget()));
         //Score net
         //operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
+
+        //Controls using blackboard values
+        driverController.b().onTrue(ElevatorCommands.EL_setPositionToBlackboard(elevator, blackboard)).onFalse(ElevatorCommands.EL_goToRest(elevator));
+        //driverController.a().onTrue(Commands.sequence(IntakeCommands.IN_setPivotToBlackboard(intake, blackboard),IntakeCommands.IN_setSpeedToBlackboard(intake, blackboard)));
+        driverController.x().onTrue(new ScoreTarget(scorer,elevator,blackboard));
+        driverController.y().onTrue(Commands.runOnce(() -> setTreeTarget()));
 
         //Intake algae
         // operatorController.leftTrigger(0.1).onTrue(new IntakeGroundAlgae(scorer, intake));
@@ -353,19 +364,21 @@ public class RobotContainer {
                 blackboard.set("hasAlgae", false);
         Logger.recordOutput("BehaviorTree/hasCoral", blackboard.getBoolean("hasCoral"));
         }
+
         }
 
-//     public void getTreeTarget() {
-//         Targets targetValue = targetChooser.get();
-//         if (targetValue != null) {
-//         blackboard.set("target", targetValue);
-//         } else {
-//                 blackboard.set("hasCoral", false);
-//                 blackboard.set("hasAlgae", false);
-//         }
-//         Logger.recordOutput("hasCoral", blackboard.getBoolean("hasCoral"));
-//     }
-    
+
+//TODO: Consider adding more getter methods for each of the 5 enums that we made, for the future ;)
+    public void getTreeTarget() {
+        Targets targetValue = targetChooser.get();
+        if (targetValue != null) {
+        blackboard.set("target", targetValue);
+        } else {
+                blackboard.set("hasCoral", false);
+                blackboard.set("hasAlgae", false);
+        }
+        }
+
     //Adds item for the stack - testing for the control tree
     public void addToStack() {
         Targets targetValue = targetChooser.get();
@@ -373,9 +386,7 @@ public class RobotContainer {
         blackboard.set("playerStation", playerStationChooser.get());
     }
 
-    public Targets getTreeTarget() {
-        return targetChooser.get();
-    }
+   
 
     public void setTreeTarget() {
     blackboard.set("target", targetChooser.get());

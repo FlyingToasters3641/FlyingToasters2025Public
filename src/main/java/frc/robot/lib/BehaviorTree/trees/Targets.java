@@ -53,5 +53,10 @@ public enum Targets {
     L4,
     TEST,
     TEST2,
-    NONE
+    REST,
+    INTAKE_ALGAE,
+    INTAKE_CORAL,
+    CS_SCORE_CORAL,
+    CS_REMOVE_ALGAE,
+    NONE;
 }

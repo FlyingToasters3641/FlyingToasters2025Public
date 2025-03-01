@@ -7,6 +7,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.lib.BehaviorTree.Blackboard;
 
 public class ElevatorCommands {
     
@@ -52,5 +53,11 @@ public class ElevatorCommands {
     public static Command EL_goToMidpoint (Elevator m_Elevator){
         return Commands.runOnce(() -> m_Elevator.setELPosition(20));
     }
+
+    public static Command EL_setPositionToBlackboard (Elevator m_Elevator, Blackboard blackboard){
+        return Commands.run(() -> m_Elevator.EL_setpoint = Inches.of(blackboard.getTargetElevatorPosition("target")));
+    }
+
+
 
 }
