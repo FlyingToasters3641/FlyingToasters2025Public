@@ -284,6 +284,46 @@ public static Command xAxisAutoAlign(
             
 }
 
+public static Command yAxisAutoAlign(
+        Drive drive, DoubleSupplier yOffset, BooleanSupplier isLeftReef) {
+
+    // Create PID controller
+
+    ProfiledPIDController xlinearController = new ProfiledPIDController(
+        LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+
+        ProfiledPIDController ylinearController = new ProfiledPIDController(
+                LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
+    // Construct command
+    return Commands.run(
+                    () -> {
+                        
+                        yTranslation = ylinearController.calculate(
+                                yOffset.getAsDouble(),
+                                0.65
+                        );
+                        // Calculate angular speed
+
+                        
+                                                // Convert to field relative speeds & send command
+                                                ChassisSpeeds speeds = new ChassisSpeeds(
+                                                        -yTranslation,
+                                                        0.0,
+                                0.0);
+                        drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                                speeds,
+                                new Rotation2d()));
+                    },
+                    drive).until(() -> Math.abs(yTranslation) < 0.5);
+            
+}
+
+public static SequentialCommandGroup sequentialAutAlign(Drive drive, Vision vision, DoubleSupplier xOffset, DoubleSupplier yOffset, BooleanSupplier isLeftReef) {
+    return new SequentialCommandGroup(
+        yAxisAutoAlign(drive, yOffset, isLeftReef),
+        xAxisAutoAlign(drive, xOffset, isLeftReef)
+    );
+
 public static Command xyAxisAutoAlign(
         Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, BooleanSupplier isLeftReef) {
 
