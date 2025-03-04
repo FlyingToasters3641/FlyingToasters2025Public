@@ -247,7 +247,7 @@ public class RobotContainer {
         debugger.enableLogging(true); // Enable debugging
         // Default command, normal field-relative drive
         drive.setDefaultCommand(DriveCommands.joystickDrive(
-                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), () -> -driverController.getRightX()
+                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX(), () -> -driverController.getRightTriggerAxis()
                 ));
 
         // Switch to X pattern when X button is pressed
@@ -270,8 +270,8 @@ public class RobotContainer {
         // driverController.povRight().or(dashboard.L1()).onTrue(new ScoreL1(scorer, elevator));
 
         // Auto Align
-        // driverController.leftBumper().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.robotLeftXOffsetToAprilTag(), () -> vision.robotLeftYOffsetToAprilTag(),() -> true));
-        // driverController.rightBumper().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.robotRightXOffsetToAprilTag(), () -> vision.robotRightYOffsetToAprilTag(),() -> false));
+        driverController.leftBumper().whileTrue(DriveCommands.sequentialAutoAlign(drive, () -> vision.robotLeftXOffsetToAprilTag(), () -> vision.robotLeftYOffsetToAprilTag(),() -> true));
+        driverController.rightBumper().whileTrue(DriveCommands.sequentialAutoAlign(drive, () -> vision.robotRightXOffsetToAprilTag(), () -> vision.robotRightYOffsetToAprilTag(),() -> false));
         //driverController.leftBumper().whileTrue(DriveCommands.xyAlign(drive, () -> vision.getRobotLeftAprilTagSize(), () -> vision.getRobotLeftPitchAngle(), () -> true));
         //driverController.rightBumper().whileTrue(DriveCommands.xyAlign(drive, () -> vision.getRobotRightAprilTagSize(), () -> vision.getRobotRightPitchAngle(), () -> false));
 

@@ -198,6 +198,10 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput("LineUp/PeriodicLeftYSize", getRobotLeftAprilTagSize());
         Logger.recordOutput("LineUp/PeriodicRightXAngle", getRobotRightPitchAngle());
         Logger.recordOutput("LineUp/PeriodicRightYOSize", getRobotRightAprilTagSize());
+        Logger.recordOutput("LineUp/PeriodicLeftXOffset", robotLeftXOffsetToAprilTag());
+        Logger.recordOutput("LineUp/PeriodicLeftYOffset", robotLeftYOffsetToAprilTag());
+        Logger.recordOutput("LineUp/PeriodicRightXOffset", robotRightXOffsetToAprilTag());
+        Logger.recordOutput("LineUp/PeriodicRightYOffset", robotRightYOffsetToAprilTag());
 
     }
 

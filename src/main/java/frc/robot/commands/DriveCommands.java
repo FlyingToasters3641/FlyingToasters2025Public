@@ -48,6 +48,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
 import edu.wpi.first.math.controller.PIDController;
@@ -62,8 +63,8 @@ public class DriveCommands {
     private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
     private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
     private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
-    private static final double LINEAR_KP = 0.1;
-    private static final double LINEAR_KD = 0.01;
+    private static final double LINEAR_KP = 10.0; //0.1
+    private static final double LINEAR_KD = 1.0; //0.01;
     private static final double LINEAR_MAX_ACCELERATION = 26.62;
     private static final double LINEAR_xKP = 0.05;
     private static final double LINEAR_xKD = 0.005;
@@ -289,8 +290,6 @@ public static Command yAxisAutoAlign(
 
     // Create PID controller
 
-    ProfiledPIDController xlinearController = new ProfiledPIDController(
-        LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
 
         ProfiledPIDController ylinearController = new ProfiledPIDController(
                 LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
@@ -298,7 +297,7 @@ public static Command yAxisAutoAlign(
     return Commands.run(
                     () -> {
                         
-                        yTranslation = ylinearController.calculate(
+                        double yTranslation = ylinearController.calculate(
                                 yOffset.getAsDouble(),
                                 0.65
                         );
@@ -314,15 +313,16 @@ public static Command yAxisAutoAlign(
                                 speeds,
                                 new Rotation2d()));
                     },
-                    drive).until(() -> Math.abs(yTranslation) < 0.5);
+                    drive).until(() -> Math.abs(yOffset.getAsDouble()) < 0.67);
             
 }
 
-public static SequentialCommandGroup sequentialAutAlign(Drive drive, Vision vision, DoubleSupplier xOffset, DoubleSupplier yOffset, BooleanSupplier isLeftReef) {
+public static SequentialCommandGroup sequentialAutoAlign(Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, BooleanSupplier isLeftReef) {
     return new SequentialCommandGroup(
         yAxisAutoAlign(drive, yOffset, isLeftReef),
         xAxisAutoAlign(drive, xOffset, isLeftReef)
     );
+}
 
 public static Command xyAxisAutoAlign(
         Drive drive, DoubleSupplier xOffset, DoubleSupplier yOffset, BooleanSupplier isLeftReef) {
