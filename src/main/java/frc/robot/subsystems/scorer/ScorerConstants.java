@@ -70,10 +70,10 @@ public class ScorerConstants {
 
     //Scorer Pivot Angle Blackboard Constants
     public static final double SCORER_GO_TO_ALGAE_ANGLE = 200;
-    public static final double SCORER_GO_TO_L4_ANGLE = 200;
+    public static final double SCORER_GO_TO_L4_ANGLE = 20;
     public static final double SCORER_REST_ANGLE = 0;
-    public static final double SCORER_REST_NET = 160;
-    public static final double SCORER_GO_TO_CORAL_ANGLE = -55;
+    public static final double SCORER_REST_NET = 170;
+    public static final double SCORER_GO_TO_CORAL_ANGLE = 0;
 
     //Scorer Roller Speed Blackboard Constants
     public static final double SCORER_CORAL_SPEED = -0.75;

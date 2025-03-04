@@ -224,6 +224,7 @@ public class RobotContainer {
         targetChooser.addOption("B1", Targets.B1);
         targetChooser.addOption("B3", Targets.B3);
         targetChooser.addOption("B4", Targets.B4);
+        targetChooser.addOption("B2", Targets.B2);
 
         playerStationChooser = new LoggedDashboardChooser<>("Human Player Station Choice:");
         playerStationChooser.addOption("Left", "left");
@@ -271,8 +272,8 @@ public class RobotContainer {
         // Auto Align
         // driverController.leftBumper().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.robotLeftXOffsetToAprilTag(), () -> vision.robotLeftYOffsetToAprilTag(),() -> true));
         // driverController.rightBumper().whileTrue(DriveCommands.xyAxisAutoAlign(drive, () -> vision.robotRightXOffsetToAprilTag(), () -> vision.robotRightYOffsetToAprilTag(),() -> false));
-        driverController.leftBumper().whileTrue(DriveCommands.xyAlign(drive, () -> vision.getRobotLeftAprilTagSize(), () -> vision.getRobotLeftPitchAngle(), () -> true));
-        driverController.rightBumper().whileTrue(DriveCommands.xyAlign(drive, () -> vision.getRobotRightAprilTagSize(), () -> vision.getRobotRightPitchAngle(), () -> false));
+        //driverController.leftBumper().whileTrue(DriveCommands.xyAlign(drive, () -> vision.getRobotLeftAprilTagSize(), () -> vision.getRobotLeftPitchAngle(), () -> true));
+        //driverController.rightBumper().whileTrue(DriveCommands.xyAlign(drive, () -> vision.getRobotRightAprilTagSize(), () -> vision.getRobotRightPitchAngle(), () -> false));
 
 
 
@@ -281,6 +282,8 @@ public class RobotContainer {
         //operatorController.rightBumper().or(dashboard.NET()).onTrue(new ScoreNet(scorer, elevator, intake));
 
         //Controls using blackboard values
+        //
+        
         driverController.b().onTrue(ElevatorCommands.EL_setPositionToBlackboard(elevator, blackboard)).onFalse(ElevatorCommands.EL_goToRest(elevator));
         //driverController.a().onTrue(Commands.sequence(IntakeCommands.IN_setPivotToBlackboard(intake, blackboard),IntakeCommands.IN_setSpeedToBlackboard(intake, blackboard)));
         driverController.x().onTrue(new ScoreTarget(scorer,elevator,blackboard));

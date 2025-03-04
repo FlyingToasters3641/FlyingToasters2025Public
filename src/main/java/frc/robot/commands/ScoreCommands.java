@@ -349,9 +349,12 @@ public class ScoreCommands {
                     ElevatorCommands.EL_setPositionToBlackboard(m_elevator, blackboard),
                     Commands.waitUntil(() -> m_elevator.getELPosition().in(Inches) >= blackboard.getTargetElevatorPosition("target") - 2.0),
                     ScorerCommands.CS_setPivotToBlackboard(m_Scorer, blackboard),
-                    ScorerCommands.CS_setSpeedToBlackboard(m_Scorer, blackboard),
+                    Commands.waitUntil(() -> m_Scorer.CS_getAngle().in(Degrees) >= blackboard.getTargetScorerAngle("target") - 4.0),
+                    ScorerCommands.CS_setRunning(m_Scorer, () -> -0.3),
+                    new WaitCommand(0.6),
                     ScorerCommands.CS_goToRest(m_Scorer),
-                    ElevatorCommands.EL_goToRest(m_elevator)
+                    ElevatorCommands.EL_goToRest(m_elevator),
+                    ScorerCommands.CS_setRunning(m_Scorer, () -> 0.0)
                 )
             );
         }

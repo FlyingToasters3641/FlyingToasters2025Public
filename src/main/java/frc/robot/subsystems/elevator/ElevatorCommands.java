@@ -55,7 +55,7 @@ public class ElevatorCommands {
     }
 
     public static Command EL_setPositionToBlackboard (Elevator m_Elevator, Blackboard blackboard){
-        return Commands.run(() -> m_Elevator.EL_setpoint = Inches.of(blackboard.getTargetElevatorPosition("target")));
+        return Commands.runOnce(() -> m_Elevator.setELPosition(blackboard.getTargetElevatorPosition("target")));
     }
 
 
