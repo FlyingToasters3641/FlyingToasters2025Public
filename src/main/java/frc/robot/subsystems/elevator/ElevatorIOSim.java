@@ -1,7 +1,6 @@
 package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
@@ -18,9 +17,9 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 
 public class ElevatorIOSim implements ElevatorIO{
     
-    private static final String CANbusName = "idk"; // TODO: Update CANbus Name
-    private static final TalonFX EL_TalonFXOne = new TalonFX(1, CANbusName);// TODO: Update CANIDs
-    private static final TalonFX EL_TalonFXTwo = new TalonFX(2, CANbusName); // TODO: Standardize Names for ElevatorMotors
+    private static final String CANbusName = "maximo";
+    private static final TalonFX EL_TalonFXOne = new TalonFX(1, CANbusName);
+    private static final TalonFX EL_TalonFXTwo = new TalonFX(2, CANbusName);
     private static final TalonFXSimState EL_TalonFXOneSim = new TalonFXSimState(EL_TalonFXOne);
 	private static final TalonFXSimState EL_TalonFXTwoSim = new TalonFXSimState(EL_TalonFXTwo);;
 

@@ -21,14 +21,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import org.dyn4j.geometry.Rotation;
-import org.dyn4j.world.Island;
 import org.littletonrobotics.junction.Logger;
-
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -48,10 +41,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
-import edu.wpi.first.math.controller.PIDController;
 
 public class DriveCommands {
     private static final double DEADBAND = 0.1;
@@ -146,8 +137,7 @@ public class DriveCommands {
                         linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * 0.25,
                         linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * 0.25,
                         omega * drive.getMaxAngularSpeedRadPerSec());
-                boolean isFlipped = DriverStation.getAlliance().isPresent()
-                        && DriverStation.getAlliance().get() == Alliance.Red;
+              
                 drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
                         speeds,
                         new Rotation2d()));
@@ -252,8 +242,6 @@ public static Command xAxisAutoAlign(
     ProfiledPIDController xlinearController = new ProfiledPIDController(
         LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
 
-        ProfiledPIDController ylinearController = new ProfiledPIDController(
-                LINEAR_KP, 0.0, LINEAR_KD, new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), LINEAR_MAX_ACCELERATION));
     // Construct command
     return Commands.run(
                     () -> {

@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Second;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.units.measure.Angle;

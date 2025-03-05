@@ -1,7 +1,6 @@
 package frc.robot.subsystems.scorer;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 
 import org.littletonrobotics.junction.Logger;

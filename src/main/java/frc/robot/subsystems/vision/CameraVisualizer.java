@@ -1,20 +1,15 @@
 package frc.robot.subsystems.vision;
 
 import java.util.List;
-import java.util.ArrayList;
-
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.function.Supplier;
-
-import javax.print.attribute.standard.MediaSize.NA;
 
 public class CameraVisualizer {
 
@@ -25,8 +20,6 @@ public class CameraVisualizer {
     private Pose2d robotPose;
 
     private final Supplier<Pose2d> poseSupplier;
-
-    //TODO: Consider moving this class to VisionIOPhotonVisionSim for clarity if needed.
 
     public CameraVisualizer(String key, Transform3d robotToCamera, Supplier<Pose2d> poseSupplier){
         this.key = key;

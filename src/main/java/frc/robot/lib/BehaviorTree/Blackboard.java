@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
-import frc.robot.lib.BehaviorTree.nodes.ScorerPivot;
 import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.intake.IntakeConstants;
@@ -45,7 +44,6 @@ public class Blackboard {
 
     public boolean getBoolean(String key) {
         if (data.get(key) == null) {
-            //TODO: THIS SETS A RANDOM VARIABLE IF NULL: FIX LATER
             return false;
         } else {
         return (boolean) data.get(key);
@@ -73,7 +71,6 @@ public class Blackboard {
                 break;
         }
     } else {
-        //TODO: THIS SETS A RANDOM VARIABLE IF NULL
         Algae = false;
     }
         return Algae;

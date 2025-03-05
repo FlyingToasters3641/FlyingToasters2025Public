@@ -40,7 +40,7 @@ public class IntakeConstants {
         public record ProfileConstraints(double crusieVelocityRadPerSec, double accelerationRadPerSec2) {};
         public static final double MM_CRUISE_VELOCITY = 2 * Math.PI;
         public static final double MM_ACCELERATION = (1 * Math.PI);
-        public static final double PIVOT_MAGNET_OFFSET = 0; //FIXME: Update with correct value
+        public static final double PIVOT_MAGNET_OFFSET = 0; 
         public static ProfileConstraints MM_PROFILE_CONSTRAINTS = new ProfileConstraints(MM_CRUISE_VELOCITY, MM_ACCELERATION);
         public static double kG = 0;
         public static double kP = 0.8;

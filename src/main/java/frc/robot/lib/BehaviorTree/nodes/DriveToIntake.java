@@ -23,7 +23,6 @@ public class DriveToIntake extends BehaviorTreeNode {
     public void initialize() {
         isAlgae = blackboard.isTargetAlgae("target");
         if (isAlgae) {
-            //TODO: change both constants for intaking to actual stuff 
             pose = Constants.reefBranchJ;
         } else {
             if (blackboard.isPlayerStationLeft()) {

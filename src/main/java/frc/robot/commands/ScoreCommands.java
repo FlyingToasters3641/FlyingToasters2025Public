@@ -22,7 +22,7 @@ import frc.robot.subsystems.scorer.ScorerConstants;
 
 public class ScoreCommands {
 
-    //TODO: Make commands that utilize the elevator only able to run if the robot is in the safe zones on the field,
+    //TODO: Make commands that utilize the elevator only able to run if the robot is in the safe zones on the field
     public static class ScoreL1 extends SequentialCommandGroup {
         public ScoreL1(Scorer m_scorer, Elevator m_elevator) {
             addCommands(

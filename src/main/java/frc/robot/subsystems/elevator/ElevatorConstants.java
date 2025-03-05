@@ -13,7 +13,6 @@ import edu.wpi.first.units.measure.Distance;
 public class ElevatorConstants {
     
 
-    //TODO: Is this class really needed? Discuss with someone later about this -AU
 
     public static final Constraints TRAPEZOID_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(0, 0);
     
@@ -49,9 +48,24 @@ public class ElevatorConstants {
 
     public static final FFConstants EL_FF_CONSTANTS = new FFConstants(0, 0, 0, 0);
 
+    public static class EL_talonConfig{
+        public static final double SENSOR_TO_MECHANISM_RATIO = (1/(3.10752688*Math.PI));
+        public static final double ROTOR_TO_SENSOR_RATIO = 5.0;
+        public record ProfileConstraints(double crusieVelocityRadPerSec, double accelerationRadPerSec2) {};
+        public static final double MM_CRUISE_VELOCITY = 200;
+        public static final double MM_ACCELERATION = 1000;
+        public static final double PIVOT_MAGNET_OFFSET = 0.108154;
+        public static ProfileConstraints MM_PROFILE_CONSTRAINTS = new ProfileConstraints(MM_CRUISE_VELOCITY, MM_ACCELERATION);
+        public static double kP = 40.0;
+        public static double kD = 1.0;
+        public static double AkP = 40.0;
+        public static double AkD = 3.0;
 
+    }
+
+    //ELEVATOR HEIGHTS
     public static final double EL_REST_HEIGHT = 0.2;
-    public static final double EL_L1_HEIGHT = 0.2; //ALL OF THESE ARE AUTOMATICALLY TURNED INTO INCHES BTW ;)
+    public static final double EL_L1_HEIGHT = 0.2;
     public static final double EL_L2_HEIGHT = 7;
     public static final double EL_L3_HEIGHT = 22;
     public static final double EL_L4_HEIGHT = 52;

@@ -21,15 +21,14 @@ import edu.wpi.first.units.measure.MutDistance;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
-    public static final double EL_RATIO = 5.0;
-    public static final double EL_ENCODER_RATIO = (1/(3.10752688*Math.PI));
     public static final double absoluteEncoderOffset = 0.326660;
 
     private static final String CANbusName = "maximo";
     //Master Motor
     public static final TalonFX EL_Left = new TalonFX(15, CANbusName);
     //Follower Motor
-    public static final TalonFX EL_Right = new TalonFX(17, CANbusName); 
+    public static final TalonFX EL_Right = new TalonFX(17, CANbusName);
+
     public static final CANcoder EL_CANCoderLeft = new CANcoder(20, CANbusName); 
     public static final CANcoder EL_CANCoderRight = new CANcoder(19, CANbusName); 
 
@@ -41,22 +40,22 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         EL_Right.setControl(new Follower(EL_Left.getDeviceID(), true));
 
         //TWO PID SLOT LOOPS
-        EL_TalonConfig.Slot0.kP = 40.0;
-        EL_TalonConfig.Slot0.kD = 1.0;
-        EL_TalonConfig.Slot1.kP = 40.0;
-        EL_TalonConfig.Slot1.kD = 3.0;
+        EL_TalonConfig.Slot0.kP = ElevatorConstants.EL_talonConfig.kP;
+        EL_TalonConfig.Slot0.kD = ElevatorConstants.EL_talonConfig.kD;
+        EL_TalonConfig.Slot1.kP = ElevatorConstants.EL_talonConfig.AkP;
+        EL_TalonConfig.Slot1.kD = ElevatorConstants.EL_talonConfig.AkD;
         //Set Motors Inverted 
         EL_TalonConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         // Measuring Feedback
         EL_TalonConfig.Feedback.FeedbackRemoteSensorID = EL_CANCoderLeft.getDeviceID();
         EL_TalonConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        EL_TalonConfig.Feedback.SensorToMechanismRatio = EL_ENCODER_RATIO;
-        EL_TalonConfig.Feedback.RotorToSensorRatio = EL_RATIO;
+        EL_TalonConfig.Feedback.SensorToMechanismRatio = ElevatorConstants.EL_talonConfig.SENSOR_TO_MECHANISM_RATIO;
+        EL_TalonConfig.Feedback.RotorToSensorRatio = ElevatorConstants.EL_talonConfig.ROTOR_TO_SENSOR_RATIO;
 
         // Motion Magic
-        EL_TalonConfig.MotionMagic = new MotionMagicConfigs().withMotionMagicAcceleration(1000)
-                .withMotionMagicCruiseVelocity(200);
+        EL_TalonConfig.MotionMagic = new MotionMagicConfigs().withMotionMagicAcceleration(ElevatorConstants.EL_talonConfig.MM_ACCELERATION)
+                .withMotionMagicCruiseVelocity(ElevatorConstants.EL_talonConfig.MM_CRUISE_VELOCITY);
         CANcoderConfiguration magConfig = new CANcoderConfiguration();
         magConfig.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
         magConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;

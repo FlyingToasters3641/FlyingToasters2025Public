@@ -18,10 +18,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.lib.BehaviorTree.trees.Targets;
 import frc.robot.subsystems.Dashboard;
-import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberCommands;
 import frc.robot.util.LocalADStarAK;
 
 import org.ironmaple.simulation.SimulatedArena;
