@@ -13,8 +13,19 @@
 
 package frc.robot.subsystems.vision;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
+import static frc.robot.subsystems.vision.VisionConstants.angularStdDevBaseline;
+import static frc.robot.subsystems.vision.VisionConstants.angularStdDevMegatag2Factor;
+import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
+import static frc.robot.subsystems.vision.VisionConstants.cameraStdDevFactors;
+import static frc.robot.subsystems.vision.VisionConstants.linearStdDevBaseline;
+import static frc.robot.subsystems.vision.VisionConstants.linearStdDevMegatag2Factor;
+import static frc.robot.subsystems.vision.VisionConstants.maxAmbiguity;
+import static frc.robot.subsystems.vision.VisionConstants.maxZError;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,19 +33,20 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
-import java.util.LinkedList;
-import java.util.List;
-import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
     private final VisionConsumer consumer;
     private final VisionIO[] io;
     private final VisionIOInputsAutoLogged[] inputs;
     private final Alert[] disconnectedAlerts;
+    public static double CenterXDistance;
+    private final int leftLineUpCamera = 5;
+    private final int rightLineUpCamera = 4;
 
     public Vision(VisionConsumer consumer, VisionIO... io) {
         this.consumer = consumer;
@@ -49,13 +61,14 @@ public class Vision extends SubsystemBase {
         // Initialize disconnected alerts
         this.disconnectedAlerts = new Alert[io.length];
         for (int i = 0; i < inputs.length; i++) {
-            disconnectedAlerts[i] =
-                    new Alert("Vision camera " + Integer.toString(i) + " is disconnected.", AlertType.kWarning);
+            disconnectedAlerts[i] = new Alert("Vision camera " + Integer.toString(i) + " is disconnected.",
+                    AlertType.kWarning);
         }
     }
 
     /**
-     * Returns the X angle to the best target, which can be used for simple servoing with vision.
+     * Returns the X angle to the best target, which can be used for simple servoing
+     * with vision.
      *
      * @param cameraIndex The index of the camera to use.
      */
@@ -144,17 +157,18 @@ public class Vision extends SubsystemBase {
 
             // Log camera datadata
             Logger.recordOutput(
-                  "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
-                      tagPoses.toArray(new Pose3d[tagPoses.size()]));       
+                    "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
+                    tagPoses.toArray(new Pose3d[tagPoses.size()]));
             Logger.recordOutput(
-                 "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPoses",
-                 robotPoses.toArray(new Pose3d[robotPoses.size()]));        
+                    "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPoses",
+                    robotPoses.toArray(new Pose3d[robotPoses.size()]));
             Logger.recordOutput(
-                  "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesAccepted",    
+                    "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesAccepted",
                     robotPosesAccepted.toArray(new Pose3d[robotPosesAccepted.size()]));
             Logger.recordOutput(
-                  "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesRejected",          
+                    "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesRejected",
                     robotPosesRejected.toArray(new Pose3d[robotPosesRejected.size()]));
+
             allTagPoses.addAll(tagPoses);
             allRobotPoses.addAll(robotPoses);
             allRobotPosesAccepted.addAll(robotPosesAccepted);
@@ -170,10 +184,108 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput(
                 "Vision/Summary/RobotPosesRejected",
                 allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+
+        Logger.recordOutput("LineUp/PeriodicLeftXAngle", getRobotLeftPitchAngle());
+        Logger.recordOutput("LineUp/PeriodicLeftYSize", getRobotLeftAprilTagSize());
+        Logger.recordOutput("LineUp/PeriodicRightXAngle", getRobotRightPitchAngle());
+        Logger.recordOutput("LineUp/PeriodicRightYOSize", getRobotRightAprilTagSize());
+        Logger.recordOutput("LineUp/PeriodicLeftXOffset", robotLeftXOffsetToAprilTag());
+        Logger.recordOutput("LineUp/PeriodicLeftYOffset", robotLeftYOffsetToAprilTag());
+        Logger.recordOutput("LineUp/PeriodicRightXOffset", robotRightXOffsetToAprilTag());
+        Logger.recordOutput("LineUp/PeriodicRightYOffset", robotRightYOffsetToAprilTag());
+
     }
 
     @FunctionalInterface
     public interface VisionConsumer {
         void accept(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs);
     }
+
+    //CONTINUED TESTING FOR LINEUP
+    public double robotLeftXOffsetToAprilTag() {
+        double distance = cameraLeftDistanceToAprilTag();
+        double yawAngle = inputs[leftLineUpCamera].latestTargetObservationDouble.tx();
+        Logger.recordOutput("LineUp/RawYawAngle", yawAngle);
+
+        yawAngle = Units.degreesToRadians(yawAngle + 25);
+        Logger.recordOutput("LineUp/ProcessedYawAngle", yawAngle);
+
+        double xOffset = distance * Math.sin(yawAngle);
+        Logger.recordOutput("LineUp/CameraXOffset", xOffset);
+
+        if (Double.isInfinite(xOffset)) {
+            return 0.0;
+        } else {
+        return xOffset - 0.082;
+        }
+    }
+
+    public double cameraLeftDistanceToAprilTag() {
+        double pitchAngle = inputs[leftLineUpCamera].latestTargetObservationDouble.ty();
+        pitchAngle = Units.degreesToRadians(pitchAngle);
+
+        double distance = .0624 / Math.tan(pitchAngle);
+        return distance;
+    }
+
+    public double robotLeftYOffsetToAprilTag() {
+        double yawAngle = inputs[leftLineUpCamera].latestTargetObservationDouble.tx();
+        yawAngle = Units.degreesToRadians(yawAngle + 25);
+        double distance = cameraLeftDistanceToAprilTag();
+        double yOffset = distance * Math.cos(yawAngle);
+        yOffset += .185;
+        return yOffset;
+    }
+
+    public double robotRightXOffsetToAprilTag() {
+        double distance = cameraRightDistanceToAprilTag();
+        double yawAngle = inputs[rightLineUpCamera].latestTargetObservationDouble.tx();
+        Logger.recordOutput("LineUp/RawYawAngle", yawAngle);
+
+        yawAngle = Units.degreesToRadians((-1 * yawAngle) + 25);
+        Logger.recordOutput("LineUp/ProcessedYawAngle", yawAngle);
+
+        double xOffset = distance * Math.sin(yawAngle);
+        Logger.recordOutput("LineUp/CameraXOffset", xOffset);
+
+        if (Double.isInfinite(xOffset)) {
+            return 0.0;
+        } else {
+        return -(xOffset - 0.082);
+        }
+    }
+
+    public double cameraRightDistanceToAprilTag() {
+        double pitchAngle = inputs[rightLineUpCamera].latestTargetObservationDouble.ty();
+        pitchAngle = Units.degreesToRadians(pitchAngle);
+
+        double distance = .0624 / Math.tan(pitchAngle);
+        return distance;
+    }
+
+    public double robotRightYOffsetToAprilTag() {
+        double yawAngle = inputs[rightLineUpCamera].latestTargetObservationDouble.tx();
+        yawAngle = Units.degreesToRadians((-1 * yawAngle) + 25);
+        double distance = cameraLeftDistanceToAprilTag();
+        double yOffset = distance * Math.cos(yawAngle);
+        yOffset += .185;
+        return yOffset;
+    }
+
+    public double getRobotLeftAprilTagSize() {
+        return inputs[leftLineUpCamera].bestTagSize;
+    }
+
+    public double getRobotLeftPitchAngle() {
+        return inputs[leftLineUpCamera].latestTargetObservationDouble.tx();
+    }
+
+    public double getRobotRightAprilTagSize() {
+        return inputs[rightLineUpCamera].bestTagSize;
+    }
+
+    public double getRobotRightPitchAngle() {
+        return inputs[rightLineUpCamera].latestTargetObservationDouble.tx();
+    }
+
 }

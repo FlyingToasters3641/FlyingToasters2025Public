@@ -12,21 +12,14 @@ public class Climber extends SubsystemBase{
 
     private final ClimberVisualizer CL_measuredVisualizer;
     private final ClimberVisualizer CL_goalVisualizer;
-
-    private final ClimberStates CL_actual;
-    private final ClimberStates CL_target;
-    private final ClimberStates CL_goal;
-
     public Angle CL_setpoint = new Rotation2d(0, 0).getMeasure();
+    public double CL_position = 0.0;
+    public double CL_currentVelocity = 0.0;
 
 
     public Climber(ClimberIO io) {
         this.io = io;
         this.io.CL_setPID(0.3, 0, 0);
-        this.CL_actual = ClimberStates.getCL_measuredInstance();
-        this.CL_target = ClimberStates.getCL_desiredInstance();
-        this.CL_goal = ClimberStates.getCL_goalInstance();
-
         CL_measuredVisualizer = new ClimberVisualizer("Measured");
         CL_goalVisualizer = new ClimberVisualizer("Goal");
     }
@@ -37,6 +30,7 @@ public class Climber extends SubsystemBase{
 
         
         this.io.updateInputs(inputs);
+        CL_currentVelocity = inputs.CL_currentVelocity;
         Logger.processInputs("Climber", inputs);
 
         //Updates all positions in ElevatorStates and for the simulation
@@ -48,11 +42,6 @@ public class Climber extends SubsystemBase{
         } else {
             this.io.CL_runSetpoint(this.CL_setpoint);
         }
-
-
-        CL_actual.updateClimberRotation(this.inputs.rotation);
-        CL_target.updateClimberRotation(this.inputs.setpointRotation);
-        CL_goal.updateClimberRotation(this.CL_setpoint);
 
     }
 
@@ -78,6 +67,18 @@ public class Climber extends SubsystemBase{
 
     public void CL_setPosition(double position){
         io.CL_setPosition(position);
+    }
+
+    public void CL_setSpeed(double speed){
+        io.CL_setSpeed(speed);
+    } 
+
+    public boolean CL_getExtended() {
+        return io.CL_getExtended();
     }   
+
+    public boolean CL_getServoDisengaged() {
+        return io.CL_getServoDisengaged();
+    }
     
 }

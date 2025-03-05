@@ -22,9 +22,9 @@ public class ClimberIOSim implements ClimberIO {
     public static final double CL_RATIO = 0.0;
     public static final double CL_ENCODER_RATIO = 0.0;
 
-    private static final String CANbusName = "idk"; // TODO: Update CANbus Name
-    public static final TalonFX CL_TalonFX = new TalonFX(1, CANbusName);// TODO: Update CANIDs
-    public static final CANcoder CL_CANCoder = new CANcoder(5, CANbusName); // TODO: Clarify CANcoder usage
+    private static final String CANbusName = "maximo";
+    public static final TalonFX CL_TalonFX = new TalonFX(1, CANbusName);
+    public static final CANcoder CL_CANCoder = new CANcoder(5, CANbusName); 
 
     private static final TalonFXSimState CL_TalonFXSim = new TalonFXSimState(CL_TalonFX);
 

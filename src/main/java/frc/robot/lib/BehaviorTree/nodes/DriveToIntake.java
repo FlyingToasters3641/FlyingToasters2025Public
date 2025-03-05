@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.lib.BehaviorTree.Blackboard;
 import frc.robot.lib.BehaviorTree.ExecutionStatus;
+import frc.robot.util.AllianceFlipUtil;
 
 public class DriveToIntake extends BehaviorTreeNode {
     Command driveToCommand;
@@ -22,11 +23,15 @@ public class DriveToIntake extends BehaviorTreeNode {
     public void initialize() {
         isAlgae = blackboard.isTargetAlgae("target");
         if (isAlgae) {
-            //TODO: change both constants for intaking to actual stuff 
             pose = Constants.reefBranchJ;
         } else {
-            pose = Constants.testPose;
+            if (blackboard.isPlayerStationLeft()) {
+                pose = Constants.humanPlayerStationLeft;
+            } else {
+            pose = Constants.humanPlayerStationRight;
         }
+    }
+        pose = AllianceFlipUtil.apply(pose);
         driveToCommand = AutoBuilder.pathfindToPose(pose, Constants.constraints);
         
     }

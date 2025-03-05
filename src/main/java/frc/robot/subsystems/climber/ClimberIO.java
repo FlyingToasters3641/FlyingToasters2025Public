@@ -23,6 +23,8 @@ public interface ClimberIO {
 
         public MutAngle setpointRotation = Radians.mutable(0);
         public MutAngularVelocity setpointAngularVelocity = RadiansPerSecond.mutable(0);
+        public double CL_position = 0.0;
+        public double CL_currentVelocity = 0.0;
     }
 
     public default void updateInputs(ClimberIOInputs inputs) {};
@@ -44,5 +46,11 @@ public interface ClimberIO {
     public default void CL_Home() {};
 
     public default void CL_setPosition(double position) {};
+
+    public default boolean CL_getExtended() {return false;};
+
+    public default void CL_setSpeed(double speed) {};
+
+    public default boolean CL_getServoDisengaged() {return false;};
 
 }

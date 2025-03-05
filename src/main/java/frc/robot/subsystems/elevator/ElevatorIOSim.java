@@ -1,7 +1,6 @@
 package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
@@ -18,9 +17,9 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 
 public class ElevatorIOSim implements ElevatorIO{
     
-    private static final String CANbusName = "idk"; // TODO: Update CANbus Name
-    private static final TalonFX EL_TalonFXOne = new TalonFX(1, CANbusName);// TODO: Update CANIDs
-    private static final TalonFX EL_TalonFXTwo = new TalonFX(2, CANbusName); // TODO: Standardize Names for ElevatorMotors
+    private static final String CANbusName = "maximo";
+    private static final TalonFX EL_TalonFXOne = new TalonFX(1, CANbusName);
+    private static final TalonFX EL_TalonFXTwo = new TalonFX(2, CANbusName);
     private static final TalonFXSimState EL_TalonFXOneSim = new TalonFXSimState(EL_TalonFXOne);
 	private static final TalonFXSimState EL_TalonFXTwoSim = new TalonFXSimState(EL_TalonFXTwo);;
 
@@ -91,14 +90,11 @@ public class ElevatorIOSim implements ElevatorIO{
     @Override
     public void EL_runSetpoint(Distance position) {
         Distance currentHeight = Meters.of(EL_sim.getPositionMeters());
-        LinearVelocity currentVelocity = MetersPerSecond.of(EL_sim.getVelocityMetersPerSecond());
 
         Voltage controllerVoltage = Volts.of(EL_PID_controller.calculate(currentHeight.in(Inches), position.in(Inches)));
-        Voltage feedForwardVoltage = Volts.of(EL_FeedForward.calculate(currentVelocity.in(InchesPerSecond)));
 
-        Voltage effort = controllerVoltage.plus(feedForwardVoltage);
 
-        EL_runVolts(effort);
+        EL_runVolts(controllerVoltage);
     }
 
     //Limits volts to go between a certain high and low value

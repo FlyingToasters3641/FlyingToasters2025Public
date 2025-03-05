@@ -16,9 +16,9 @@ public class ClimberIOTalonFX implements ClimberIO {
     public static final double CL_RATIO = 0.0;
     public static final double CL_ENCODER_RATIO = 0.0;
 
-    private static final String CANbusName = "maximo"; // TODO: Update CANbus Name
-    public static final TalonFX CL_TalonFX = new TalonFX(0, CANbusName);// TODO: Update CANIDs
-    public static final Servo CL_Servo = new Servo(0); // TODO: Standardize Names for Motors
+    private static final String CANbusName = "maximo"; 
+    public static final TalonFX CL_TalonFX = new TalonFX(14, CANbusName);
+    public static final Servo CL_Servo = new Servo(9);
 
     MutAngle setpoint = Rotations.mutable(0);
 
@@ -37,7 +37,9 @@ public class ClimberIOTalonFX implements ClimberIO {
     public void updateInputs(ClimberIOInputs inputs){;
 
         //Logs from TalonFX simulation.
-
+        inputs.CL_position = CL_TalonFX.getPosition().getValueAsDouble();
+        inputs.CL_currentVelocity = CL_TalonFX.getVelocity().getValueAsDouble();
+        Logger.recordOutput("Climber/velocity",  CL_TalonFX.getVelocity().getValueAsDouble());
         Logger.recordOutput("Climber/motorPos", CL_TalonFX.getPosition().getValueAsDouble());
         Logger.recordOutput("Climber/voltage", CL_TalonFX.getMotorVoltage().getValueAsDouble());
         Logger.recordOutput("Climber/setpoint", setpoint);
@@ -48,23 +50,37 @@ public class ClimberIOTalonFX implements ClimberIO {
     @Override
     public void CL_setPosition(double position){
         setpoint.mut_replace(position, Rotations);
-        CL_TalonFX.setControl(new MotionMagicTorqueCurrentFOC(position).withSlot(0)); //May need to make position negative if needed.
-        //TODO: this may be a thing to be debugged but WPILib has had issues with mutable Units randomly being changed. -AU
+        CL_TalonFX.setControl(new MotionMagicTorqueCurrentFOC(position).withSlot(0)); 
     }
 
     @Override
     public void CL_Home(){
-        CL_TalonFX.set(0.1);
-        double currentVelocity = CL_TalonFX.getVelocity().getValueAsDouble();
-
-        if (currentVelocity < ClimberConstants.STALL_VELOCITY_THRESHOLD || CL_TalonFX.getStatorCurrent().getValueAsDouble() > ClimberConstants.STALL_CURRENT_THRESHOLD){
-            CL_TalonFX.set(0);
-            CL_TalonFX.setPosition(0);
-        }
+        CL_TalonFX.setPosition(0);
+        CL_TalonFX.set(0.0);
     }
 
     @Override
     public void CL_setServo(double angle){
         CL_Servo.setAngle(angle);
+    }
+
+    @Override
+    public void CL_Stop(){
+        CL_TalonFX.set(0);
+    }
+
+    @Override
+    public void CL_setSpeed(double speed){
+        CL_TalonFX.set(speed);
+    } 
+
+    @Override
+    public boolean CL_getExtended(){
+        return CL_TalonFX.getPosition().getValueAsDouble() > 1000.0;
+    }
+
+    @Override
+    public boolean CL_getServoDisengaged() {
+        return CL_Servo.getAngle() > 45;
     }
 }

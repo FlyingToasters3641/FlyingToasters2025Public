@@ -22,14 +22,14 @@ public class IntakeVisualizer {
 
     public IntakeVisualizer(String key, Color color) {
         this.key = key;
-        this.panel = new LoggedMechanism2d(Inches.of(100).in(Meters), Inches.of(100).in(Meters),
+        this.panel = new LoggedMechanism2d(Inches.of(100).in(Meters), Inches.of(20).in(Meters),
                 new Color8Bit(Color.kWhite));
-        this.root = panel.getRoot("intake", Inches.of(7.35).in(Meters), Inches.of(10).in(Meters));
+        this.root = panel.getRoot("intake", Inches.of(0).in(Meters), Inches.of(10).in(Meters));
         this.intake = root.append(
                 new LoggedMechanismLigament2d(
                         "Intake",
-                        Inches.of(0).in(Meters),
-                        90,
+                        Inches.of(20).in(Meters),
+                        0,
                         10,
                         new Color8Bit(color)));
         Logger.recordOutput("Intake/Mechanism2d/" + key, this.panel);
@@ -39,7 +39,7 @@ public class IntakeVisualizer {
         intake.setAngle(position.in(Radians));
         Logger.recordOutput("Intake/Mechanism2d/" + key, this.panel);
         Angle intakeAngle = position.times(IntakeConstants.INTAKE_ANGLE_MODIFIER);
-        Pose3d intake3d = new Pose3d(Inches.zero(), Inches.zero(), Inches.zero(), new Rotation3d(0, 0, intakeAngle.in(Radians)));
+        Pose3d intake3d = new Pose3d(Inches.zero(), Inches.zero(), Inches.zero(), new Rotation3d(0, 0, intakeAngle.in(Degrees)));
         Logger.recordOutput("Intake/Mechanism3d/" + key, intake3d);
     }
 }

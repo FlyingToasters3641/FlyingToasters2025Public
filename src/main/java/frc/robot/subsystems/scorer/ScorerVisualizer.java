@@ -34,7 +34,7 @@ public class ScorerVisualizer {
     }
 
     public void update(Angle position) {
-        Scorer.setAngle(position.in(Radians));
+        Scorer.setAngle(position.in(Degrees));
         Logger.recordOutput("Scorer/Mechanism2d/" + key, this.panel);
     }
 }

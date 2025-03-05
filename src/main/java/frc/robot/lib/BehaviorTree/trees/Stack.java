@@ -9,8 +9,7 @@ public class Stack {
     Blackboard blackboard;
 
     public Stack(Blackboard blackboard) {
-    this.blackboard = blackboard;
-
+        this.blackboard = blackboard;
     }
 
     public void add(Targets item) {
@@ -64,6 +63,14 @@ public class Stack {
             return stack;
         } else {
             return null;
+        }
+    }
+
+    public void removeMatchingElements(Targets item) {
+        for (int i = 0; i < stack.size(); i++) {
+            if (stack.get(i) == item) {
+                stack.remove(i);
+            }
         }
     }
 }
